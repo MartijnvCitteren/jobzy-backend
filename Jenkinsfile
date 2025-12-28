@@ -47,8 +47,7 @@ pipeline {
 
 						env.IMAGE_VERSION = "${env.VERSION_PREFIX}.${env.BUILD_NUMBER}-${gitShort}"
 						env.IMAGE_NAME_VERSIONED = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:${env.IMAGE_VERSION}"
-						env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.
-					IMAGE_REPO}:latest"
+						env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:latest"
 						}
                 }
                 sh 'echo "Building image: $IMAGE_NAME_VERSIONED (and tagging as latest)"'
