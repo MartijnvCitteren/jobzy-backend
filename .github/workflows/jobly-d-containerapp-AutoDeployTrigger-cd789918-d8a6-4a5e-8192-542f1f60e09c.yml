@@ -1,0 +1,49 @@
+name: Trigger auto deployment for jobly-d-containerapp
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/jobly-d-containerapp-AutoDeployTrigger-cd789918-d8a6-4a5e-8192-542f1f60e09c.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.JOBLYDCONTAINERAPP_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.JOBLYDCONTAINERAPP_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.JOBLYDCONTAINERAPP_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}".
+          _dockerfilePathKey_: _dockerfilePath_
+          _targetLabelKey_: _targetLabel_
+          registryUrl: jobly.azurecr.io
+          registryUsername: ${{ secrets.JOBLYDCONTAINERAPP_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.JOBLYDCONTAINERAPP_REGISTRY_PASSWORD }}
+          containerAppName: jobly-d-containerapp
+          resourceGroup: jobly-develop
+          imageToBuild: jobly.azurecr.io/jobly-d-containerapp:${{ github.sha }}
+          _buildArgumentsKey_: |
+            _buildArgumentsValues_
+
+
