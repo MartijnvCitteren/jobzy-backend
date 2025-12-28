@@ -15,16 +15,8 @@ pipeline {
     }
 
     environment {
-        // --- ACR ---
-        ACR_LOGIN_SERVER = 'jobly.azurecr.io'
-        IMAGE_REPO       = 'jobly/jobs'
-
         // --- Versioning ---
         VERSION_PREFIX   = '0.1'
-
-        // --- ACI deploy ---
-        AZ_RESOURCE_GROUP     = 'jobly-rg'
-        AZ_CONTAINER_INSTANCE    = 'jobly-jobs-aci'
     }
 
     stages {
@@ -48,10 +40,16 @@ pipeline {
         stage('Create Image Tags') {
             steps {
                 script {
-                    def gitShort = sh(script: 'cat .git_short', returnStdout: true).trim()
-                    env.IMAGE_VERSION = "${env.VERSION_PREFIX}.${env.BUILD_NUMBER}-${gitShort}"
-                    env.IMAGE_NAME_VERSIONED = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:${env.IMAGE_VERSION}"
-                    env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:latest"
+					withCredentials([
+						string(credentialsId: 'ACR_LOGIN_SERVER', variable: 'ACR_LOGIN_SERVER'),
+						string(credentialsId: 'IMAGE_REPO', variable:'IMAGE_REPO')]){
+						def gitShort = sh(script: 'cat .git_short', returnStdout: true).trim()
+
+						env.IMAGE_VERSION = "${env.VERSION_PREFIX}.${env.BUILD_NUMBER}-${gitShort}"
+						env.IMAGE_NAME_VERSIONED = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:${env.IMAGE_VERSION}"
+						env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.
+					IMAGE_REPO}:latest"
+						}
                 }
                 sh 'echo "Building image: $IMAGE_NAME_VERSIONED (and tagging as latest)"'
             }
@@ -63,35 +61,32 @@ pipeline {
             }
         }
 
-        stage('ACR Login + Push') {
-            steps {
-                // Option A (recommended): Use Azure CLI + service principal (credentials type: "Secret text" with JSON)
-                //  - Create Jenkins credential: azure-sp (Secret text)
-                //  - Value: {"appId":"...","password":"...","tenant":"...","subscription":"..."}
-                //  - Grant SP: AcrPush on ACR + contributor on RG (or specific ACI permissions)
-                withCredentials([string(credentialsId: 'azure-sp', variable: 'AZ_SP_JSON')]) {
-                    script {
-                        def appId = sh(script: "python3 -c 'import json,os; print(json.loads(os.environ[\"AZ_SP_JSON\"]) [\"appId\"])'", returnStdout: true).trim()
-                        def password = sh(script: "python3 -c 'import json,os; print(json.loads(os.environ[\"AZ_SP_JSON\"]) [\"password\"])'", returnStdout: true).trim()
-                        def tenant = sh(script: "python3 -c 'import json,os; print(json.loads(os.environ[\"AZ_SP_JSON\"]) [\"tenant\"])'", returnStdout: true).trim()
-                        def subscription = sh(script: "python3 -c 'import json,os; print(json.loads(os.environ[\"AZ_SP_JSON\"]) [\"subscription\"])'", returnStdout: true).trim()
+		stage('ACR Login + Push') {
+			steps {
+				withCredentials([
+					usernamePassword(credentialsId: 'ACR_ACCOUNT', usernameVariable: 'AZ_CLIENT_ID', passwordVariable: 'AZ_CLIENT_SECRET'),
+					string(credentialsId: 'TENANT_ID', variable: 'AZ_TENANT_ID'),
+					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
+				]) {
+					sh """
+        set -euo pipefail
+        az logout || true
 
-                        sh """
-                          set -euo pipefail
-                          az logout || true
-                          az login --service-principal -u '${appId}' -p '${password}' --tenant '${tenant}'
-                          az account set --subscription '${subscription}'
+        az login --service-principal \\
+          -u "$AZ_CLIENT_ID" \\
+          -p "$AZ_CLIENT_SECRET" \\
+          --tenant "$AZ_TENANT_ID"
 
-                          az acr login --name '${env.ACR_LOGIN_SERVER.split('\\.')[0]}'
+        az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-                          docker push '${env.IMAGE_NAME_VERSIONED}'
-                          docker push '${env.IMAGE_NAME_LATEST}'
-                        """
-                    }
-                }
-            }
-        }
+        az acr login --name '${env.ACR_LOGIN_SERVER.split('\\.')[0]}'
 
+        docker push '${env.IMAGE_NAME_VERSIONED}'
+        docker push '${env.IMAGE_NAME_LATEST}'
+      """
+				}
+			}
+		}
         stage('Restart ACI') {
             steps {
                 sh 'sleep 10'
