@@ -1,74 +1,108 @@
 pipeline {
     agent any
-    tools{
+
+    tools {
         maven 'Maven 3.9.9'
         dockerTool 'Docker'
     }
+
+    options {
+        timestamps()
+        ansiColor('xterm')
+        disableConcurrentBuilds()
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+    }
+
     environment {
-            AWS_CLI_PATH = '/opt/homebrew/bin/aws'
-            ECR_REGISTRY = '481665105260.dkr.ecr.eu-west-1.amazonaws.com'
-            DOCKER_PATH = '/opt/homebrew/bin/docker'
-        }
+        // --- Versioning ---
+        VERSION_PREFIX   = '0.1'
+    }
+
     stages {
-        stage('Build Maven') {
+        stage('Checkout') {
             steps {
-                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/MartijnvCitteren/Jobly-Jobs']])
-                sh 'mvn clean install -DskipTests'
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    extensions: [],
+                    userRemoteConfigs: [[url: 'https://github.com/MartijnvCitteren/Jobly-Jobs']]
+                )
+                sh 'git rev-parse --short HEAD > .git_short'
             }
         }
 
-        stage('Unit Test') {
+        stage('Build + Unit/Integration Tests') {
             steps {
-                sh 'mvn test'
+                sh 'mvn -B -U clean verify'
             }
         }
 
-        stage('Logging into AWS ECR') {
-                steps {
-                    withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                        credentialsId: 'aws-ecr-credentials',
-                        usernameVariable: 'AWS_ACCESS_KEY_ID',
-                        passwordVariable: 'AWS_SECRET_ACCESS_KEY']])  {
-                                script {
+        stage('Create Image Tags') {
+            steps {
+                script {
+					withCredentials([
+						string(credentialsId: 'ACR_LOGIN_SERVER', variable: 'ACR_LOGIN_SERVER'),
+						string(credentialsId: 'IMAGE_REPO', variable:'IMAGE_REPO')]){
+						def gitShort = sh(script: 'cat .git_short', returnStdout: true).trim()
 
+						env.IMAGE_VERSION = "${env.VERSION_PREFIX}.${env.BUILD_NUMBER}-${gitShort}"
+						env.IMAGE_NAME_VERSIONED = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:${env.IMAGE_VERSION}"
+						env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.
+					IMAGE_REPO}:latest"
+						}
+                }
+                sh 'echo "Building image: $IMAGE_NAME_VERSIONED (and tagging as latest)"'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t "$IMAGE_NAME_VERSIONED" -t "$IMAGE_NAME_LATEST" .'
+            }
+        }
+
+		stage('ACR Login + Push') {
+			steps {
+				withCredentials([
+					usernamePassword(credentialsId: 'ACR_ACCOUNT', usernameVariable: 'AZ_CLIENT_ID', passwordVariable: 'AZ_CLIENT_SECRET'),
+					string(credentialsId: 'TENANT_ID', variable: 'AZ_TENANT_ID'),
+					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
+				]) {
+					sh """
+        set -euo pipefail
+        az logout || true
+
+        az login --service-principal \\
+          -u "$AZ_CLIENT_ID" \\
+          -p "$AZ_CLIENT_SECRET" \\
+          --tenant "$AZ_TENANT_ID"
+
+        az account set --subscription "$AZ_SUBSCRIPTION_ID"
+
+        az acr login --name '${env.ACR_LOGIN_SERVER.split('\\.')[0]}'
+
+        docker push '${env.IMAGE_NAME_VERSIONED}'
+        docker push '${env.IMAGE_NAME_LATEST}'
+      """
+				}
+			}
+		}
+        stage('Restart ACI') {
+            steps {
+                sh 'sleep 10'
                 sh """
-                    mkdir -p /tmp/.docker
-                    echo '{"credsStore":""}' > /tmp/.docker/config.json
+                  set -euo pipefail
+                  az container restart --resource-group '${AZ_RESOURCE_GROUP}' --name '${AZ_CONTAINER_GROUP}'
                 """
-
-                withEnv(['DOCKER_CONFIG=/tmp/.docker']) {
-                    sh """
-                        ${AWS_CLI_PATH} ecr get-login-password --region eu-west-1 | \
-                        ${DOCKER_PATH} login \
-                            --username AWS \
-                            --password-stdin \
-                            ${ECR_REGISTRY}
-                    """
-                }
-                    }
-                }
-            }
-        }
-        stage('Build Docker Image') {
-            steps {
-                withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                    credentialsId: 'aws-ecr-credentials',
-                    usernameVariable: 'AWS_ACCESS_KEY_ID',
-                    passwordVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh """
-                        mvn compile jib:build \
-                        -Djib.to.image=${ECR_REGISTRY}/jobly/jobs:latest \
-                        -Djib.to.auth.username=AWS \
-                        -Djib.to.auth.password=\$(${AWS_CLI_PATH} ecr get-login-password --region eu-west-1)
-                    """
-                }
             }
         }
     }
+
     post {
         always {
             junit '**/target/surefire-reports/*.xml'
             archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+            sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
         }
     }
 }
