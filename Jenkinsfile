@@ -3,12 +3,10 @@ pipeline {
 
     tools {
         maven 'Maven 3.9.9'
-        dockerTool 'Docker'
     }
 
     options {
         timestamps()
-        ansiColor('xterm')
         disableConcurrentBuilds()
         timeout(time: 30, unit: 'MINUTES')
         buildDiscarder(logRotator(numToKeepStr: '30'))
