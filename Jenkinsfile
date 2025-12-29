@@ -68,6 +68,7 @@ pipeline {
 					string(credentialsId: 'TENANT_ID', variable: 'AZ_TENANT_ID'),
 					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
 				]) {
+					def acrName = env.ACR_LOGIN_SERVER.split('\\.')[0]
 					sh """
         set -euo pipefail
         az logout || true
@@ -79,7 +80,7 @@ pipeline {
 
         az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-        az acr login --name '${env.ACR_LOGIN_SERVER.split('\\.')[0]}'
+    	sh "az acr login --name ${acrName}"
 
         docker push '${env.IMAGE_NAME_VERSIONED}'
         docker push '${env.IMAGE_NAME_LATEST}'
@@ -89,11 +90,17 @@ pipeline {
 		}
         stage('Restart ACI') {
             steps {
-                sh 'sleep 10'
-                sh """
+				withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_TENANT_ID'),
+					string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_SUBSCRIPTION_ID')
+				]){
+					sh 'sleep 10'
+
+					sh """
                   set -euo pipefail
-                  az container restart --resource-group '${AZ_RESOURCE_GROUP}' --name '${AZ_CONTAINER_GROUP}'
-                """
+                  az container restart --resource-group '${env.AZ_RESOURCE_GROUP}' --name '${env.AZ_CONTAINER_GROUP}'
+
+				        """
+					}
             }
         }
     }
