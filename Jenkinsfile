@@ -1,46 +1,46 @@
 pipeline {
-    agent any
+	agent any
 
-    tools {
-        maven 'Maven 3.9.9'
+	tools {
+		maven 'Maven 3.9.9'
 		jdk 'JDK21'
 		git 'DefaultGit'
-    }
+	}
 
-    options {
-        timestamps()
-        disableConcurrentBuilds()
-        timeout(time: 30, unit: 'MINUTES')
-        buildDiscarder(logRotator(numToKeepStr: '30'))
-    }
+	options {
+		timestamps()
+		disableConcurrentBuilds()
+		timeout(time: 30, unit: 'MINUTES')
+		buildDiscarder(logRotator(numToKeepStr: '30'))
+	}
 
-    environment {
-        // --- Versioning ---
-        VERSION_PREFIX   = '0.1'
-    }
+	environment {
+		// --- Versioning ---
+		VERSION_PREFIX = '0.1'
+	}
 
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scmGit(
-                    branches: [[name: '*/main']],
-                    extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/MartijnvCitteren/Jobly-Jobs.git',
+	stages {
+		stage('Checkout') {
+			steps {
+				checkout scmGit(
+					branches: [[name: '*/main']],
+					extensions: [],
+					userRemoteConfigs: [[url: 'https://github.com/MartijnvCitteren/Jobly-Jobs.git',
 						credentialsId: 'GITHUB_TOKEN']]
-                )
-                sh 'git rev-parse --short HEAD > .git_short'
-            }
-        }
+				)
+				sh 'git rev-parse --short HEAD > .git_short'
+			}
+		}
 
-        stage('Build + Unit/Integration Tests') {
-            steps {
-                sh 'mvn -B -U clean verify'
-            }
-        }
+		stage('Build + Unit/Integration Tests') {
+			steps {
+				sh 'mvn -B -U clean verify'
+			}
+		}
 
-        stage('Create Image Tags') {
-            steps {
-                script {
+		stage('Create Image Tags') {
+			steps {
+				script {
 					withCredentials([
 						string(credentialsId: 'ACR_LOGIN_SERVER', variable: 'ACR_LOGIN_SERVER'),
 						string(credentialsId: 'IMAGE_REPO', variable:'IMAGE_REPO')]){
@@ -49,17 +49,17 @@ pipeline {
 						env.IMAGE_VERSION = "${env.VERSION_PREFIX}.${env.BUILD_NUMBER}-${gitShort}"
 						env.IMAGE_NAME_VERSIONED = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:${env.IMAGE_VERSION}"
 						env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:latest"
-						}
-                }
-                sh 'echo "Building image: $IMAGE_NAME_VERSIONED (and tagging as latest)"'
-            }
-        }
+					}
+				}
+				sh 'echo "Building image: $IMAGE_NAME_VERSIONED (and tagging as latest)"'
+			}
+		}
 
-        stage('Docker Build') {
-            steps {
-                sh 'docker build -t "$IMAGE_NAME_VERSIONED" -t "$IMAGE_NAME_LATEST" .'
-            }
-        }
+		stage('Docker Build') {
+			steps {
+				sh 'docker build -t "$IMAGE_NAME_VERSIONED" -t "$IMAGE_NAME_LATEST" .'
+			}
+		}
 
 		stage('ACR Login + Push') {
 			steps {
@@ -68,28 +68,32 @@ pipeline {
 					string(credentialsId: 'TENANT_ID', variable: 'AZ_TENANT_ID'),
 					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
 				]) {
-					def acrName = env.ACR_LOGIN_SERVER.split('\\.')[0]
-					sh """
-        set -euo pipefail
-        az logout || true
+					script {
+						def acrName = env.ACR_LOGIN_SERVER.tokenize('.')[0]
+						sh """
+          set -euo pipefail
 
-        az login --service-principal \\
-          -u "$AZ_CLIENT_ID" \\
-          -p "$AZ_CLIENT_SECRET" \\
-          --tenant "$AZ_TENANT_ID"
+          az logout || true
 
-        az account set --subscription "$AZ_SUBSCRIPTION_ID"
+          az login --service-principal \\
+            -u "$AZ_CLIENT_ID" \\
+            -p "$AZ_CLIENT_SECRET" \\
+            --tenant "$AZ_TENANT_ID"
 
-    	sh "az acr login --name ${acrName}"
+          az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-        docker push '${env.IMAGE_NAME_VERSIONED}'
-        docker push '${env.IMAGE_NAME_LATEST}'
-      """
+          az acr login --name ${acrName}
+
+          docker push "${env.IMAGE_NAME_VERSIONED}"
+          docker push "${env.IMAGE_NAME_LATEST}"
+        """
+					}
 				}
 			}
+
 		}
-        stage('Restart ACI') {
-            steps {
+		stage('Restart ACI') {
+			steps {
 				withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_TENANT_ID'),
 					string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_SUBSCRIPTION_ID')
 				]){
@@ -100,17 +104,17 @@ pipeline {
                   az container restart --resource-group '${env.AZ_RESOURCE_GROUP}' --name '${env.AZ_CONTAINER_GROUP}'
 
 				        """
-					}
-            }
-        }
-    }
+				}
+			}
+		}
+	}
 
-    post {
-        always {
+	post {
+		always {
 			junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
 			junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
-            archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
-            sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
-        }
-    }
+			archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+			sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
+		}
+	}
 }
