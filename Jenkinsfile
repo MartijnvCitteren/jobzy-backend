@@ -23,7 +23,8 @@ pipeline {
                 checkout scmGit(
                     branches: [[name: '*/main']],
                     extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/MartijnvCitteren/Jobly-Jobs']]
+                    userRemoteConfigs: [[url: 'https://github.com/MartijnvCitteren/Jobly-Jobs.git',
+						credentialsId: 'GITHUB_TOKEN']]
                 )
                 sh 'git rev-parse --short HEAD > .git_short'
             }
@@ -97,7 +98,8 @@ pipeline {
 
     post {
         always {
-            junit '**/target/surefire-reports/*.xml'
+			junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+			junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
             archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
             sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
         }
