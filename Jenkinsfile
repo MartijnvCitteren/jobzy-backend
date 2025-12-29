@@ -68,53 +68,52 @@ pipeline {
 					string(credentialsId: 'TENANT_ID', variable: 'AZ_TENANT_ID'),
 					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
 				]) {
-					script {
-						sh """
+					sh(script: '''#!/usr/bin/env bash
+set -euo pipefail
 
-          set -euo pipefail
+ACR_NAME="jobly"
 
-          az logout || true
+az logout || true
 
-          az login --service-principal \\
-            -u "$AZ_CLIENT_ID" \\
-            -p "$AZ_CLIENT_SECRET" \\
-            --tenant "$AZ_TENANT_ID"
+az login --service-principal \
+  -u "$AZ_CLIENT_ID" \
+  -p "$AZ_CLIENT_SECRET" \
+  --tenant "$AZ_TENANT_ID"
 
-          az account set --subscription "$AZ_SUBSCRIPTION_ID"
+az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-          az acr login --name jobly
+az acr login --name "$ACR_NAME"
 
-          docker push "${env.IMAGE_NAME_VERSIONED}"
-          docker push "${env.IMAGE_NAME_LATEST}"
-        """
-					}
+docker push "$IMAGE_NAME_VERSIONED"
+docker push "$IMAGE_NAME_LATEST"
+''', shell: '/bin/bash')
 				}
 			}
-
 		}
-		stage('Restart ACI') {
-			steps {
-				withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_TENANT_ID'),
-					string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_SUBSCRIPTION_ID')
-				]){
-					sh 'sleep 10'
 
-					sh """
+	stage('Restart ACI') {
+		steps {
+			withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_TENANT_ID'),
+				string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_SUBSCRIPTION_ID')
+			]){
+				sh 'sleep 10'
+
+				sh """
                   set -euo pipefail
                   az container restart --resource-group '${env.AZ_RESOURCE_GROUP}' --name '${env.AZ_CONTAINER_GROUP}'
 
 				        """
-				}
 			}
 		}
 	}
+}
 
-	post {
-		always {
-			junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
-			junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
-			archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
-			sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
-		}
+post {
+	always {
+		junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+		junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
+		archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+		sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
 	}
+}
 }
