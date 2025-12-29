@@ -51,7 +51,7 @@ pipeline {
 						env.IMAGE_NAME_LATEST = "${env.ACR_LOGIN_SERVER}/${env.IMAGE_REPO}:latest"
 					}
 				}
-				sh 'echo "Building image: $IMAGE_NAME_VERSIONED (and tagging as latest)"'
+				sh 'echo "Building image: $IMAGE_NAME_VERSIONED and tagging as latest $IMAGE_NAME_LATEST"'
 			}
 		}
 
@@ -71,6 +71,7 @@ pipeline {
 					script {
 						def acrName = env.ACR_LOGIN_SERVER.tokenize('.')[0]
 						sh """
+						'echo "ARCNAME: $acrName ACR_LOGIN_SERVER: $env.ARC_LOGIN_SERVER"'
           set -euo pipefail
 
           az logout || true
