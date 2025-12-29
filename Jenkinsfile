@@ -68,25 +68,25 @@ pipeline {
 					string(credentialsId: 'TENANT_ID', variable: 'AZ_TENANT_ID'),
 					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
 				]) {
-					sh(script: '''#!/usr/bin/env bash
-set -euo pipefail
+					sh '''bash -lc '
+        set -euo pipefail
 
-ACR_NAME="jobly"
+        ACR_NAME="jobly"
 
-az logout || true
+        az logout || true
 
-az login --service-principal \
-  -u "$AZ_CLIENT_ID" \
-  -p "$AZ_CLIENT_SECRET" \
-  --tenant "$AZ_TENANT_ID"
+        az login --service-principal \
+          -u "$AZ_CLIENT_ID" \
+          -p "$AZ_CLIENT_SECRET" \
+          --tenant "$AZ_TENANT_ID"
 
-az account set --subscription "$AZ_SUBSCRIPTION_ID"
+        az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-az acr login --name "$ACR_NAME"
+        az acr login --name "$ACR_NAME"
 
-docker push "$IMAGE_NAME_VERSIONED"
-docker push "$IMAGE_NAME_LATEST"
-''', shell: '/bin/bash')
+        docker push "$IMAGE_NAME_VERSIONED"
+        docker push "$IMAGE_NAME_LATEST"
+      ' '''
 				}
 			}
 		}
