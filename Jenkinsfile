@@ -69,9 +69,8 @@ pipeline {
 					string(credentialsId: 'SUBSCRIPTION_ID', variable: 'AZ_SUBSCRIPTION_ID')
 				]) {
 					script {
-						def acrName = env.ACR_LOGIN_SERVER.tokenize('.')[0]
 						sh """
-						'echo "ARCNAME: $acrName ACR_LOGIN_SERVER: $env.ARC_LOGIN_SERVER"'
+
           set -euo pipefail
 
           az logout || true
@@ -83,7 +82,7 @@ pipeline {
 
           az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-          az acr login --name ${acrName}
+          az acr login --name jobly
 
           docker push "${env.IMAGE_NAME_VERSIONED}"
           docker push "${env.IMAGE_NAME_LATEST}"
