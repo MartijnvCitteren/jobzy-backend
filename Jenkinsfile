@@ -71,8 +71,6 @@ pipeline {
 					sh '''bash -lc '
         set -euo pipefail
 
-        ACR_NAME="jobly"
-
         az logout || true
 
         az login --service-principal \
@@ -82,7 +80,7 @@ pipeline {
 
         az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-        az acr login --name "$ACR_NAME"
+        az acr login --name jobly
 
         docker push "$IMAGE_NAME_VERSIONED"
         docker push "$IMAGE_NAME_LATEST"
@@ -93,8 +91,8 @@ pipeline {
 
 	stage('Restart ACI') {
 		steps {
-			withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_TENANT_ID'),
-				string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_SUBSCRIPTION_ID')
+			withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_RESOURCE_GROUP'),
+				string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_CONTAINER_GROUP')
 			]){
 				sh 'sleep 10'
 
