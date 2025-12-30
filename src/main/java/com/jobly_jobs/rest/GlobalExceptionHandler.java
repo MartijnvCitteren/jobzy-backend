@@ -19,12 +19,6 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     private static final String INTERNAL_SERVER_ERROR_DISPLAY = "Something unexpected happend. Internal server error.";
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<Object> handleDataAccessException(DataAccessException e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(buildErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, e, INTERNAL_SERVER_ERROR_DISPLAY));
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         Map<String, String> exceptionMap = e.getBindingResult()
@@ -33,6 +27,15 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
         return ResponseEntity.badRequest().body(exceptionMap);
     }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ErrorDto> handleDataAccessException(DataAccessException e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, e, INTERNAL_SERVER_ERROR_DISPLAY));
+    }
+
+
+
 
     private ErrorDto buildErrorDto(BaseException e) {
         return ErrorDto.builder()

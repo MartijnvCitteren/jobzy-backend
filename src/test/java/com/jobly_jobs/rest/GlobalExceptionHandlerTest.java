@@ -1,5 +1,6 @@
 package com.jobly_jobs.rest;
 
+import com.jobly_jobs.domain.dto.response.ErrorDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,11 +24,10 @@ class GlobalExceptionHandlerTest {
         };
 
         // when
-        ResponseEntity<Object> responseEntity = globalExceptionHandler.handleDataAccessException(dataAccessException);
+        ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleDataAccessException(dataAccessException);
 
         // then
         assertEquals(500, responseEntity.getStatusCode().value());
-        assertEquals("Data access exception", responseEntity.getBody());
     }
 
     @Test

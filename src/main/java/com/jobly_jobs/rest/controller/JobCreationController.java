@@ -1,5 +1,7 @@
 package com.jobly_jobs.rest.controller;
 
+import com.jobly_jobs.client.OpenAiClient;
+import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.domain.dto.request.JobCreationRequestDto;
 import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
@@ -26,11 +28,18 @@ public class JobCreationController {
     private final JobCreationFacade jobCreationFacade;
     private final JobRequestService jobRequestService;
     private final CompanyInfoService companyInfoService;
+    private final OpenAiClient openAiClient;
 
     @PostMapping("/create-company-info")
     public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(@RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
         var response = companyInfoService.createCompanyInfo(companyInfoRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @GetMapping
+    public ResponseEntity<AiCompanyInfo> getCompanyInfoTest(){
+        var response = openAiClient.getCompanyInfo();
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/create/")

@@ -11,6 +11,7 @@ public class CompanyInfoService {
 
     public CompanyInfoResponseToken createCompanyInfo(CompanyInfoRequestDto companyInfoRequestDto) {
         return null;
+
     }
 
 }
