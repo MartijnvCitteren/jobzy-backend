@@ -91,16 +91,19 @@ pipeline {
 
 		stage('Restart ACI') {
 			steps {
-				withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_RESOURCE_GROUP'),
+				withCredentials([
+					string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_RESOURCE_GROUP'),
 					string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_CONTAINER_GROUP')
-				]){
-					sh 'sleep 10'
+				]) {
+					sh 'sleep 5'
 
 					sh '''bash -lc '
-                  set -euo pipefail
-                  az container restart --resource-group "${env.AZ_RESOURCE_GROUP}" --name "${env.AZ_CONTAINER_GROUP}"
+        set -euo pipefail
 
-				        ' '''
+        az container restart \
+          --resource-group "$AZ_RESOURCE_GROUP" \
+          --name "$AZ_CONTAINER_GROUP"
+      ' '''
 				}
 			}
 		}
