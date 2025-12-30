@@ -71,8 +71,6 @@ pipeline {
 					sh '''bash -lc '
         set -euo pipefail
 
-        ACR_NAME="jobly"
-
         az logout || true
 
         az login --service-principal \
@@ -82,7 +80,7 @@ pipeline {
 
         az account set --subscription "$AZ_SUBSCRIPTION_ID"
 
-        az acr login --name "$ACR_NAME"
+        az acr login --name jobly
 
         docker push "$IMAGE_NAME_VERSIONED"
         docker push "$IMAGE_NAME_LATEST"
@@ -91,29 +89,29 @@ pipeline {
 			}
 		}
 
-	stage('Restart ACI') {
-		steps {
-			withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_TENANT_ID'),
-				string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_SUBSCRIPTION_ID')
-			]){
-				sh 'sleep 10'
+		stage('Restart ACI') {
+			steps {
+				withCredentials([string(credentialsId: 'RESOURCE_GROUP', variable: 'AZ_RESOURCE_GROUP'),
+					string(credentialsId: 'CONTAINER_GROUP', variable: 'AZ_CONTAINER_GROUP')
+				]){
+					sh 'sleep 10'
 
-				sh """
+					sh '''bash -lc '
                   set -euo pipefail
-                  az container restart --resource-group '${env.AZ_RESOURCE_GROUP}' --name '${env.AZ_CONTAINER_GROUP}'
+                  az container restart --resource-group "${env.AZ_RESOURCE_GROUP}" --name "${env.AZ_CONTAINER_GROUP}"
 
-				        """
+				        ' '''
+				}
 			}
 		}
 	}
-}
 
-post {
-	always {
-		junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
-		junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
-		archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
-		sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
+	post {
+		always {
+			junit testResults: '**/target/surefire-reports/*.xml', allowEmptyResults: true
+			junit testResults: '**/target/failsafe-reports/*.xml', allowEmptyResults: true
+			archiveArtifacts artifacts: 'target/*.jar', allowEmptyArchive: true
+			sh 'docker image rm -f "$IMAGE_NAME_VERSIONED" "$IMAGE_NAME_LATEST" 2>/dev/null || true'
+		}
 	}
-}
 }
