@@ -10,7 +10,7 @@
 //import com.jobly_jobs.factory.GeneralJobInfoDtoFactory;
 //import com.jobly_jobs.factory.GeneratedVacancyDtoFactory;
 //import com.jobly_jobs.factory.JobCreationRequestDtoFactory;
-//import com.jobly_jobs.service.CompanyInfoService;
+//import com.jobly_jobs.service.CompanyInfoTokenService;
 //import com.jobly_jobs.service.JobRequestService;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.params.ParameterizedTest;
@@ -47,7 +47,7 @@
 //    private JobRequestService jobRequestService;
 //
 //    @MockitoBean
-//    private CompanyInfoService companyInfoService;
+//    private CompanyInfoTokenService companyInfoService;
 //
 //    @Test
 //    void givenCorrectInput_whenCreate_thenReturnsStatusCreated() throws Exception {

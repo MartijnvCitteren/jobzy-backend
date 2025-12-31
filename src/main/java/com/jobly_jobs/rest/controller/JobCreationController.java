@@ -8,7 +8,7 @@ import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
 import com.jobly_jobs.domain.dto.response.GeneratedVacancyDto;
 import com.jobly_jobs.domain.dto.response.JobCreationResponseDto;
 import com.jobly_jobs.facade.JobCreationFacade;
-import com.jobly_jobs.service.CompanyInfoService;
+import com.jobly_jobs.service.CompanyInfoTokenService;
 import com.jobly_jobs.service.JobRequestService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,20 +27,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class JobCreationController {
     private final JobCreationFacade jobCreationFacade;
     private final JobRequestService jobRequestService;
-    private final CompanyInfoService companyInfoService;
+    private final CompanyInfoTokenService companyInfoTokenService;
     private final OpenAiClient openAiClient;
 
     @PostMapping("/create-company-info")
     public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(@RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
-        var response = companyInfoService.createCompanyInfo(companyInfoRequestDto);
+        var response = companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<AiCompanyInfo> getCompanyInfoTest(){
-        var response = openAiClient.getCompanyInfo();
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
+//    @GetMapping("/company-test")
+//    public ResponseEntity<AiCompanyInfo> getCompanyInfoTest(){
+//        var response = openAiClient.getCompanyInfo();
+//        return new ResponseEntity<>(response, HttpStatus.OK);
+//    }
 
     @PostMapping("/create/")
     public ResponseEntity<GeneratedVacancyDto> generateVacancyText(@RequestBody @Valid JobCreationRequestDto descriptionInputDto) {

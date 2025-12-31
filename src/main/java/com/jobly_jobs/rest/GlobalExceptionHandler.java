@@ -2,6 +2,7 @@ package com.jobly_jobs.rest;
 
 import com.jobly_jobs.domain.dto.response.ErrorDto;
 import com.jobly_jobs.exceptions.BaseException;
+import com.jobly_jobs.exceptions.InvalidUrlException;
 import org.slf4j.MDC;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -26,6 +27,11 @@ public class GlobalExceptionHandler {
                 .stream()
                 .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
         return ResponseEntity.badRequest().body(exceptionMap);
+    }
+
+    @ExceptionHandler(InvalidUrlException.class)
+    public ResponseEntity<ErrorDto> handleInvalidUrlException(InvalidUrlException e) {
+        return ResponseEntity.status(e.getHttpStatus()).body(buildErrorDto(e));
     }
 
     @ExceptionHandler(DataAccessException.class)

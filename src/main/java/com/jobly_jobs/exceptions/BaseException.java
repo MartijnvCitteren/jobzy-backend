@@ -1,12 +1,14 @@
 package com.jobly_jobs.exceptions;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 public abstract class BaseException extends RuntimeException {
-    private final HttpStatus httpStatus;
-    private final String message;
+    private HttpStatus httpStatus;
+    private String message;
     private String displayMessage;
 
     public BaseException(HttpStatus httpStatus, String message) {
@@ -21,5 +23,6 @@ public abstract class BaseException extends RuntimeException {
     }
 
 
-
+    protected BaseException() {
+    }
 }
