@@ -25,7 +25,7 @@ public class CompanyInfoTokenService {
 
 
     public CompanyInfoResponseToken getCompanyInfoResponseToken(CompanyInfoRequestDto companyInfoRequestDto) {
-        if(!urlsAreValid(companyInfoRequestDto)){
+        if (!urlsAreValid(companyInfoRequestDto)) {
             throw new InvalidUrlException(companyInfoRequestDto.companyWebsite(),
                                           companyInfoRequestDto.exampleVacancyUrl());
         }
@@ -38,10 +38,11 @@ public class CompanyInfoTokenService {
     }
 
     private boolean urlsAreValid(CompanyInfoRequestDto companyInfoRequestDto) {
-        if(ObjectUtils.isEmpty(companyInfoRequestDto.exampleVacancyUrl())){
+        if (ObjectUtils.isEmpty(companyInfoRequestDto.exampleVacancyUrl())) {
             return urlValidation.isValid(companyInfoRequestDto.companyWebsite());
         }
-        return urlValidation.isValid(companyInfoRequestDto.companyWebsite()) && urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl());
+        return urlValidation.isValid(companyInfoRequestDto.companyWebsite()) && urlValidation.isValid(
+                companyInfoRequestDto.exampleVacancyUrl());
     }
 
 }

@@ -1,9 +1,11 @@
 package com.jobly_jobs.validation;
 
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -14,6 +16,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Log4j2
@@ -54,9 +58,9 @@ public class UrlValidation {
     }
 
     private boolean websiteIsReachable(String url){
-        try {
-            HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newHttpClient();
 
+        try {
             HttpRequest head = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .method("HEAD", HttpRequest.BodyPublishers.noBody())
@@ -66,7 +70,9 @@ public class UrlValidation {
             HttpResponse<Void> headResponse =
                     client.send(head, HttpResponse.BodyHandlers.discarding());
 
-            if (headResponse.statusCode() < 400) return true;
+            if (indicatesWebsiteIsReachable(headResponse.statusCode())) {
+                return true;
+            }
 
 
             HttpRequest get = HttpRequest.newBuilder()
@@ -77,15 +83,26 @@ public class UrlValidation {
             HttpResponse<Void> getResponse =
                     client.send(get, HttpResponse.BodyHandlers.discarding());
 
-            return getResponse.statusCode() < 400;
+            return indicatesWebsiteIsReachable(getResponse.statusCode());
 
-        } catch (Exception e) {
+        } catch (InterruptedException | IOException e) {
+            log.info(e.getMessage());
+            client.close();
             return false;
         }
+
     }
 
     private boolean doesNotStartWithHttp (String url) {
         return !ObjectUtils.isEmpty(url) && !(url.startsWith("http://")  || url.startsWith("https://"));
+    }
+
+    private boolean indicatesWebsiteIsReachable(int statusCode){
+        return statusCode != HttpStatus.NOT_FOUND.value() &&
+                statusCode != HttpStatus.GONE.value() &&
+                statusCode < 500;
+
+
     }
 
 
