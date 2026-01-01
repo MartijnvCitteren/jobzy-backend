@@ -34,14 +34,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus()).body(buildErrorDto(e));
     }
 
-    @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<ErrorDto> handleDataAccessException(DataAccessException e) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorDto> handleUnspecifiedExceptions(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, e, INTERNAL_SERVER_ERROR_DISPLAY));
     }
-
-
-
 
     private ErrorDto buildErrorDto(BaseException e) {
         return ErrorDto.builder()

@@ -1,5 +1,6 @@
 package com.jobly_jobs.service;
 
+import com.jobly_jobs.cache.CacheCompanyService;
 import com.jobly_jobs.client.AiClient;
 import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
@@ -48,7 +49,7 @@ class CompanyInfoTokenServiceTest {
     private AiClient aiClient;
 
     @Mock
-    private RedisJobInfoCacheSerive redisJobInfoCacheSerive;
+    private CacheCompanyService cacheCompanyService;
 
     @InjectMocks
     private CompanyInfoTokenService companyInfoTokenService;
@@ -79,7 +80,7 @@ class CompanyInfoTokenServiceTest {
         // Given
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(redisJobInfoCacheSerive.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
+        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
         when(promtGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
@@ -91,8 +92,8 @@ class CompanyInfoTokenServiceTest {
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
         verify(promtGenerator).getPrompt(companyInfoRequestDto);
         verify(aiClient).getCompanyInfo(promptFormat, companyInfoRequestDto);
-        verify(redisJobInfoCacheSerive).put(any(UUID.class), any(AiCompanyInfo.class));
-        verify(redisJobInfoCacheSerive).put(any(String.class), any(UUID.class));
+        verify(cacheCompanyService).put(any(UUID.class), any(AiCompanyInfo.class));
+        verify(cacheCompanyService).put(any(String.class), any(UUID.class));
     }
 
     @Test
@@ -111,8 +112,8 @@ class CompanyInfoTokenServiceTest {
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(promtGenerator, never()).getPrompt(any());
         verify(aiClient, never()).getCompanyInfo(any(), any());
-        verify(redisJobInfoCacheSerive, never()).put(any(UUID.class), any(AiCompanyInfo.class));
-        verify(redisJobInfoCacheSerive, never()).put(any(String.class), any(UUID.class));
+        verify(cacheCompanyService, never()).put(any(UUID.class), any(AiCompanyInfo.class));
+        verify(cacheCompanyService, never()).put(any(String.class), any(UUID.class));
     }
 
     @Test
@@ -142,7 +143,7 @@ class CompanyInfoTokenServiceTest {
         CompanyInfoRequestDto requestWithoutVacancy =
                 CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
         when(urlValidation.isValid(requestWithoutVacancy.companyWebsite())).thenReturn(true);
-        when(redisJobInfoCacheSerive.getUUID(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
+        when(cacheCompanyService.getUUID(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
         when(promtGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, requestWithoutVacancy)).thenReturn(aiCompanyInfo);
 
@@ -163,7 +164,7 @@ class CompanyInfoTokenServiceTest {
         UUID cachedUuid = UUID.randomUUID();
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(redisJobInfoCacheSerive.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(
+        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(
                 Optional.of(cachedUuid));
 
         // When
@@ -172,10 +173,10 @@ class CompanyInfoTokenServiceTest {
         // Then
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(redisJobInfoCacheSerive).getUUID(companyInfoRequestDto.companyWebsite());
+        verify(cacheCompanyService).getUUID(companyInfoRequestDto.companyWebsite());
         verifyNoInteractions(promtGenerator);
         verifyNoInteractions(aiClient);
-        verifyNoMoreInteractions(redisJobInfoCacheSerive);
+        verifyNoMoreInteractions(cacheCompanyService);
     }
 
     @Test
@@ -184,7 +185,7 @@ class CompanyInfoTokenServiceTest {
         // Given
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(redisJobInfoCacheSerive.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
+        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
         when(promtGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
@@ -192,8 +193,8 @@ class CompanyInfoTokenServiceTest {
         CompanyInfoResponseToken result = companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
         // Then
-        verify(redisJobInfoCacheSerive).put(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
-        verify(redisJobInfoCacheSerive).put(stringCaptor.capture(), uuidCaptor.capture());
+        verify(cacheCompanyService).put(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
+        verify(cacheCompanyService).put(stringCaptor.capture(), uuidCaptor.capture());
 
         UUID storedUuid = uuidCaptor.getAllValues().getFirst();
         AiCompanyInfo storedCompanyInfo = aiCompanyInfoCaptor.getValue();

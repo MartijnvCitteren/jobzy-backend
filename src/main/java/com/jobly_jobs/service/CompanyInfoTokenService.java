@@ -1,5 +1,6 @@
 package com.jobly_jobs.service;
 
+import com.jobly_jobs.cache.CacheCompanyService;
 import com.jobly_jobs.client.AiClient;
 import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
@@ -23,7 +24,7 @@ public class CompanyInfoTokenService {
     private final PromtGenerator<CompanyInfoRequestDto> promtGenerator;
     private final UrlValidation urlValidation;
     private final AiClient aiClient;
-    private final RedisJobInfoCacheSerive redisJobInfoCacheSerive;
+    private final CacheCompanyService cacheCompanyService;
 
 
     public CompanyInfoResponseToken getCompanyInfoResponseToken(CompanyInfoRequestDto companyInfoRequestDto) {
@@ -32,7 +33,7 @@ public class CompanyInfoTokenService {
                                           companyInfoRequestDto.exampleVacancyUrl());
         }
 
-        Optional<UUID> optionalUUID = redisJobInfoCacheSerive.getUUID(companyInfoRequestDto.companyWebsite());
+        Optional<UUID> optionalUUID = cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite());
         if(optionalUUID.isPresent()) {
             return new CompanyInfoResponseToken(optionalUUID.get().toString());
         }
@@ -45,8 +46,8 @@ public class CompanyInfoTokenService {
 
     private UUID storeInCacheAndGetUuid(CompanyInfoRequestDto companyInfoRequestDto, AiCompanyInfo aiCompanyInfo) {
         UUID uuid = UUID.randomUUID();
-        redisJobInfoCacheSerive.put(uuid, aiCompanyInfo);
-        redisJobInfoCacheSerive.put(companyInfoRequestDto.companyWebsite(), uuid);
+        cacheCompanyService.put(uuid, aiCompanyInfo);
+        cacheCompanyService.put(companyInfoRequestDto.companyWebsite(), uuid);
         return uuid;
     }
 

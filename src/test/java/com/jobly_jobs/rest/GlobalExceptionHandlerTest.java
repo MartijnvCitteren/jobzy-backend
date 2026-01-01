@@ -24,7 +24,7 @@ class GlobalExceptionHandlerTest {
         };
 
         // when
-        ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleDataAccessException(dataAccessException);
+        ResponseEntity<ErrorDto> responseEntity = globalExceptionHandler.handleUnspecifiedExceptions(dataAccessException);
 
         // then
         assertEquals(500, responseEntity.getStatusCode().value());
