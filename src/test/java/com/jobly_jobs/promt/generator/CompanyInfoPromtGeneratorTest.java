@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -70,9 +71,8 @@ class CompanyInfoPromtGeneratorTest {
 
         // Then
         assertNotNull(result.getAction());
-        assertTrue(result.getAction() instanceof CompanyInfoSeachAction);
+        CompanyInfoSeachAction action = assertInstanceOf(CompanyInfoSeachAction.class, result.getAction());
 
-        CompanyInfoSeachAction action = (CompanyInfoSeachAction) result.getAction();
         assertEquals(companyInfoRequestDto.companyName(), action.getCompanyName());
         assertEquals(companyInfoRequestDto.country().toString(), action.getCountryLocated());
         assertEquals(companyInfoRequestDto.exampleVacancyUrl(), action.getUrlExampleVacancy());

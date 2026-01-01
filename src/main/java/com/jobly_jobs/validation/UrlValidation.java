@@ -30,10 +30,10 @@ public class UrlValidation {
     }
 
     private String formatUrl(String url) {
+        url = url.trim().toLowerCase();
         if(doesNotStartWithHttp(url)){
             url = "https://" + url;
         }
-        url = url.trim().toLowerCase();
         return url;
     }
 
@@ -101,12 +101,5 @@ public class UrlValidation {
         return statusCode != HttpStatus.NOT_FOUND.value() &&
                 statusCode != HttpStatus.GONE.value() &&
                 statusCode < 500;
-
-
     }
-
-
-
-
-
 }

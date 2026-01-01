@@ -39,11 +39,15 @@ public class CompanyInfoTokenService {
 
         PromptFormat prompt = promtGenerator.getPrompt(companyInfoRequestDto);
         AiCompanyInfo foundInfo = aiClient.getCompanyInfo(prompt, companyInfoRequestDto);
-        UUID uuid = UUID.randomUUID();
-        redisJobInfoCacheSerive.put(uuid, foundInfo);
-        redisJobInfoCacheSerive.put(companyInfoRequestDto.companyWebsite(), uuid);
-        System.out.println(redisJobInfoCacheSerive.getCompanyInfo(uuid).get());
+        UUID uuid = storeInCacheAndGetUuid(companyInfoRequestDto, foundInfo);
         return new CompanyInfoResponseToken(uuid.toString());
+    }
+
+    private UUID storeInCacheAndGetUuid(CompanyInfoRequestDto companyInfoRequestDto, AiCompanyInfo aiCompanyInfo) {
+        UUID uuid = UUID.randomUUID();
+        redisJobInfoCacheSerive.put(uuid, aiCompanyInfo);
+        redisJobInfoCacheSerive.put(companyInfoRequestDto.companyWebsite(), uuid);
+        return uuid;
     }
 
     private boolean urlsAreValid(CompanyInfoRequestDto companyInfoRequestDto) {
