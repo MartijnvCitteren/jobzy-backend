@@ -5,7 +5,7 @@ import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
 import com.jobly_jobs.exceptions.InvalidUrlException;
-import com.jobly_jobs.promt.PromtGenerator;
+import com.jobly_jobs.promt.generator.PromtGenerator;
 import com.jobly_jobs.promt.dto.PromptFormat;
 import com.jobly_jobs.validation.UrlValidation;
 import lombok.RequiredArgsConstructor;

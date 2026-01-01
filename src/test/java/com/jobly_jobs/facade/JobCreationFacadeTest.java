@@ -5,7 +5,7 @@ import com.jobly_jobs.exceptions.JobRequestAlreadyExists;
 import com.jobly_jobs.factory.GeneralJobInfoDtoFactory;
 import com.jobly_jobs.factory.GeneratedVacancyDtoFactory;
 import com.jobly_jobs.factory.JobCreationRequestDtoFactory;
-import com.jobly_jobs.promt.PromptCreator;
+import com.jobly_jobs.promt.generator.PromptCreator;
 import com.jobly_jobs.service.JobRequestService;
 import com.jobly_jobs.service.VacancyTextService;
 import org.junit.jupiter.api.Test;
