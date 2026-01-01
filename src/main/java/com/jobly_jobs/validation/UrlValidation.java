@@ -16,8 +16,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Log4j2
@@ -31,14 +29,14 @@ public class UrlValidation {
 
     private String formatUrl(String url) {
         url = url.trim().toLowerCase();
-        if(doesNotStartWithHttp(url)){
+        if (doesNotStartWithHttp(url)) {
             url = "https://" + url;
         }
         return url;
     }
 
     private boolean urlSyntaxValid(String url) {
-        try{
+        try {
             URI uri = new URI(url);
             return (!ObjectUtils.isEmpty(uri.getHost()) || !ObjectUtils.isEmpty(uri.getScheme()));
         } catch (URISyntaxException e) {
@@ -46,9 +44,9 @@ public class UrlValidation {
         }
     }
 
-    private boolean hostExists(String url){
+    private boolean hostExists(String url) {
         try {
-            URL parsedUrl= new URL(url);
+            URL parsedUrl = new URL(url);
             InetAddress.getByName(parsedUrl.getHost());
             return true;
         } catch (MalformedURLException | UnknownHostException e) {
@@ -57,7 +55,7 @@ public class UrlValidation {
 
     }
 
-    private boolean websiteIsReachable(String url){
+    private boolean websiteIsReachable(String url) {
         HttpClient client = HttpClient.newHttpClient();
 
         try {
@@ -67,8 +65,7 @@ public class UrlValidation {
                     .timeout(Duration.ofSeconds(2))
                     .build();
 
-            HttpResponse<Void> headResponse =
-                    client.send(head, HttpResponse.BodyHandlers.discarding());
+            HttpResponse<Void> headResponse = client.send(head, HttpResponse.BodyHandlers.discarding());
 
             if (indicatesWebsiteIsReachable(headResponse.statusCode())) {
                 return true;
@@ -80,8 +77,7 @@ public class UrlValidation {
                     .GET()
                     .timeout(Duration.ofSeconds(2))
                     .build();
-            HttpResponse<Void> getResponse =
-                    client.send(get, HttpResponse.BodyHandlers.discarding());
+            HttpResponse<Void> getResponse = client.send(get, HttpResponse.BodyHandlers.discarding());
 
             return indicatesWebsiteIsReachable(getResponse.statusCode());
 
@@ -93,13 +89,11 @@ public class UrlValidation {
 
     }
 
-    private boolean doesNotStartWithHttp (String url) {
-        return !ObjectUtils.isEmpty(url) && !(url.startsWith("http://")  || url.startsWith("https://"));
+    private boolean doesNotStartWithHttp(String url) {
+        return !ObjectUtils.isEmpty(url) && !(url.startsWith("http://") || url.startsWith("https://"));
     }
 
-    private boolean indicatesWebsiteIsReachable(int statusCode){
-        return statusCode != HttpStatus.NOT_FOUND.value() &&
-                statusCode != HttpStatus.GONE.value() &&
-                statusCode < 500;
+    private boolean indicatesWebsiteIsReachable(int statusCode) {
+        return statusCode != HttpStatus.NOT_FOUND.value() && statusCode != HttpStatus.GONE.value() && statusCode < 500;
     }
 }

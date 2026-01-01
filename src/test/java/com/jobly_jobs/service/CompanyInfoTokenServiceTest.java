@@ -164,8 +164,7 @@ class CompanyInfoTokenServiceTest {
         UUID cachedUuid = UUID.randomUUID();
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(
-                Optional.of(cachedUuid));
+        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.of(cachedUuid));
 
         // When
         companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);

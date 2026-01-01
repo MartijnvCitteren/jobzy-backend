@@ -8,7 +8,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
 class UrlValidationTest {
@@ -17,30 +18,19 @@ class UrlValidationTest {
     private UrlValidation urlValidation;
 
     @ParameterizedTest
-    @CsvSource({
-            "https://www.google.com, full https url with existing domain",
-            "www.google.com, www.address.extension format",
-            "https://about.google/, url with trailing slash",
-            "http://www.google.com, url with http protocol",
-            "'  www.google.com  ', url with leading and trailing whitespace",
-            "WwW.GoOgLe.CoM, url with mixed case",
-            "https://www.google.com/search, url with path",
-            "https://www.google.com/search?q=test, url with query parameters",
-            "https://google.com, url without www",
-            "https://mail.google.com, subdomain url"
-    })
+    @CsvSource({"https://www.google.com, full https url with existing domain", "www.google.com, www.address.extension" +
+            " format", "https://about.google/, url with trailing slash", "http://www.google.com, url with http " +
+            "protocol", "'  www.google.com  ', url with leading and trailing whitespace", "WwW.GoOgLe.CoM, url with " +
+            "mixed case", "https://www.google.com/search, url with path", "https://www.google.com/search?q=test, url " +
+            "with query parameters", "https://google.com, url without www", "https://mail.google.com, subdomain url"})
     @DisplayName("given valid url with different formatting, then return true")
     void testUrlFormattingVariations(String url, String description) {
         assertTrue(urlValidation.isValid(url), "Failed for: " + description);
     }
 
     @ParameterizedTest
-    @CsvSource({
-            "'ht!tp://invalid url with spaces', url with invalid syntax and spaces",
-            "'https://', url without host",
-            "'https://[invalid', url with invalid bracket",
-            "'htp://typo.com', url with typo in protocol"
-    })
+    @CsvSource({"'ht!tp://invalid url with spaces', url with invalid syntax and spaces", "'https://', url without " +
+            "host", "'https://[invalid', url with invalid bracket", "'htp://typo.com', url with typo in protocol"})
     @DisplayName("given invalid url formats, then return false")
     void testInvalidUrlFormats(String url, String description) {
         assertFalse(urlValidation.isValid(url), "Should fail for: " + description);

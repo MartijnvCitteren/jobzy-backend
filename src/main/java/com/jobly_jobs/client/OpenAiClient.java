@@ -36,7 +36,7 @@ public class OpenAiClient implements AiClient {
     }
 
     @Override
-    public AiCompanyInfo getCompanyInfo(PromptFormat prompt,  CompanyInfoRequestDto companyInfoRequestDto) {
+    public AiCompanyInfo getCompanyInfo(PromptFormat prompt, CompanyInfoRequestDto companyInfoRequestDto) {
         WebSearchOptions webSearchOptions = createWebSearchOptions(companyInfoRequestDto);
         OpenAiChatOptions openAiChatOptions = new OpenAiChatOptions();
         openAiChatOptions.setWebSearchOptions(webSearchOptions);
@@ -49,14 +49,14 @@ public class OpenAiClient implements AiClient {
 
     private WebSearchOptions createWebSearchOptions(CompanyInfoRequestDto companyInfoRequestDto) {
         Approximate approximate;
-        if(ObjectUtils.isEmpty(companyInfoRequestDto.country())){
+        if (ObjectUtils.isEmpty(companyInfoRequestDto.country())) {
             approximate = null;
         } else {
             approximate = new Approximate(null, companyInfoRequestDto.country().toString(), null, null);
         }
 
         return new WebSearchOptions(WebSearchOptions.SearchContextSize.LOW,
-                                                                 new WebSearchOptions.UserLocation("location", approximate));
+                                    new WebSearchOptions.UserLocation("location", approximate));
 
     }
 

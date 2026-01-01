@@ -96,10 +96,12 @@ class CompanyInfoPromtGeneratorTest {
     }
 
     @Test
-    @DisplayName("Given company info request without vacancy url, when getting prompt, then prompt includes null vacancy url")
+    @DisplayName("Given company info request without vacancy url, when getting prompt, then prompt includes null " +
+            "vacancy url")
     void givenCompanyInfoRequestWithoutVacancyUrl_whenGettingPrompt_thenPromptIncludesNullVacancyUrl() {
         // Given
-        CompanyInfoRequestDto companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
+        CompanyInfoRequestDto companyInfoRequestDto =
+                CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
 
         // When
         PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);

@@ -40,13 +40,8 @@ public class JobCreationRequest extends GenericEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private VacancyText vacancyText;
 
-    public JobCreationRequest(String jobTitle,
-                              FunctionGroup functionGroup,
-                              String companyName,
-                              BigDecimal minSalary,
-                              BigDecimal maxSalary,
-                              LocalDateTime creationDate,
-                              LocalDateTime updateTime) {
+    public JobCreationRequest(String jobTitle, FunctionGroup functionGroup, String companyName, BigDecimal minSalary,
+                              BigDecimal maxSalary, LocalDateTime creationDate, LocalDateTime updateTime) {
         this.jobTitle = jobTitle;
         this.functionGroup = functionGroup;
         this.companyName = companyName;

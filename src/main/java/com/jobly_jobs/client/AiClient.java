@@ -7,5 +7,6 @@ import com.jobly_jobs.promt.dto.PromptFormat;
 
 public interface AiClient {
     GeneratedVacancyDto getResponse(String message);
+
     AiCompanyInfo getCompanyInfo(PromptFormat prompt, CompanyInfoRequestDto companyInfoRequestDto);
 }

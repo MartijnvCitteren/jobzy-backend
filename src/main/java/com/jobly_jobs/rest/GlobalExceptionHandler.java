@@ -3,12 +3,9 @@ package com.jobly_jobs.rest;
 import com.jobly_jobs.domain.dto.response.ErrorDto;
 import com.jobly_jobs.exceptions.BaseException;
 import com.jobly_jobs.exceptions.InvalidUrlException;
-import org.slf4j.MDC;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -49,7 +46,7 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
-    private ErrorDto buildErrorDto(HttpStatus httpStatus, Exception e,  String displayMessage) {
+    private ErrorDto buildErrorDto(HttpStatus httpStatus, Exception e, String displayMessage) {
         return ErrorDto.builder()
                 .status(String.valueOf(httpStatus.value()))
                 .error(httpStatus.getReasonPhrase())

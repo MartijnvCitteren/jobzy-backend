@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
 import redis.clients.jedis.RedisClient;
 import redis.clients.jedis.params.SetParams;
 
@@ -19,16 +18,15 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Log4j2
 public class CacheCompanyService {
+    private static final long EXPIRE_COMPANY_INFO_SECONDS = 3600;
     private final RedisClient redisClient;
     private final ObjectMapper objectMapper;
-    private static final long EXPIRE_COMPANY_INFO_SECONDS = 3600;
-
 
     public void put(UUID uuid, AiCompanyInfo aiCompanyInfo) {
         try {
             SetParams setParams = setExpirationTimeInSeconds(EXPIRE_COMPANY_INFO_SECONDS);
             String json = objectMapper.writeValueAsString(aiCompanyInfo);
-            redisClient.set(uuid.toString(),json, setParams);
+            redisClient.set(uuid.toString(), json, setParams);
         } catch (JsonProcessingException e) {
             log.error("Error serializing AiCompanyInfo", e);
             throw new SystemException(e.getMessage());
@@ -36,14 +34,14 @@ public class CacheCompanyService {
     }
 
     public void put(String companyWebsite, UUID uuid) {
-            SetParams setParams = setExpirationTimeInSeconds(EXPIRE_COMPANY_INFO_SECONDS-30);
-            redisClient.set(companyWebsite,uuid.toString(), setParams);
+        SetParams setParams = setExpirationTimeInSeconds(EXPIRE_COMPANY_INFO_SECONDS - 30);
+        redisClient.set(companyWebsite, uuid.toString(), setParams);
     }
 
     public Optional<AiCompanyInfo> getCompanyInfo(UUID uuid) {
-        try{
+        try {
             String json = redisClient.get(uuid.toString());
-            if(ObjectUtils.isEmpty(json)){
+            if (ObjectUtils.isEmpty(json)) {
                 return Optional.empty();
             }
             return Optional.of(objectMapper.readValue(json, AiCompanyInfo.class));

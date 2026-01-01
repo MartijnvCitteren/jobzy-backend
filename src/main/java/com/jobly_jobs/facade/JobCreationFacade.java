@@ -17,10 +17,11 @@ public class JobCreationFacade {
     private final PromptCreator promptCreator;
 
     public GeneratedVacancyDto generateVacancyText(JobCreationRequestDto descriptionInputDto) {
-        if(!jobRequestService.isUniqueJobRequest(descriptionInputDto.generalInfo())){
-            String message  = String.format("Job request for company: %s and vacancy: %s is already created in the last" +
-                                            "14 days, please update the existing vacancy",
-                                            descriptionInputDto.generalInfo().companyName(), descriptionInputDto.generalInfo().jobTitle());
+        if (!jobRequestService.isUniqueJobRequest(descriptionInputDto.generalInfo())) {
+            String message = String.format(
+                    "Job request for company: %s and vacancy: %s is already created in the last" + "14 days, please " +
+                            "update the existing vacancy",
+                    descriptionInputDto.generalInfo().companyName(), descriptionInputDto.generalInfo().jobTitle());
             throw new JobRequestAlreadyExists(message);
         }
         String prompt = promptCreator.createPrompt(descriptionInputDto);
