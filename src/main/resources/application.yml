@@ -20,3 +20,9 @@ spring:
         completions-path: v1/chat/completions
         options:
           model: gpt-4o-mini
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2s

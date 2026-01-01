@@ -13,6 +13,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Log4j2
@@ -22,6 +23,7 @@ public class CompanyInfoTokenService {
     private final PromtGenerator<CompanyInfoRequestDto> promtGenerator;
     private final UrlValidation urlValidation;
     private final AiClient aiClient;
+    private final RedisJobInfoCacheSerive redisJobInfoCacheSerive;
 
 
     public CompanyInfoResponseToken getCompanyInfoResponseToken(CompanyInfoRequestDto companyInfoRequestDto) {
@@ -30,10 +32,17 @@ public class CompanyInfoTokenService {
                                           companyInfoRequestDto.exampleVacancyUrl());
         }
 
+        Optional<UUID> optionalUUID = redisJobInfoCacheSerive.getUUID(companyInfoRequestDto.companyWebsite());
+        if(optionalUUID.isPresent()) {
+            return new CompanyInfoResponseToken(optionalUUID.get().toString());
+        }
+
         PromptFormat prompt = promtGenerator.getPrompt(companyInfoRequestDto);
         AiCompanyInfo foundInfo = aiClient.getCompanyInfo(prompt, companyInfoRequestDto);
-        System.out.println(foundInfo);
         UUID uuid = UUID.randomUUID();
+        redisJobInfoCacheSerive.put(uuid, foundInfo);
+        redisJobInfoCacheSerive.put(companyInfoRequestDto.companyWebsite(), uuid);
+        System.out.println(redisJobInfoCacheSerive.getCompanyInfo(uuid).get());
         return new CompanyInfoResponseToken(uuid.toString());
     }
 
@@ -44,5 +53,7 @@ public class CompanyInfoTokenService {
         return urlValidation.isValid(companyInfoRequestDto.companyWebsite()) && urlValidation.isValid(
                 companyInfoRequestDto.exampleVacancyUrl());
     }
+
+
 
 }
