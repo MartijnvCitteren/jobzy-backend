@@ -1,7 +1,5 @@
 package com.jobly_jobs.rest.controller;
 
-import com.jobly_jobs.client.OpenAiClient;
-import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.domain.dto.request.JobCreationRequestDto;
 import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
@@ -21,29 +19,24 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@Controller("job")
+@Controller
 @RequiredArgsConstructor
 @Log4j2
 public class JobCreationController {
     private final JobCreationFacade jobCreationFacade;
     private final JobRequestService jobRequestService;
     private final CompanyInfoTokenService companyInfoTokenService;
-    private final OpenAiClient openAiClient;
 
     @PostMapping("/create-company-info")
-    public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(@RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
+    public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(
+            @RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
         var response = companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-//    @GetMapping("/company-test")
-//    public ResponseEntity<AiCompanyInfo> getCompanyInfoTest(){
-//        var response = openAiClient.getCompanyInfo();
-//        return new ResponseEntity<>(response, HttpStatus.OK);
-//    }
-
     @PostMapping("/create/")
-    public ResponseEntity<GeneratedVacancyDto> generateVacancyText(@RequestBody @Valid JobCreationRequestDto descriptionInputDto) {
+    public ResponseEntity<GeneratedVacancyDto> generateVacancyText(
+            @RequestBody @Valid JobCreationRequestDto descriptionInputDto) {
         GeneratedVacancyDto generatedVacancy = jobCreationFacade.generateVacancyText(descriptionInputDto);
         return new ResponseEntity<>(generatedVacancy, HttpStatus.CREATED);
     }
@@ -53,5 +46,4 @@ public class JobCreationController {
         JobCreationResponseDto jobCreationResponseDto = jobRequestService.getJobRequest(id);
         return new ResponseEntity<>(jobCreationResponseDto, HttpStatus.OK);
     }
-
 }
