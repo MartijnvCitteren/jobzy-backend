@@ -38,7 +38,7 @@ public class UrlValidation {
     private boolean urlSyntaxValid(String url) {
         try {
             URI uri = new URI(url);
-            return (!ObjectUtils.isEmpty(uri.getHost()) || !ObjectUtils.isEmpty(uri.getScheme()));
+            return (!ObjectUtils.isEmpty(uri.getHost()) && !ObjectUtils.isEmpty(uri.getScheme()));
         } catch (URISyntaxException e) {
             return false;
         }
@@ -83,8 +83,9 @@ public class UrlValidation {
 
         } catch (InterruptedException | IOException e) {
             log.info(e.getMessage());
-            client.close();
             return false;
+        } finally {
+            client.close();
         }
 
     }

@@ -7,7 +7,7 @@ import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
 import com.jobly_jobs.exceptions.InvalidUrlException;
 import com.jobly_jobs.promt.dto.PromptFormat;
-import com.jobly_jobs.promt.generator.PromtGenerator;
+import com.jobly_jobs.promt.generator.PromptGenerator;
 import com.jobly_jobs.validation.UrlValidation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 public class CompanyInfoTokenService {
-    private final PromtGenerator<CompanyInfoRequestDto> promtGenerator;
+    private final PromptGenerator<CompanyInfoRequestDto> promptGenerator;
     private final UrlValidation urlValidation;
     private final AiClient aiClient;
     private final CacheCompanyService cacheCompanyService;
@@ -38,7 +38,7 @@ public class CompanyInfoTokenService {
             return new CompanyInfoResponseToken(optionalUUID.get().toString());
         }
 
-        PromptFormat prompt = promtGenerator.getPrompt(companyInfoRequestDto);
+        PromptFormat prompt = promptGenerator.getPrompt(companyInfoRequestDto);
         AiCompanyInfo foundInfo = aiClient.getCompanyInfo(prompt, companyInfoRequestDto);
         UUID uuid = storeInCacheAndGetUuid(companyInfoRequestDto, foundInfo);
         return new CompanyInfoResponseToken(uuid.toString());

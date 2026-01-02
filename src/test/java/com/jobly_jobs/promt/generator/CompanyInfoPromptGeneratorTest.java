@@ -2,7 +2,7 @@ package com.jobly_jobs.promt.generator;
 
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
-import com.jobly_jobs.promt.dto.CompanyInfoSeachAction;
+import com.jobly_jobs.promt.dto.CompanyInfoSearchAction;
 import com.jobly_jobs.promt.dto.PromptFormat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,10 +16,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-class CompanyInfoPromtGeneratorTest {
+class CompanyInfoPromptGeneratorTest {
 
     @InjectMocks
-    private CompanyInfoPromtGenerator companyInfoPromtGenerator;
+    private CompanyInfoPromptGenerator companyInfoPromtGenerator;
 
     @Test
     @DisplayName("Given valid company info request, when getting prompt, then return prompt format with correct values")
@@ -71,7 +71,7 @@ class CompanyInfoPromtGeneratorTest {
 
         // Then
         assertNotNull(result.getAction());
-        CompanyInfoSeachAction action = assertInstanceOf(CompanyInfoSeachAction.class, result.getAction());
+        CompanyInfoSearchAction action = assertInstanceOf(CompanyInfoSearchAction.class, result.getAction());
 
         assertEquals(companyInfoRequestDto.companyName(), action.getCompanyName());
         assertEquals(companyInfoRequestDto.country().toString(), action.getCountryLocated());
@@ -111,7 +111,7 @@ class CompanyInfoPromtGeneratorTest {
         assertNotNull(result.getTask());
         assertTrue(result.getTask().contains(companyInfoRequestDto.companyWebsite()));
 
-        CompanyInfoSeachAction action = (CompanyInfoSeachAction) result.getAction();
+        CompanyInfoSearchAction action = (CompanyInfoSearchAction) result.getAction();
         assertEquals(companyInfoRequestDto.companyName(), action.getCompanyName());
         assertEquals(companyInfoRequestDto.exampleVacancyUrl(), action.getUrlExampleVacancy());
     }

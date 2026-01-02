@@ -9,7 +9,7 @@ import com.jobly_jobs.exceptions.InvalidUrlException;
 import com.jobly_jobs.factory.AiCompanyInfoFactory;
 import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
 import com.jobly_jobs.promt.dto.PromptFormat;
-import com.jobly_jobs.promt.generator.PromtGenerator;
+import com.jobly_jobs.promt.generator.PromptGenerator;
 import com.jobly_jobs.validation.UrlValidation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,7 +40,7 @@ import static org.mockito.Mockito.when;
 class CompanyInfoTokenServiceTest {
 
     @Mock
-    private PromtGenerator<CompanyInfoRequestDto> promtGenerator;
+    private PromptGenerator<CompanyInfoRequestDto> promptGenerator;
 
     @Mock
     private UrlValidation urlValidation;
@@ -81,7 +81,7 @@ class CompanyInfoTokenServiceTest {
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
         when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
-        when(promtGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
+        when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
         // When
@@ -90,7 +90,7 @@ class CompanyInfoTokenServiceTest {
         // Then
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(promtGenerator).getPrompt(companyInfoRequestDto);
+        verify(promptGenerator).getPrompt(companyInfoRequestDto);
         verify(aiClient).getCompanyInfo(promptFormat, companyInfoRequestDto);
         verify(cacheCompanyService).put(any(UUID.class), any(AiCompanyInfo.class));
         verify(cacheCompanyService).put(any(String.class), any(UUID.class));
@@ -110,7 +110,7 @@ class CompanyInfoTokenServiceTest {
 
         assertNotNull(exception);
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verify(promtGenerator, never()).getPrompt(any());
+        verify(promptGenerator, never()).getPrompt(any());
         verify(aiClient, never()).getCompanyInfo(any(), any());
         verify(cacheCompanyService, never()).put(any(UUID.class), any(AiCompanyInfo.class));
         verify(cacheCompanyService, never()).put(any(String.class), any(UUID.class));
@@ -132,7 +132,7 @@ class CompanyInfoTokenServiceTest {
         assertNotNull(exception);
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(promtGenerator, never()).getPrompt(any());
+        verify(promptGenerator, never()).getPrompt(any());
         verify(aiClient, never()).getCompanyInfo(any(), any());
     }
 
@@ -144,7 +144,7 @@ class CompanyInfoTokenServiceTest {
                 CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
         when(urlValidation.isValid(requestWithoutVacancy.companyWebsite())).thenReturn(true);
         when(cacheCompanyService.getUUID(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
-        when(promtGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptFormat);
+        when(promptGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, requestWithoutVacancy)).thenReturn(aiCompanyInfo);
 
         // When
@@ -153,7 +153,7 @@ class CompanyInfoTokenServiceTest {
         // Then
         verify(urlValidation, times(1)).isValid(requestWithoutVacancy.companyWebsite());
         verify(urlValidation, never()).isValid(null);
-        verify(promtGenerator).getPrompt(requestWithoutVacancy);
+        verify(promptGenerator).getPrompt(requestWithoutVacancy);
         verify(aiClient).getCompanyInfo(promptFormat, requestWithoutVacancy);
     }
 
@@ -173,7 +173,7 @@ class CompanyInfoTokenServiceTest {
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
         verify(cacheCompanyService).getUUID(companyInfoRequestDto.companyWebsite());
-        verifyNoInteractions(promtGenerator);
+        verifyNoInteractions(promptGenerator);
         verifyNoInteractions(aiClient);
         verifyNoMoreInteractions(cacheCompanyService);
     }
@@ -185,7 +185,7 @@ class CompanyInfoTokenServiceTest {
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
         when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
-        when(promtGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
+        when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
         // When
@@ -216,7 +216,7 @@ class CompanyInfoTokenServiceTest {
                      () -> companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto));
 
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verifyNoInteractions(promtGenerator);
+        verifyNoInteractions(promptGenerator);
         verifyNoInteractions(aiClient);
     }
 

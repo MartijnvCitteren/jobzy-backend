@@ -1,14 +1,14 @@
 package com.jobly_jobs.promt.generator;
 
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
-import com.jobly_jobs.promt.dto.CompanyInfoSeachAction;
+import com.jobly_jobs.promt.dto.CompanyInfoSearchAction;
 import com.jobly_jobs.promt.dto.PromptFormat;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 @Log4j2
 @Service
-class CompanyInfoPromtGenerator implements PromtGenerator<CompanyInfoRequestDto> {
+class CompanyInfoPromptGenerator implements PromptGenerator<CompanyInfoRequestDto> {
     private static final String SCOPE = """
                                         Focus on a company description. What is there core business? (2 - 4 lines)
                                         Focus on company goal. What does the company want to achieve? What makes them unique (2 - 4 lines)
@@ -37,8 +37,8 @@ class CompanyInfoPromtGenerator implements PromtGenerator<CompanyInfoRequestDto>
                              """, companyInfoRequestDto.companyWebsite(), companyInfoRequestDto.exampleVacancyUrl());
     }
 
-    private CompanyInfoSeachAction getAction(CompanyInfoRequestDto companyInfoRequestDto) {
-        return CompanyInfoSeachAction.builder()
+    private CompanyInfoSearchAction getAction(CompanyInfoRequestDto companyInfoRequestDto) {
+        return CompanyInfoSearchAction.builder()
                 .companyName(companyInfoRequestDto.companyName())
                 .countryLocated(companyInfoRequestDto.country().toString())
                 .urlExampleVacancy(companyInfoRequestDto.exampleVacancyUrl())

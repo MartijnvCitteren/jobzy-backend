@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class CompanyInfoSeachAction extends Action {
+public class CompanyInfoSearchAction extends Action {
     String companyName;
     String countryLocated;
     String urlExampleVacancy;

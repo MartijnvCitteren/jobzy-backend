@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    private static final String INTERNAL_SERVER_ERROR_DISPLAY = "Something unexpected happend. Internal server error.";
+    private static final String INTERNAL_SERVER_ERROR_DISPLAY = "Something unexpected happened. Internal server error.";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
         return ErrorDto.builder()
                 .status(String.valueOf(e.getHttpStatus().value()))
                 .error(e.getHttpStatus().getReasonPhrase())
-                .message(e.getMessage())
+                .message(e.getInternalMessage())
                 .displayMessage(e.getDisplayMessage())
                 .build();
     }

@@ -19,6 +19,7 @@ import java.util.UUID;
 @Log4j2
 public class CacheCompanyService {
     private static final long EXPIRE_COMPANY_INFO_SECONDS = 3600;
+    private static final long EXPIRE_COMPANY_WEBSITE_IN_SECONDS = 3550;
     private final RedisClient redisClient;
     private final ObjectMapper objectMapper;
 
@@ -34,7 +35,7 @@ public class CacheCompanyService {
     }
 
     public void put(String companyWebsite, UUID uuid) {
-        SetParams setParams = setExpirationTimeInSeconds(EXPIRE_COMPANY_INFO_SECONDS - 30);
+        SetParams setParams = setExpirationTimeInSeconds(EXPIRE_COMPANY_WEBSITE_IN_SECONDS);
         redisClient.set(companyWebsite, uuid.toString(), setParams);
     }
 
