@@ -37,7 +37,7 @@ public class JobCreationController {
 
     @PostMapping("/create/")
     public ResponseEntity<GeneratedVacancyDto> generateVacancyText(
-            @RequestBody @Valid JobCreationRequestDto descriptionInputDto) {;
+            @RequestBody @Valid JobCreationRequestDto descriptionInputDto) {
         GeneratedVacancyDto generatedVacancy = jobCreationFacade.generateVacancyText(descriptionInputDto);
         return new ResponseEntity<>(generatedVacancy, HttpStatus.CREATED);
     }

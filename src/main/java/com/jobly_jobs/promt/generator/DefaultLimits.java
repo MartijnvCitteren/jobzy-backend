@@ -1,7 +1,10 @@
 package com.jobly_jobs.promt.generator;
 
 import com.jobly_jobs.promt.dto.Limits;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 class DefaultLimits {
     static Limits getDefaultLimits() {
         return Limits.builder()

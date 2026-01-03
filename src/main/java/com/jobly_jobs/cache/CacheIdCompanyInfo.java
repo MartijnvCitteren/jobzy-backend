@@ -2,7 +2,6 @@ package com.jobly_jobs.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;

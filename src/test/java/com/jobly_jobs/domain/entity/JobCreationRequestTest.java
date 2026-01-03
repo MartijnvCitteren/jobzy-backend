@@ -11,13 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MockitoExtension.class)
 class JobCreationRequestTest {
 
-    @Test
-    void givenNewJobCreationRequest_whenCreated_thenJobCreationIdIsNotNull() {
-        //given & when
-        JobCreationRequest jobCreationRequest = new JobCreationRequest();
-
-        //then
-    }
 
     @Test
     void givenExistingJobCreationRequest_whenGetAnyValue_thenValueIsReturned() {

@@ -54,8 +54,8 @@ class JobCreationFacadeTest {
         //when & then
         verify(promptCreator, times(1)).createPrompt(any(JobCreationRequestDto.class));
         verify(vacancyTextService, times(1)).generatedVacancyText(anyString());
-        verify(jobRequestService, times(1)).createJobRequest(eq(descriptionInput.generalInfo()),
-                                                             eq(generatedVacancyDto));
+        verify(jobRequestService, times(1)).createJobRequest((descriptionInput.generalInfo()),
+                                                             (generatedVacancyDto));
     }
 
     @Test

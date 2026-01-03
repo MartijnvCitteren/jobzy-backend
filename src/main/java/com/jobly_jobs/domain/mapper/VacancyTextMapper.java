@@ -2,7 +2,10 @@ package com.jobly_jobs.domain.mapper;
 
 import com.jobly_jobs.domain.dto.response.GeneratedVacancyDto;
 import com.jobly_jobs.domain.entity.VacancyText;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class VacancyTextMapper {
 
     public static VacancyText toVacancyText(GeneratedVacancyDto generatedVacancyDto) {
