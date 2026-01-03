@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,80 +50,6 @@ class JobCreationControllerTest {
 
     @MockitoBean
     private CompanyInfoTokenService companyInfoService;
-
-    private static Stream<Arguments> provideValidCompanyInfoRequests() {
-        return Stream.of(
-                // Valid URLs with https://
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://techcorp.com", Country.THE_NETHERLANDS,
-                                                       "https://techcorp.com/careers"),
-                             "Valid URL with https and .com"), Arguments.of(
-                        new CompanyInfoRequestDto("TechCorp", "https://www.techcorp.nl", Country.THE_NETHERLANDS, null),
-                        "Valid URL with https, www and .nl"),
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "http://techcorp.be", Country.BELGIUM, null),
-                             "Valid URL with http and .be"), Arguments.of(
-                        new CompanyInfoRequestDto("TechCorp", "https://company-name.de/path/to/page", Country.GERMANY,
-                                                  null), "Valid URL with https, dash in domain and path"),
-                // Valid URLs with www.
-                Arguments.of(new CompanyInfoRequestDto("Corp", "www.example.com", Country.THE_NETHERLANDS, null),
-                             "Valid URL starting with www"), Arguments.of(
-                        new CompanyInfoRequestDto("Corp", "www.test-company.io", Country.THE_NETHERLANDS,
-                                                  "www.test-company.io/jobs"), "Valid URL with www, dash and .io"),
-                // Various TLDs
-                Arguments.of(new CompanyInfoRequestDto("Corp", "https://example.eu", Country.THE_NETHERLANDS, null),
-                             "Valid URL with .eu TLD"),
-                Arguments.of(new CompanyInfoRequestDto("Corp", "https://example.tech", Country.THE_NETHERLANDS, null),
-                             "Valid URL with .tech TLD"),
-                Arguments.of(new CompanyInfoRequestDto("Corp", "https://example.co.uk", Country.THE_NETHERLANDS, null),
-                             "Valid URL with .co.uk TLD"),
-                // Minimal and maximal valid lengths
-                Arguments.of(new CompanyInfoRequestDto("C", "www.a.com", Country.BELGIUM, null),
-                             "Minimal valid lengths"), Arguments.of(
-                        new CompanyInfoRequestDto("A".repeat(50), "https://techcorp.com", Country.GERMANY,
-                                                  "https://techcorp.com/jobs"), "Maximal valid lengths"));
-    }
-
-    private static Stream<Arguments> provideInvalidCompanyInfoRequests() {
-        return Stream.of(
-                // Company name validation
-                Arguments.of(new CompanyInfoRequestDto("", "https://test.com", Country.THE_NETHERLANDS, null),
-                             "companyName", "Company name must be between 1 and 50 characters"), Arguments.of(
-                        new CompanyInfoRequestDto("A".repeat(51), "https://test.com", Country.THE_NETHERLANDS, null),
-                        "companyName", "Company name must be between 1 and 50 characters"),
-
-                // Website length validation
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "", Country.THE_NETHERLANDS, null), "companyWebsite",
-                             "website must be between 1 and 50 characters"),
-
-                // Website URL regex validation - invalid formats
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "not-a-url", Country.THE_NETHERLANDS, null),
-                             "companyWebsite", "website address should look like 'www.example.com'"),
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "ftp://test.com", Country.THE_NETHERLANDS, null),
-                             "companyWebsite", "website address should look like 'www.example.com'"),
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://", Country.THE_NETHERLANDS, null),
-                             "companyWebsite", "website address should look like 'www.example.com'"),
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "test.com", Country.THE_NETHERLANDS, null),
-                             "companyWebsite", "website address should look like 'www.example.com'"), Arguments.of(
-                        new CompanyInfoRequestDto("TechCorp", "https://test.invalid", Country.THE_NETHERLANDS, null),
-                        "companyWebsite", "website address should look like 'www.example.com'"),
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "www.test", Country.THE_NETHERLANDS, null),
-                             "companyWebsite", "website address should look like 'www.example.com'"),
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "http://test", Country.THE_NETHERLANDS, null),
-                             "companyWebsite", "website address should look like 'www.example.com'"),
-
-                // Country validation
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://test.com", null, null), "country",
-                             "must not be null"),
-
-                // Example vacancy URL regex validation
-                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://test.com", Country.THE_NETHERLANDS,
-                                                       "not-a-valid-url"), "exampleVacancyUrl",
-                             "Vacancy url should start with 'www.example.com'"), Arguments.of(
-                        new CompanyInfoRequestDto("TechCorp", "https://test.com", Country.THE_NETHERLANDS,
-                                                  "ftp://test.com"), "exampleVacancyUrl",
-                        "Vacancy url should start with 'www.example.com'"), Arguments.of(
-                        new CompanyInfoRequestDto("TechCorp", "https://test.com", Country.THE_NETHERLANDS, "test.xyz"),
-                        "exampleVacancyUrl", "Vacancy url should start with 'www.example.com'"));
-    }
 
     @Test
     @DisplayName("Given correct input, when creating job, then returns status created")
@@ -196,7 +123,7 @@ class JobCreationControllerTest {
                 .andExpect(jsonPath("$." + expectedField).value(
                         org.hamcrest.Matchers.containsString(expectedMessagePart)));
 
-        verify(companyInfoService, times(0)).getCompanyInfoResponseToken(any(CompanyInfoRequestDto.class));
+        verifyNoInteractions(companyInfoService);
     }
 
     private String convertToJsonString(Object object) {
@@ -206,6 +133,75 @@ class JobCreationControllerTest {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Stream<Arguments> provideValidCompanyInfoRequests() {
+        return Stream.of(
+                // Valid URLs with https://
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://techcorp.com", Country.THE_NETHERLANDS, "https://techcorp.com/careers"),
+                             "Valid URL with https and .com"),
+                Arguments.of(
+                        new CompanyInfoRequestDto("TechCorp", "https://www.techcorp.nl", Country.THE_NETHERLANDS, null),
+                        "Valid URL with https, www and .nl"),
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "http://techcorp.be", Country.BELGIUM, null),
+                             "Valid URL with http and .be"),
+                Arguments.of(
+                        new CompanyInfoRequestDto("TechCorp", "https://company-name.de/path/to/page", Country.GERMANY,
+                                                  null), "Valid URL with https, dash in domain and path"),
+                // Valid URLs with www.
+                Arguments.of(new CompanyInfoRequestDto("Corp", "www.example.com", Country.THE_NETHERLANDS, null),
+                             "Valid URL starting with www"), Arguments.of(
+                        new CompanyInfoRequestDto("Corp", "www.test-company.io", Country.THE_NETHERLANDS,
+                                                  "www.test-company.io/jobs"), "Valid URL with www, dash and .io"),
+                // Various TLDs
+                Arguments.of(new CompanyInfoRequestDto("Corp", "https://example.eu", Country.THE_NETHERLANDS, null),
+                             "Valid URL with .eu TLD"),
+                Arguments.of(new CompanyInfoRequestDto("Corp", "https://example.tech", Country.THE_NETHERLANDS, null),
+                             "Valid URL with .tech TLD"),
+                Arguments.of(new CompanyInfoRequestDto("Corp", "https://example.co.uk", Country.THE_NETHERLANDS, null),
+                             "Valid URL with .co.uk TLD"),
+                // Minimal and maximal valid lengths
+                Arguments.of(new CompanyInfoRequestDto("C", "www.a.com", Country.BELGIUM, null),
+                             "Minimal valid lengths"), Arguments.of(
+                        new CompanyInfoRequestDto("A".repeat(50), "https://techcorp.com", Country.GERMANY,
+                                                  "https://techcorp.com/jobs"), "Maximal valid lengths"));
+    }
+
+    private static Stream<Arguments> provideInvalidCompanyInfoRequests() {
+        return Stream.of(
+                // Company name validation
+                Arguments.of(new CompanyInfoRequestDto("", "https://test.com", Country.THE_NETHERLANDS, null),
+                             "companyName", "Company name must be between 1 and 50 characters"), Arguments.of(
+                        new CompanyInfoRequestDto("A".repeat(51), "https://test.com", Country.THE_NETHERLANDS, null),
+                        "companyName", "Company name must be between 1 and 50 characters"),
+
+                // Website URL regex validation - invalid formats
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "not-a-url", Country.THE_NETHERLANDS, null),
+                             "companyWebsite", "website address should look like 'www.example.com'"),
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "ftp://test.com", Country.THE_NETHERLANDS, null),
+                             "companyWebsite", "website address should look like 'www.example.com'"),
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://", Country.THE_NETHERLANDS, null),
+                             "companyWebsite", "website address should look like 'www.example.com'"),
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "test.com", Country.THE_NETHERLANDS, null),
+                             "companyWebsite", "website address should look like 'www.example.com'"),
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "www.test", Country.THE_NETHERLANDS, null),
+                             "companyWebsite", "website address should look like 'www.example.com'"),
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "http://test", Country.THE_NETHERLANDS, null),
+                             "companyWebsite", "website address should look like 'www.example.com'"),
+
+                // Country validation
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://test.com", null, null), "country",
+                             "must not be null"),
+
+                // Example vacancy URL regex validation
+                Arguments.of(new CompanyInfoRequestDto("TechCorp", "https://test.com", Country.THE_NETHERLANDS,
+                                                       "not-a-valid-url"), "exampleVacancyUrl",
+                             "Vacancy url should start with 'www.example.com'"), Arguments.of(
+                        new CompanyInfoRequestDto("TechCorp", "https://test.com", Country.THE_NETHERLANDS,
+                                                  "ftp://test.com"), "exampleVacancyUrl",
+                        "Vacancy url should start with 'www.example.com'"), Arguments.of(
+                        new CompanyInfoRequestDto("TechCorp", "https://test.com", Country.THE_NETHERLANDS, "test.xyz"),
+                        "exampleVacancyUrl", "Vacancy url should start with 'www.example.com'"));
     }
 
 }

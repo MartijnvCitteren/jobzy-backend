@@ -30,13 +30,14 @@ public class JobCreationController {
     @PostMapping("/create-company-info")
     public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(
             @RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
+        log.debug("Received companyInfoRequestDto {}", companyInfoRequestDto);
         var response = companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PostMapping("/create/")
     public ResponseEntity<GeneratedVacancyDto> generateVacancyText(
-            @RequestBody @Valid JobCreationRequestDto descriptionInputDto) {
+            @RequestBody @Valid JobCreationRequestDto descriptionInputDto) {;
         GeneratedVacancyDto generatedVacancy = jobCreationFacade.generateVacancyText(descriptionInputDto);
         return new ResponseEntity<>(generatedVacancy, HttpStatus.CREATED);
     }
