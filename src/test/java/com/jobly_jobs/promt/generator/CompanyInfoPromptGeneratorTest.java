@@ -2,8 +2,9 @@ package com.jobly_jobs.promt.generator;
 
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
-import com.jobly_jobs.promt.dto.CompanyInfoSearchAction;
-import com.jobly_jobs.promt.dto.PromptFormat;
+import com.jobly_jobs.prompt.dto.CompanyInfoSearchAction;
+import com.jobly_jobs.prompt.dto.PromptFormat;
+import com.jobly_jobs.prompt.generator.CompanyInfoPromptGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

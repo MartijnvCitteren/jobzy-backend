@@ -20,8 +20,12 @@ import java.time.Duration;
 @Service
 @Log4j2
 public class UrlValidation {
+    private final HttpClient client = HttpClient.newHttpClient();
 
     public boolean isValid(String url) {
+        if (ObjectUtils.isEmpty(url)) {
+            return false;
+        }
         url = formatUrl(url);
         return urlSyntaxValid(url) && hostExists(url) && websiteIsReachable(url);
 
@@ -56,8 +60,6 @@ public class UrlValidation {
     }
 
     private boolean websiteIsReachable(String url) {
-        HttpClient client = HttpClient.newHttpClient();
-
         try {
             HttpRequest head = HttpRequest.newBuilder()
                     .uri(URI.create(url))
@@ -84,8 +86,6 @@ public class UrlValidation {
         } catch (InterruptedException | IOException e) {
             log.info(e.getMessage());
             return false;
-        } finally {
-            client.close();
         }
 
     }

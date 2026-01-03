@@ -1,6 +1,6 @@
-package com.jobly_jobs.promt.generator;
+package com.jobly_jobs.prompt.generator;
 
-import com.jobly_jobs.promt.dto.Limits;
+import com.jobly_jobs.prompt.dto.Limits;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

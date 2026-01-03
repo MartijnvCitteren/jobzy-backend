@@ -1,4 +1,4 @@
-package com.jobly_jobs.promt.generator;
+package com.jobly_jobs.prompt.generator;
 
 import com.jobly_jobs.domain.dto.request.JobCreationRequestDto;
 import com.jobly_jobs.domain.enums.WritingStyle;

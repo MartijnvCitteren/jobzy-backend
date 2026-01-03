@@ -1,4 +1,4 @@
-package com.jobly_jobs.promt.dto;
+package com.jobly_jobs.prompt.dto;
 
 import lombok.Builder;
 import lombok.Getter;

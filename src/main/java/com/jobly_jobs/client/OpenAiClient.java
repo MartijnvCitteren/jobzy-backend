@@ -3,7 +3,7 @@ package com.jobly_jobs.client;
 import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.domain.dto.response.GeneratedVacancyDto;
-import com.jobly_jobs.promt.dto.PromptFormat;
+import com.jobly_jobs.prompt.dto.PromptFormat;
 import dev.toonformat.jtoon.JToon;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.ai.chat.client.ChatClient;

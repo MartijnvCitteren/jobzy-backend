@@ -3,7 +3,7 @@ package com.jobly_jobs.facade;
 import com.jobly_jobs.domain.dto.request.JobCreationRequestDto;
 import com.jobly_jobs.domain.dto.response.GeneratedVacancyDto;
 import com.jobly_jobs.exceptions.JobRequestAlreadyExists;
-import com.jobly_jobs.promt.generator.PromptCreator;
+import com.jobly_jobs.prompt.generator.PromptCreator;
 import com.jobly_jobs.service.JobRequestService;
 import com.jobly_jobs.service.VacancyTextService;
 import lombok.RequiredArgsConstructor;
