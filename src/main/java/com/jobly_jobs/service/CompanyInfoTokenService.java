@@ -1,6 +1,7 @@
 package com.jobly_jobs.service;
 
-import com.jobly_jobs.cache.CacheCompanyService;
+import com.jobly_jobs.cache.CacheCompanyInfoService;
+import com.jobly_jobs.cache.CacheIdCompanyInfo;
 import com.jobly_jobs.client.AiClient;
 import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
@@ -24,7 +25,9 @@ public class CompanyInfoTokenService {
     private final PromptGenerator<CompanyInfoRequestDto> promptGenerator;
     private final UrlValidation urlValidation;
     private final AiClient aiClient;
-    private final CacheCompanyService cacheCompanyService;
+
+    private final CacheCompanyInfoService cacheCompanyInfoService;
+    private final CacheIdCompanyInfo cacheIdCompanyInfo;
 
 
     public CompanyInfoResponseToken getCompanyInfoResponseToken(CompanyInfoRequestDto companyInfoRequestDto) {
@@ -33,7 +36,7 @@ public class CompanyInfoTokenService {
                                           companyInfoRequestDto.exampleVacancyUrl());
         }
 
-        Optional<UUID> optionalUUID = cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite());
+        Optional<UUID> optionalUUID = cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite());
         if (optionalUUID.isPresent()) {
             return new CompanyInfoResponseToken(optionalUUID.get().toString());
         }
@@ -46,8 +49,8 @@ public class CompanyInfoTokenService {
 
     private UUID storeInCacheAndGetUuid(CompanyInfoRequestDto companyInfoRequestDto, AiCompanyInfo aiCompanyInfo) {
         UUID uuid = UUID.randomUUID();
-        cacheCompanyService.put(uuid, aiCompanyInfo);
-        cacheCompanyService.put(companyInfoRequestDto.companyWebsite(), uuid);
+        cacheCompanyInfoService.putCompanyInfo(uuid, aiCompanyInfo);
+        cacheIdCompanyInfo.putCompanyWebsite(companyInfoRequestDto.companyWebsite(), uuid);
         return uuid;
     }
 
@@ -58,6 +61,4 @@ public class CompanyInfoTokenService {
         return urlValidation.isValid(companyInfoRequestDto.companyWebsite()) && urlValidation.isValid(
                 companyInfoRequestDto.exampleVacancyUrl());
     }
-
-
 }

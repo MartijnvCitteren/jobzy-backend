@@ -20,9 +20,3 @@ spring:
         completions-path: v1/chat/completions
         options:
           model: gpt-4o-mini
-
-  data:
-    redis:
-      host: ${REDIS_HOST}
-      port: ${REDIS_PORT}
-      timeout: 2s

@@ -1,6 +1,7 @@
 package com.jobly_jobs.service;
 
-import com.jobly_jobs.cache.CacheCompanyService;
+import com.jobly_jobs.cache.CacheCompanyInfoService;
+import com.jobly_jobs.cache.CacheIdCompanyInfo;
 import com.jobly_jobs.client.AiClient;
 import com.jobly_jobs.domain.dto.AiCompanyInfo;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
@@ -49,7 +50,10 @@ class CompanyInfoTokenServiceTest {
     private AiClient aiClient;
 
     @Mock
-    private CacheCompanyService cacheCompanyService;
+    private CacheCompanyInfoService cacheCompanyInfoService;
+
+    @Mock
+    private CacheIdCompanyInfo cacheIdCompanyInfo;
 
     @InjectMocks
     private CompanyInfoTokenService companyInfoTokenService;
@@ -80,7 +84,7 @@ class CompanyInfoTokenServiceTest {
         // Given
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
+        when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
         when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
@@ -92,8 +96,8 @@ class CompanyInfoTokenServiceTest {
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
         verify(promptGenerator).getPrompt(companyInfoRequestDto);
         verify(aiClient).getCompanyInfo(promptFormat, companyInfoRequestDto);
-        verify(cacheCompanyService).put(any(UUID.class), any(AiCompanyInfo.class));
-        verify(cacheCompanyService).put(any(String.class), any(UUID.class));
+        verify(cacheCompanyInfoService).putCompanyInfo(any(UUID.class), any(AiCompanyInfo.class));
+        verify(cacheIdCompanyInfo).putCompanyWebsite(any(String.class), any(UUID.class));
     }
 
     @Test
@@ -110,10 +114,10 @@ class CompanyInfoTokenServiceTest {
 
         assertNotNull(exception);
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verify(promptGenerator, never()).getPrompt(any());
-        verify(aiClient, never()).getCompanyInfo(any(), any());
-        verify(cacheCompanyService, never()).put(any(UUID.class), any(AiCompanyInfo.class));
-        verify(cacheCompanyService, never()).put(any(String.class), any(UUID.class));
+        verifyNoInteractions(promptGenerator);
+        verifyNoInteractions(aiClient);
+        verifyNoInteractions(cacheCompanyInfoService);
+        verifyNoInteractions(cacheIdCompanyInfo);
     }
 
     @Test
@@ -132,8 +136,8 @@ class CompanyInfoTokenServiceTest {
         assertNotNull(exception);
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(promptGenerator, never()).getPrompt(any());
-        verify(aiClient, never()).getCompanyInfo(any(), any());
+        verifyNoInteractions(promptGenerator);
+        verifyNoInteractions(aiClient);
     }
 
     @Test
@@ -143,7 +147,7 @@ class CompanyInfoTokenServiceTest {
         CompanyInfoRequestDto requestWithoutVacancy =
                 CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
         when(urlValidation.isValid(requestWithoutVacancy.companyWebsite())).thenReturn(true);
-        when(cacheCompanyService.getUUID(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
+        when(cacheIdCompanyInfo.getUuid(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
         when(promptGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, requestWithoutVacancy)).thenReturn(aiCompanyInfo);
 
@@ -164,7 +168,7 @@ class CompanyInfoTokenServiceTest {
         UUID cachedUuid = UUID.randomUUID();
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.of(cachedUuid));
+        when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.of(cachedUuid));
 
         // When
         companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
@@ -172,10 +176,11 @@ class CompanyInfoTokenServiceTest {
         // Then
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(cacheCompanyService).getUUID(companyInfoRequestDto.companyWebsite());
+        verify(cacheIdCompanyInfo).getUuid(companyInfoRequestDto.companyWebsite());
         verifyNoInteractions(promptGenerator);
         verifyNoInteractions(aiClient);
-        verifyNoMoreInteractions(cacheCompanyService);
+        verifyNoMoreInteractions(cacheIdCompanyInfo);
+        verifyNoInteractions(cacheCompanyInfoService);
     }
 
     @Test
@@ -184,7 +189,7 @@ class CompanyInfoTokenServiceTest {
         // Given
         when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
         when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheCompanyService.getUUID(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
+        when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
         when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
@@ -192,8 +197,8 @@ class CompanyInfoTokenServiceTest {
         CompanyInfoResponseToken result = companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
         // Then
-        verify(cacheCompanyService).put(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
-        verify(cacheCompanyService).put(stringCaptor.capture(), uuidCaptor.capture());
+        verify(cacheCompanyInfoService).putCompanyInfo(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
+        verify(cacheIdCompanyInfo).putCompanyWebsite(stringCaptor.capture(), uuidCaptor.capture());
 
         UUID storedUuid = uuidCaptor.getAllValues().getFirst();
         AiCompanyInfo storedCompanyInfo = aiCompanyInfoCaptor.getValue();
