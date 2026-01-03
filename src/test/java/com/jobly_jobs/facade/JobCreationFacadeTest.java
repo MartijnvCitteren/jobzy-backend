@@ -5,7 +5,7 @@ import com.jobly_jobs.exceptions.JobRequestAlreadyExists;
 import com.jobly_jobs.factory.GeneralJobInfoDtoFactory;
 import com.jobly_jobs.factory.GeneratedVacancyDtoFactory;
 import com.jobly_jobs.factory.JobCreationRequestDtoFactory;
-import com.jobly_jobs.promt.PromptCreator;
+import com.jobly_jobs.prompt.generator.PromptCreator;
 import com.jobly_jobs.service.JobRequestService;
 import com.jobly_jobs.service.VacancyTextService;
 import org.junit.jupiter.api.Test;
@@ -54,8 +54,8 @@ class JobCreationFacadeTest {
         //when & then
         verify(promptCreator, times(1)).createPrompt(any(JobCreationRequestDto.class));
         verify(vacancyTextService, times(1)).generatedVacancyText(anyString());
-        verify(jobRequestService, times(1)).createJobRequest(eq(descriptionInput.generalInfo()),
-                                                             eq(generatedVacancyDto));
+        verify(jobRequestService, times(1)).createJobRequest((descriptionInput.generalInfo()),
+                                                             (generatedVacancyDto));
     }
 
     @Test

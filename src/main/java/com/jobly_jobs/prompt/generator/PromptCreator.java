@@ -1,4 +1,4 @@
-package com.jobly_jobs.promt;
+package com.jobly_jobs.prompt.generator;
 
 import com.jobly_jobs.domain.dto.request.JobCreationRequestDto;
 import com.jobly_jobs.domain.enums.WritingStyle;
@@ -42,9 +42,7 @@ public class PromptCreator {
     private String createDateToDayDescription(JobCreationRequestDto inputDto) {
         return "In this case write a day to day description and consider this " + "information as most " + "important"
                 + ": " + "the day to day activities are: :" + inputDto.tasks() + " also consider this " +
-                "information:" + " " + inputDto.skills() + " and " + inputDto.teamDescription() + " Focus on this " +
-                "part " + "really on " + "the day to day activities. The skills and team description are just " +
-                "there for some " + "context.";
+                "information:" + " " + inputDto.skills() + " and " + inputDto.teamDescription() + " Focus on this " + "part " + "really on " + "the day to day activities. The skills and team description are just " + "there for some " + "context.";
     }
 
     private String createJobDescription(JobCreationRequestDto inputDto) {
@@ -73,14 +71,15 @@ public class PromptCreator {
 
     private String createContactInformation(JobCreationRequestDto inputDto) {
         return "In this case write the contact information for the job and consider this " + "information as " +
-                        "most " + "important: the contact information is: :" + inputDto.generalInfo()
+                "most " + "important: the contact information is: :" + inputDto.generalInfo()
                 .companyName() + " make this an alinea of 2-3 sentences";
 
     }
 
     private String createSummary(JobCreationRequestDto inputDto) {
         return "In this case write a summary for the job and consider this " + "information as most important: " +
-                        "the" + " summary is: :" + inputDto.jobSummary() + " make this an alinea of 2-3 sentences. " + "But also use the information that is written before.";
+                "the" + " summary is: :" + inputDto.jobSummary() + " make this an alinea of 2-3 sentences. " + "But " +
+                "also use the information that is written before.";
     }
 
 

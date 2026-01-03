@@ -6,7 +6,6 @@ import com.jobly_jobs.domain.dto.response.JobCreationResponseDto;
 import com.jobly_jobs.domain.entity.JobCreationRequest;
 import com.jobly_jobs.domain.mapper.JobCreationMapper;
 import com.jobly_jobs.domain.mapper.VacancyTextMapper;
-import com.jobly_jobs.exceptions.JobRequestAlreadyExists;
 import com.jobly_jobs.repository.JobCreationRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 
 @Service
@@ -28,9 +26,9 @@ public class JobRequestService {
     @Transactional
     public void createJobRequest(GeneralJobDescriptionInfoDto jobInfo, GeneratedVacancyDto vacancyDto) {
         try {
-                JobCreationRequest jobCreationRequest = JobCreationMapper.toNewJobCreationRequest(jobInfo);
-                jobCreationRequest.setVacancyText(VacancyTextMapper.toVacancyText(vacancyDto));
-                jobCreationRepository.save(jobCreationRequest);
+            JobCreationRequest jobCreationRequest = JobCreationMapper.toNewJobCreationRequest(jobInfo);
+            jobCreationRequest.setVacancyText(VacancyTextMapper.toVacancyText(vacancyDto));
+            jobCreationRepository.save(jobCreationRequest);
 
         } catch (DataAccessException e) {
             log.error("Error while saving job creation request for job: {} and company {}", jobInfo.jobTitle(),
@@ -54,7 +52,9 @@ public class JobRequestService {
 
     public boolean isUniqueJobRequest(GeneralJobDescriptionInfoDto jobInfo) {
         return jobCreationRepository.findByJobTitleAndFunctionGroupAndCompanyNameAndCreationDateAfter(
-                jobInfo.jobTitle(), jobInfo.functionGroup(), jobInfo.companyName(), LocalDateTime.now().minusWeeks(2)).isEmpty();
+                        jobInfo.jobTitle(), jobInfo.functionGroup(), jobInfo.companyName(),
+                        LocalDateTime.now().minusWeeks(2))
+                .isEmpty();
 
     }
 }
