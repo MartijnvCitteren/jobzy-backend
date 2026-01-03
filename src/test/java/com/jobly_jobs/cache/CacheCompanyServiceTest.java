@@ -7,17 +7,13 @@ import com.jobly_jobs.exceptions.SystemException;
 import com.jobly_jobs.factory.AiCompanyInfoFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.annotation.DirtiesContext;
 import redis.clients.jedis.RedisClient;
-import redis.clients.jedis.commands.JedisCommands;
 import redis.clients.jedis.params.SetParams;
 
 import java.util.Optional;
@@ -34,8 +30,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CacheCompanyServiceTest {
 
     @Mock
