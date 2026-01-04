@@ -1,9 +1,12 @@
 package com.jobly_jobs.agent.vacancy;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jobly_jobs.agent.Agent;
 import com.jobly_jobs.domain.dto.JobInfo;
 import com.jobly_jobs.domain.dto.agent.CompanyInfoAiResponse;
 import com.jobly_jobs.domain.dto.agent.CoreVacancyAiResponse;
+import com.jobly_jobs.exceptions.SystemException;
 import com.jobly_jobs.prompt.dto.PromptValues;
 import dev.toonformat.jtoon.JToon;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +22,26 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CoreVacancyAgent implements Agent<PromptValues<JobInfo>, CoreVacancyAiResponse> {
   private final ChatClient chatClient;
+  private final ObjectMapper objectMapper;
 
   @Override
   public CoreVacancyAiResponse execute(PromptValues<JobInfo> prompt) {
-    WebSearchOptions searchOptions = createWebSearchOptions();
-    OpenAiChatOptions openAiChatOptions = new OpenAiChatOptions();
-    openAiChatOptions.setWebSearchOptions(searchOptions);
+    try {
+      WebSearchOptions searchOptions = createWebSearchOptions();
+      OpenAiChatOptions openAiChatOptions = new OpenAiChatOptions();
+      openAiChatOptions.setWebSearchOptions(searchOptions);
 
-    String toonPrompt = JToon.encode(prompt);
-    log.debug(toonPrompt);
+      String promptAsString = objectMapper.writeValueAsString(prompt);
 
-    return chatClient.prompt().options(openAiChatOptions).user(toonPrompt).call().entity(CoreVacancyAiResponse.class);
+      log.info(prompt.toString());
+      String toonPrompt = JToon.encode(promptAsString);
+      log.debug(toonPrompt);
+
+      return chatClient.prompt().options(openAiChatOptions).user(toonPrompt).call().entity(CoreVacancyAiResponse.class);
+    } catch (JsonProcessingException e){
+      log.error(e.getMessage());
+      throw new SystemException(e.getMessage());
+    }
   }
 
 
