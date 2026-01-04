@@ -1,30 +1,5 @@
 package com.jobly_jobs.service;
 
-import com.jobly_jobs.cache.CacheCompanyInfoService;
-import com.jobly_jobs.cache.CacheIdCompanyInfo;
-import com.jobly_jobs.client.AiClient;
-import com.jobly_jobs.domain.dto.AiCompanyInfo;
-import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
-import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
-import com.jobly_jobs.exceptions.InvalidUrlException;
-import com.jobly_jobs.factory.AiCompanyInfoFactory;
-import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
-import com.jobly_jobs.prompt.dto.PromptFormat;
-import com.jobly_jobs.prompt.generator.PromptGenerator;
-import com.jobly_jobs.validation.UrlValidation;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Optional;
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,193 +12,217 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.jobly_jobs.cache.CacheCompanyInfoService;
+import com.jobly_jobs.cache.CacheIdCompanyInfo;
+import com.jobly_jobs.client.AiClient;
+import com.jobly_jobs.domain.dto.AiCompanyInfo;
+import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
+import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
+import com.jobly_jobs.exceptions.InvalidUrlException;
+import com.jobly_jobs.factory.AiCompanyInfoFactory;
+import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
+import com.jobly_jobs.prompt.dto.PromptFormat;
+import com.jobly_jobs.prompt.generator.PromptGenerator;
+import com.jobly_jobs.validation.UrlValidation;
+import java.util.Optional;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 @ExtendWith(MockitoExtension.class)
 class CompanyInfoRetrievalServiceTest {
 
-    @Mock
-    private PromptGenerator<CompanyInfoRequestDto> promptGenerator;
+  @Mock
+  private PromptGenerator<CompanyInfoRequestDto> promptGenerator;
 
-    @Mock
-    private UrlValidation urlValidation;
+  @Mock
+  private UrlValidation urlValidation;
 
-    @Mock
-    private AiClient aiClient;
+  @Mock
+  private AiClient aiClient;
 
-    @Mock
-    private CacheCompanyInfoService cacheCompanyInfoService;
+  @Mock
+  private CacheCompanyInfoService cacheCompanyInfoService;
 
-    @Mock
-    private CacheIdCompanyInfo cacheIdCompanyInfo;
+  @Mock
+  private CacheIdCompanyInfo cacheIdCompanyInfo;
 
-    @InjectMocks
-    private CompanyInfoRetrievalService companyInfoRetrievalService;
+  @InjectMocks
+  private CompanyInfoRetrievalService companyInfoRetrievalService;
 
-    @Captor
-    private ArgumentCaptor<UUID> uuidCaptor;
+  @Captor
+  private ArgumentCaptor<UUID> uuidCaptor;
 
-    @Captor
-    private ArgumentCaptor<AiCompanyInfo> aiCompanyInfoCaptor;
+  @Captor
+  private ArgumentCaptor<AiCompanyInfo> aiCompanyInfoCaptor;
 
-    @Captor
-    private ArgumentCaptor<String> stringCaptor;
+  @Captor
+  private ArgumentCaptor<String> stringCaptor;
 
-    private CompanyInfoRequestDto companyInfoRequestDto;
-    private AiCompanyInfo aiCompanyInfo;
-    private PromptFormat promptFormat;
+  private CompanyInfoRequestDto companyInfoRequestDto;
+  private AiCompanyInfo aiCompanyInfo;
+  private PromptFormat promptFormat;
 
-    @BeforeEach
-    void setUp() {
-        companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
-        aiCompanyInfo = AiCompanyInfoFactory.createAiCompanyInfo();
-        promptFormat = mock(PromptFormat.class);
-    }
+  @BeforeEach
+  void setUp() {
+    companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
+    aiCompanyInfo = AiCompanyInfoFactory.createAiCompanyInfo();
+    promptFormat = mock(PromptFormat.class);
+  }
 
-    @Test
-    @DisplayName("given valid company info request with valid URLs, when getting token, then return token successfully")
-    void givenValidCompanyInfoRequest_whenGettingToken_thenReturnTokenSuccessfully() {
-        // Given
-        when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
-        when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
-        when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
-        when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
+  @Test
+  @DisplayName("given valid company info request with valid URLs, when getting token, then return token successfully")
+  void givenValidCompanyInfoRequest_whenGettingToken_thenReturnTokenSuccessfully() {
+    // Given
+    when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
+    when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
+    when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
+    when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
+    when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
-        // When
-        companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
+    // When
+    companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
-        // Then
-        verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(promptGenerator).getPrompt(companyInfoRequestDto);
-        verify(aiClient).getCompanyInfo(promptFormat, companyInfoRequestDto);
-        verify(cacheCompanyInfoService).putCompanyInfo(any(UUID.class), any(AiCompanyInfo.class));
-        verify(cacheIdCompanyInfo).putCompanyWebsite(any(String.class), any(UUID.class));
-    }
+    // Then
+    verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
+    verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
+    verify(promptGenerator).getPrompt(companyInfoRequestDto);
+    verify(aiClient).getCompanyInfo(promptFormat, companyInfoRequestDto);
+    verify(cacheCompanyInfoService).putCompanyInfo(any(UUID.class), any(AiCompanyInfo.class));
+    verify(cacheIdCompanyInfo).putCompanyWebsite(any(String.class), any(UUID.class));
+  }
 
-    @Test
-    @DisplayName("given company info request with invalid website URL, when getting token, then throw " +
-            "InvalidUrlException")
-    void givenInvalidWebsiteUrl_whenGettingToken_thenThrowInvalidUrlException() {
-        // Given
-        when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(false);
+  @Test
+  @DisplayName("given company info request with invalid website URL, when getting token, then throw " +
+      "InvalidUrlException")
+  void givenInvalidWebsiteUrl_whenGettingToken_thenThrowInvalidUrlException() {
+    // Given
+    when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(false);
 
-        // When & Then
-        InvalidUrlException exception = assertThrows(InvalidUrlException.class,
-                                                     () -> companyInfoRetrievalService.getCompanyInfoResponseToken(
-                                                             companyInfoRequestDto));
+    // When & Then
+    InvalidUrlException exception = assertThrows(InvalidUrlException.class,
+        () -> companyInfoRetrievalService.getCompanyInfoResponseToken(
+            companyInfoRequestDto));
 
-        assertNotNull(exception);
-        verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verifyNoInteractions(promptGenerator);
-        verifyNoInteractions(aiClient);
-        verifyNoInteractions(cacheCompanyInfoService);
-        verifyNoInteractions(cacheIdCompanyInfo);
-    }
+    assertNotNull(exception);
+    verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
+    verifyNoInteractions(promptGenerator);
+    verifyNoInteractions(aiClient);
+    verifyNoInteractions(cacheCompanyInfoService);
+    verifyNoInteractions(cacheIdCompanyInfo);
+  }
 
-    @Test
-    @DisplayName("given company info request with invalid vacancy URL, when getting token, then throw " +
-            "InvalidUrlException")
-    void givenInvalidVacancyUrl_whenGettingToken_thenThrowInvalidUrlException() {
-        // Given
-        when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
-        when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(false);
+  @Test
+  @DisplayName("given company info request with invalid vacancy URL, when getting token, then throw " +
+      "InvalidUrlException")
+  void givenInvalidVacancyUrl_whenGettingToken_thenThrowInvalidUrlException() {
+    // Given
+    when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
+    when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(false);
 
-        // When & Then
-        InvalidUrlException exception = assertThrows(InvalidUrlException.class,
-                                                     () -> companyInfoRetrievalService.getCompanyInfoResponseToken(
-                                                             companyInfoRequestDto));
+    // When & Then
+    InvalidUrlException exception = assertThrows(InvalidUrlException.class,
+        () -> companyInfoRetrievalService.getCompanyInfoResponseToken(
+            companyInfoRequestDto));
 
-        assertNotNull(exception);
-        verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verifyNoInteractions(promptGenerator);
-        verifyNoInteractions(aiClient);
-    }
+    assertNotNull(exception);
+    verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
+    verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
+    verifyNoInteractions(promptGenerator);
+    verifyNoInteractions(aiClient);
+  }
 
-    @Test
-    @DisplayName("given company info request without vacancy URL, when URLs are valid, then return token successfully")
-    void givenCompanyInfoRequestWithoutVacancyUrl_whenUrlsAreValid_thenReturnTokenSuccessfully() {
-        // Given
-        CompanyInfoRequestDto requestWithoutVacancy =
-                CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
-        when(urlValidation.isValid(requestWithoutVacancy.companyWebsite())).thenReturn(true);
-        when(cacheIdCompanyInfo.getUuid(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
-        when(promptGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptFormat);
-        when(aiClient.getCompanyInfo(promptFormat, requestWithoutVacancy)).thenReturn(aiCompanyInfo);
+  @Test
+  @DisplayName("given company info request without vacancy URL, when URLs are valid, then return token successfully")
+  void givenCompanyInfoRequestWithoutVacancyUrl_whenUrlsAreValid_thenReturnTokenSuccessfully() {
+    // Given
+    CompanyInfoRequestDto requestWithoutVacancy =
+        CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
+    when(urlValidation.isValid(requestWithoutVacancy.companyWebsite())).thenReturn(true);
+    when(cacheIdCompanyInfo.getUuid(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
+    when(promptGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptFormat);
+    when(aiClient.getCompanyInfo(promptFormat, requestWithoutVacancy)).thenReturn(aiCompanyInfo);
 
-        // When
-        companyInfoRetrievalService.getCompanyInfoResponseToken(requestWithoutVacancy);
+    // When
+    companyInfoRetrievalService.getCompanyInfoResponseToken(requestWithoutVacancy);
 
-        // Then
-        verify(urlValidation, times(1)).isValid(requestWithoutVacancy.companyWebsite());
-        verify(urlValidation, never()).isValid(null);
-        verify(promptGenerator).getPrompt(requestWithoutVacancy);
-        verify(aiClient).getCompanyInfo(promptFormat, requestWithoutVacancy);
-    }
+    // Then
+    verify(urlValidation, times(1)).isValid(requestWithoutVacancy.companyWebsite());
+    verify(urlValidation, never()).isValid(null);
+    verify(promptGenerator).getPrompt(requestWithoutVacancy);
+    verify(aiClient).getCompanyInfo(promptFormat, requestWithoutVacancy);
+  }
 
-    @Test
-    @DisplayName("given company info already cached, when getting token, then return cached token without AI call")
-    void givenCompanyInfoAlreadyCached_whenGettingToken_thenReturnCachedTokenWithoutAiCall() {
-        // Given
-        UUID cachedUuid = UUID.randomUUID();
-        when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
-        when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.of(cachedUuid));
+  @Test
+  @DisplayName("given company info already cached, when getting token, then return cached token without AI call")
+  void givenCompanyInfoAlreadyCached_whenGettingToken_thenReturnCachedTokenWithoutAiCall() {
+    // Given
+    UUID cachedUuid = UUID.randomUUID();
+    when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
+    when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
+    when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.of(cachedUuid));
 
-        // When
-        companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
+    // When
+    companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
-        // Then
-        verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
-        verify(cacheIdCompanyInfo).getUuid(companyInfoRequestDto.companyWebsite());
-        verifyNoInteractions(promptGenerator);
-        verifyNoInteractions(aiClient);
-        verifyNoMoreInteractions(cacheIdCompanyInfo);
-        verifyNoInteractions(cacheCompanyInfoService);
-    }
+    // Then
+    verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
+    verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
+    verify(cacheIdCompanyInfo).getUuid(companyInfoRequestDto.companyWebsite());
+    verifyNoInteractions(promptGenerator);
+    verifyNoInteractions(aiClient);
+    verifyNoMoreInteractions(cacheIdCompanyInfo);
+    verifyNoInteractions(cacheCompanyInfoService);
+  }
 
-    @Test
-    @DisplayName("given valid request, when storing in cache, then store both UUID and company info correctly")
-    void givenValidRequest_whenStoringInCache_thenStoreBothUuidAndCompanyInfoCorrectly() {
-        // Given
-        when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
-        when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
-        when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
-        when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
-        when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
+  @Test
+  @DisplayName("given valid request, when storing in cache, then store both UUID and company info correctly")
+  void givenValidRequest_whenStoringInCache_thenStoreBothUuidAndCompanyInfoCorrectly() {
+    // Given
+    when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(true);
+    when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
+    when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
+    when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptFormat);
+    when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
-        // When
-        CompanyInfoResponseToken result = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
+    // When
+    CompanyInfoResponseToken result = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
-        // Then
-        verify(cacheCompanyInfoService).putCompanyInfo(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
-        verify(cacheIdCompanyInfo).putCompanyWebsite(stringCaptor.capture(), uuidCaptor.capture());
+    // Then
+    verify(cacheCompanyInfoService).putCompanyInfo(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
+    verify(cacheIdCompanyInfo).putCompanyWebsite(stringCaptor.capture(), uuidCaptor.capture());
 
-        UUID storedUuid = uuidCaptor.getAllValues().getFirst();
-        AiCompanyInfo storedCompanyInfo = aiCompanyInfoCaptor.getValue();
-        String storedWebsite = stringCaptor.getValue();
+    UUID storedUuid = uuidCaptor.getAllValues().getFirst();
+    AiCompanyInfo storedCompanyInfo = aiCompanyInfoCaptor.getValue();
+    String storedWebsite = stringCaptor.getValue();
 
-        assertEquals(result.token(), storedUuid.toString());
-        assertEquals(aiCompanyInfo, storedCompanyInfo);
-        assertEquals(companyInfoRequestDto.companyWebsite(), storedWebsite);
-    }
+    assertEquals(result.token(), storedUuid.toString());
+    assertEquals(aiCompanyInfo, storedCompanyInfo);
+    assertEquals(companyInfoRequestDto.companyWebsite(), storedWebsite);
+  }
 
 
-    @Test
-    @DisplayName("given invalid url, when getting token, then throw InvalidUrlException")
-    void givenBothUrlsInvalid_whenGettingToken_thenThrowInvalidUrlException() {
-        // Given
-        when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(false);
+  @Test
+  @DisplayName("given invalid url, when getting token, then throw InvalidUrlException")
+  void givenBothUrlsInvalid_whenGettingToken_thenThrowInvalidUrlException() {
+    // Given
+    when(urlValidation.isValid(companyInfoRequestDto.companyWebsite())).thenReturn(false);
 
-        // When & Then
-        assertThrows(InvalidUrlException.class,
-                     () -> companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto));
+    // When & Then
+    assertThrows(InvalidUrlException.class,
+        () -> companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto));
 
-        verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
-        verifyNoInteractions(promptGenerator);
-        verifyNoInteractions(aiClient);
-    }
+    verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
+    verifyNoInteractions(promptGenerator);
+    verifyNoInteractions(aiClient);
+  }
 
 }
 

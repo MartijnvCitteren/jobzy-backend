@@ -7,8 +7,10 @@ import lombok.Builder;
 
 @Builder
 public record WritingStyleRequestDto(
-        @NotBlank
-        WritingStyle writingStyle,
-        @NotBlank
-        Language language
-        ) {}
+    @NotBlank
+    WritingStyle writingStyle,
+    @NotBlank
+    Language language
+) {
+
+}

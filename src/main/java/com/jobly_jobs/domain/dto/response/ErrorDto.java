@@ -4,10 +4,11 @@ import lombok.Builder;
 
 @Builder
 public record ErrorDto(
-        String status,
-        String error,
-        String message,
-        String displayMessage
+    String status,
+    String error,
+    String message,
+    String displayMessage
 
 ) {
+
 }

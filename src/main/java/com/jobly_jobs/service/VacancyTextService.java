@@ -10,15 +10,16 @@ import org.springframework.stereotype.Service;
 @Log4j2
 @RequiredArgsConstructor
 public class VacancyTextService {
-    private final OpenAiClient openAiClient;
 
-    public GeneratedVacancyDto generatedVacancyText(String prompt) {
-        return generateText(prompt);
-    }
+  private final OpenAiClient openAiClient;
 
-    private GeneratedVacancyDto generateText(String prompt) {
-        return openAiClient.getResponse(prompt);
-    }
+  public GeneratedVacancyDto generatedVacancyText(String prompt) {
+    return generateText(prompt);
+  }
+
+  private GeneratedVacancyDto generateText(String prompt) {
+    return openAiClient.getResponse(prompt);
+  }
 
 
 }

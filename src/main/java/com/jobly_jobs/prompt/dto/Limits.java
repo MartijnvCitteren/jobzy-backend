@@ -8,8 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class Limits {
-    private String mustDo;
-    private String mustAvoid;
-    private String missingInfo;
-    private String factuality;
+
+  private String mustDo;
+  private String mustAvoid;
+  private String missingInfo;
+  private String factuality;
 }

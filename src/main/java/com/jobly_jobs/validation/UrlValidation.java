@@ -1,10 +1,5 @@
 package com.jobly_jobs.validation;
 
-import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.util.ObjectUtils;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -16,85 +11,89 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 @Service
 @Log4j2
 public class UrlValidation {
-    private final HttpClient client = HttpClient.newHttpClient();
 
-    public boolean isValid(String url) {
-        if (ObjectUtils.isEmpty(url)) {
-            return false;
-        }
-        url = formatUrl(url);
-        return urlSyntaxValid(url) && hostExists(url) && websiteIsReachable(url);
+  private final HttpClient client = HttpClient.newHttpClient();
 
+  public boolean isValid(String url) {
+    if (ObjectUtils.isEmpty(url)) {
+      return false;
+    }
+    url = formatUrl(url);
+    return urlSyntaxValid(url) && hostExists(url) && websiteIsReachable(url);
+
+  }
+
+  private String formatUrl(String url) {
+    url = url.trim().toLowerCase();
+    if (doesNotStartWithHttp(url)) {
+      url = "https://" + url;
+    }
+    return url;
+  }
+
+  private boolean urlSyntaxValid(String url) {
+    try {
+      URI uri = new URI(url);
+      return (!ObjectUtils.isEmpty(uri.getHost()) && !ObjectUtils.isEmpty(uri.getScheme()));
+    } catch (URISyntaxException e) {
+      return false;
+    }
+  }
+
+  private boolean hostExists(String url) {
+    try {
+      URL parsedUrl = new URL(url);
+      InetAddress.getByName(parsedUrl.getHost());
+      return true;
+    } catch (MalformedURLException | UnknownHostException e) {
+      return false;
     }
 
-    private String formatUrl(String url) {
-        url = url.trim().toLowerCase();
-        if (doesNotStartWithHttp(url)) {
-            url = "https://" + url;
-        }
-        return url;
+  }
+
+  private boolean websiteIsReachable(String url) {
+    try {
+      HttpRequest head = HttpRequest.newBuilder()
+          .uri(URI.create(url))
+          .method("HEAD", HttpRequest.BodyPublishers.noBody())
+          .timeout(Duration.ofSeconds(2))
+          .build();
+
+      HttpResponse<Void> headResponse = client.send(head, HttpResponse.BodyHandlers.discarding());
+
+      if (indicatesWebsiteIsReachable(headResponse.statusCode())) {
+        return true;
+      }
+
+      HttpRequest get = HttpRequest.newBuilder()
+          .uri(URI.create(url))
+          .GET()
+          .timeout(Duration.ofSeconds(2))
+          .build();
+      HttpResponse<Void> getResponse = client.send(get, HttpResponse.BodyHandlers.discarding());
+
+      return indicatesWebsiteIsReachable(getResponse.statusCode());
+
+    } catch (InterruptedException | IOException e) {
+      log.info(e.getMessage());
+      return false;
     }
 
-    private boolean urlSyntaxValid(String url) {
-        try {
-            URI uri = new URI(url);
-            return (!ObjectUtils.isEmpty(uri.getHost()) && !ObjectUtils.isEmpty(uri.getScheme()));
-        } catch (URISyntaxException e) {
-            return false;
-        }
-    }
+  }
 
-    private boolean hostExists(String url) {
-        try {
-            URL parsedUrl = new URL(url);
-            InetAddress.getByName(parsedUrl.getHost());
-            return true;
-        } catch (MalformedURLException | UnknownHostException e) {
-            return false;
-        }
+  private boolean doesNotStartWithHttp(String url) {
+    return !ObjectUtils.isEmpty(url) && !(url.startsWith("http://") || url.startsWith("https://"));
+  }
 
-    }
-
-    private boolean websiteIsReachable(String url) {
-        try {
-            HttpRequest head = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .method("HEAD", HttpRequest.BodyPublishers.noBody())
-                    .timeout(Duration.ofSeconds(2))
-                    .build();
-
-            HttpResponse<Void> headResponse = client.send(head, HttpResponse.BodyHandlers.discarding());
-
-            if (indicatesWebsiteIsReachable(headResponse.statusCode())) {
-                return true;
-            }
-
-
-            HttpRequest get = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .GET()
-                    .timeout(Duration.ofSeconds(2))
-                    .build();
-            HttpResponse<Void> getResponse = client.send(get, HttpResponse.BodyHandlers.discarding());
-
-            return indicatesWebsiteIsReachable(getResponse.statusCode());
-
-        } catch (InterruptedException | IOException e) {
-            log.info(e.getMessage());
-            return false;
-        }
-
-    }
-
-    private boolean doesNotStartWithHttp(String url) {
-        return !ObjectUtils.isEmpty(url) && !(url.startsWith("http://") || url.startsWith("https://"));
-    }
-
-    private boolean indicatesWebsiteIsReachable(int statusCode) {
-        return statusCode != HttpStatus.NOT_FOUND.value() && statusCode != HttpStatus.GONE.value() && statusCode < 500;
-    }
+  private boolean indicatesWebsiteIsReachable(int statusCode) {
+    return statusCode != HttpStatus.NOT_FOUND.value() && statusCode != HttpStatus.GONE.value() && statusCode < 500;
+  }
 }

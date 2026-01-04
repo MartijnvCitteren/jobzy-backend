@@ -11,15 +11,16 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 public class Prompt {
-    @Getter(value = AccessLevel.NONE)
-    private String genericContext;
-    private String companyDescription;
-    private String teamDescription;
-    private String dayToDayDescription;
-    private String jobDescription;
-    private String jobUniqueSellingPoints;
-    private String requirements;
-    private String offer;
-    private String contactInformation;
-    private String summary;
+
+  @Getter(value = AccessLevel.NONE)
+  private String genericContext;
+  private String companyDescription;
+  private String teamDescription;
+  private String dayToDayDescription;
+  private String jobDescription;
+  private String jobUniqueSellingPoints;
+  private String requirements;
+  private String offer;
+  private String contactInformation;
+  private String summary;
 }

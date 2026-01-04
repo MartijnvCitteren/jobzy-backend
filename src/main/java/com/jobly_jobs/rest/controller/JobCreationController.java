@@ -8,6 +8,7 @@ import com.jobly_jobs.service.CompanyInfoRetrievalService;
 import com.jobly_jobs.service.JobRequestService;
 import com.jobly_jobs.service.VacancyCreationService;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -17,28 +18,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.UUID;
-
 @Controller
 @RequiredArgsConstructor
 @Log4j2
 public class JobCreationController {
-    private final JobRequestService jobRequestService;
-    private final CompanyInfoRetrievalService companyInfoRetrievalService;
-    private final VacancyCreationService vacancyCreationService;
 
-    @PostMapping("/create-company-info")
-    public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(
-            @RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
-        log.debug("Received companyInfoRequestDto {}", companyInfoRequestDto);
-        var response = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
+  private final JobRequestService jobRequestService;
+  private final CompanyInfoRetrievalService companyInfoRetrievalService;
+  private final VacancyCreationService vacancyCreationService;
 
-    @PostMapping("/create-vacancy")
-    public ResponseEntity<GeneratedVacancyDto> createVacancyText(
-            @RequestBody @Valid JobInfoRequestDto jobInfoRequestDto, @RequestParam("requestId") UUID requestId) {
-        GeneratedVacancyDto generatedVacancy = vacancyCreationService.createVacancy(jobInfoRequestDto, requestId);
-        return new ResponseEntity<>(generatedVacancy, HttpStatus.CREATED);
-    }
+  @PostMapping("/create-company-info")
+  public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(
+      @RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
+    log.debug("Received companyInfoRequestDto {}", companyInfoRequestDto);
+    var response = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
+    return new ResponseEntity<>(response, HttpStatus.CREATED);
+  }
+
+  @PostMapping("/create-vacancy")
+  public ResponseEntity<GeneratedVacancyDto> createVacancyText(
+      @RequestBody @Valid JobInfoRequestDto jobInfoRequestDto, @RequestParam("requestId") UUID requestId) {
+    GeneratedVacancyDto generatedVacancy = vacancyCreationService.createVacancy(jobInfoRequestDto, requestId);
+    return new ResponseEntity<>(generatedVacancy, HttpStatus.CREATED);
+  }
 }

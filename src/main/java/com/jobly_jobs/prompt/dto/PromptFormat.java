@@ -10,8 +10,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PromptFormat {
-    private String task;
-    private String scope;
-    private Limits limits;
-    private Action action;
+
+  private String task;
+  private String scope;
+  private Limits limits;
+  private Action action;
 }
