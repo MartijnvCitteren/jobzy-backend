@@ -85,7 +85,7 @@ class CompanyInfoRetrievalServiceTest {
     when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
     when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
     when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptValues);
-    when(agent.getCompanyInfo(promptValues, companyInfoRequestDto)).thenReturn(companyInfoAiResponse);
+    when(agent.execute(promptValues)).thenReturn(companyInfoAiResponse);
 
     // When
     companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
@@ -94,7 +94,7 @@ class CompanyInfoRetrievalServiceTest {
     verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
     verify(urlValidation).isValid(companyInfoRequestDto.exampleVacancyUrl());
     verify(promptGenerator).getPrompt(companyInfoRequestDto);
-    verify(agent).getCompanyInfo(promptValues, companyInfoRequestDto);
+    verify(agent).execute(promptValues);
     verify(cacheCompanyInfoService).putCompanyInfo(any(UUID.class), any(CompanyInfoAiResponse.class));
     verify(cacheIdCompanyInfo).putCompanyWebsite(any(String.class), any(UUID.class));
   }
@@ -148,7 +148,7 @@ class CompanyInfoRetrievalServiceTest {
     when(urlValidation.isValid(requestWithoutVacancy.companyWebsite())).thenReturn(true);
     when(cacheIdCompanyInfo.getUuid(requestWithoutVacancy.companyWebsite())).thenReturn(Optional.empty());
     when(promptGenerator.getPrompt(requestWithoutVacancy)).thenReturn(promptValues);
-    when(agent.getCompanyInfo(promptValues, requestWithoutVacancy)).thenReturn(companyInfoAiResponse);
+    when(agent.execute(promptValues)).thenReturn(companyInfoAiResponse);
 
     // When
     companyInfoRetrievalService.getCompanyInfoResponseToken(requestWithoutVacancy);
@@ -157,7 +157,7 @@ class CompanyInfoRetrievalServiceTest {
     verify(urlValidation, times(1)).isValid(requestWithoutVacancy.companyWebsite());
     verify(urlValidation, never()).isValid(null);
     verify(promptGenerator).getPrompt(requestWithoutVacancy);
-    verify(agent).getCompanyInfo(promptValues, requestWithoutVacancy);
+    verify(agent).execute(promptValues);
   }
 
   @Test
@@ -190,7 +190,7 @@ class CompanyInfoRetrievalServiceTest {
     when(urlValidation.isValid(companyInfoRequestDto.exampleVacancyUrl())).thenReturn(true);
     when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.empty());
     when(promptGenerator.getPrompt(companyInfoRequestDto)).thenReturn(promptValues);
-    when(agent.getCompanyInfo(promptValues, companyInfoRequestDto)).thenReturn(companyInfoAiResponse);
+    when(agent.execute(promptValues)).thenReturn(companyInfoAiResponse);
 
     // When
     CompanyInfoResponseToken result = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
