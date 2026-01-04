@@ -1,9 +1,8 @@
 package com.jobly_jobs.prompt.generator;
 
-import com.jobly_jobs.prompt.dto.PromptFormat;
+import com.jobly_jobs.prompt.dto.PromptValues;
 
 public interface PromptGenerator<T> {
-
-  PromptFormat getPrompt(T t);
+  PromptValues<T> getPrompt(T t);
 
 }

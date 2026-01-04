@@ -1,6 +1,6 @@
 //package com.jobly_jobs.service;
 //
-//import com.jobly_jobs.client.OpenAiClient;
+//import com.jobly_jobs.agent.CompanyInfoAgent;
 //import com.jobly_jobs.domain.entity.Prompt;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,7 +17,7 @@
 //class VacancyTextServiceTest {
 //
 //    @Mock
-//    OpenAiClient openAiClient;
+//    CompanyInfoAgent openAiClient;
 //
 //    @InjectMocks
 //    VacancyTextService vacancyTextService;

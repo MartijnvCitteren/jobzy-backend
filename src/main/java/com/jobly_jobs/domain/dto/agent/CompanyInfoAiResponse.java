@@ -1,6 +1,6 @@
-package com.jobly_jobs.domain.dto;
+package com.jobly_jobs.domain.dto.agent;
 
-public record AiCompanyInfo(
+public record CompanyInfoAiResponse(
     String companyDescription,
     String companyGoal,
     String uspForEmployees,

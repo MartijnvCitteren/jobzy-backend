@@ -2,7 +2,7 @@ package com.jobly_jobs.prompt.generator;
 
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.prompt.dto.CompanyInfoSearchAction;
-import com.jobly_jobs.prompt.dto.PromptFormat;
+import com.jobly_jobs.prompt.dto.PromptValues;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -18,12 +18,13 @@ public class CompanyInfoPromptGenerator implements PromptGenerator<CompanyInfoRe
       """;
 
   @Override
-  public PromptFormat getPrompt(CompanyInfoRequestDto companyInfoRequestDto) {
-    return PromptFormat.builder()
+  public PromptValues<CompanyInfoRequestDto> getPrompt(CompanyInfoRequestDto companyInfoRequestDto) {
+    return PromptValues.builderForRequest(companyInfoRequestDto)
         .task(getTask(companyInfoRequestDto))
         .scope(SCOPE)
         .limits(DefaultLimits.getDefaultLimits())
         .action(getAction(companyInfoRequestDto))
+        .requestObject(companyInfoRequestDto)
         .build();
   }
 

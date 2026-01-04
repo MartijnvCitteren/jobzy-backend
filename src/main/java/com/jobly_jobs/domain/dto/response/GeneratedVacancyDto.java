@@ -2,6 +2,7 @@ package com.jobly_jobs.domain.dto.response;
 
 import lombok.Builder;
 
+//@formatting:off
 @Builder
 public record GeneratedVacancyDto(
     String summary,

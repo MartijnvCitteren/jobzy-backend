@@ -1,4 +1,4 @@
-package com.jobly_jobs.client;
+package com.jobly_jobs.config;
 
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.context.annotation.Bean;

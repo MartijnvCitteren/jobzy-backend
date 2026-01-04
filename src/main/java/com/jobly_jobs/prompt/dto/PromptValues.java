@@ -9,10 +9,14 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PromptFormat {
-
+public class PromptValues<T> {
   private String task;
   private String scope;
   private Limits limits;
   private Action action;
+  private T requestObject;
+
+  public static <T> PromptValuesBuilder<T> builderForRequest(T request) {
+    return PromptValues.<T>builder().requestObject(request);
+  }
 }

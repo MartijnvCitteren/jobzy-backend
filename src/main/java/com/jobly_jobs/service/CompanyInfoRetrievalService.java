@@ -2,12 +2,12 @@ package com.jobly_jobs.service;
 
 import com.jobly_jobs.cache.CacheCompanyInfoService;
 import com.jobly_jobs.cache.CacheIdCompanyInfo;
-import com.jobly_jobs.client.AiClient;
-import com.jobly_jobs.domain.dto.AiCompanyInfo;
+import com.jobly_jobs.agent.Agent;
+import com.jobly_jobs.domain.dto.agent.CompanyInfoAiResponse;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
 import com.jobly_jobs.exceptions.InvalidUrlException;
-import com.jobly_jobs.prompt.dto.PromptFormat;
+import com.jobly_jobs.prompt.dto.PromptValues;
 import com.jobly_jobs.prompt.generator.PromptGenerator;
 import com.jobly_jobs.validation.UrlValidation;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class CompanyInfoRetrievalService {
 
   private final PromptGenerator<CompanyInfoRequestDto> promptGenerator;
   private final UrlValidation urlValidation;
-  private final AiClient aiClient;
+  private final Agent<PromptValues<CompanyInfoRequestDto>, CompanyInfoAiResponse> companyInfoAgent;
   private final CacheCompanyInfoService cacheCompanyInfoService;
   private final CacheIdCompanyInfo cacheIdCompanyInfo;
 
@@ -40,15 +40,15 @@ public class CompanyInfoRetrievalService {
       return new CompanyInfoResponseToken(optionalUUID.get().toString());
     }
 
-    PromptFormat prompt = promptGenerator.getPrompt(companyInfoRequestDto);
-    AiCompanyInfo foundInfo = aiClient.getCompanyInfo(prompt, companyInfoRequestDto);
+    PromptValues<CompanyInfoRequestDto> prompt = promptGenerator.getPrompt(companyInfoRequestDto);
+    CompanyInfoAiResponse foundInfo = companyInfoAgent.execute(prompt);
     UUID uuid = storeInCacheAndGetUuid(companyInfoRequestDto, foundInfo);
     return new CompanyInfoResponseToken(uuid.toString());
   }
 
-  private UUID storeInCacheAndGetUuid(CompanyInfoRequestDto companyInfoRequestDto, AiCompanyInfo aiCompanyInfo) {
+  private UUID storeInCacheAndGetUuid(CompanyInfoRequestDto companyInfoRequestDto, CompanyInfoAiResponse companyInfoAiResponse) {
     UUID uuid = UUID.randomUUID();
-    cacheCompanyInfoService.putCompanyInfo(uuid, aiCompanyInfo);
+    cacheCompanyInfoService.putCompanyInfo(uuid, companyInfoAiResponse);
     cacheIdCompanyInfo.putCompanyWebsite(companyInfoRequestDto.companyWebsite(), uuid);
     return uuid;
   }

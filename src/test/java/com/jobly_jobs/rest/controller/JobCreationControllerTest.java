@@ -285,7 +285,7 @@ class JobCreationControllerTest {
   @ParameterizedTest
   @MethodSource("provideValidCompanyInfoRequests")
   @DisplayName("Given valid company info with various URL formats, when sending company info, then returns created")
-  void givenValidCompanyInfo_whenSendCompanyInfo_thenReturnsStatusCreated(CompanyInfoRequestDto request,
+  void givenValidCompanyInfo_whenCreateCompanyInfo_thenReturnsStatusCreated(CompanyInfoRequestDto request,
       String testDescription) throws Exception {
     // given
     var expectedResponse = new CompanyInfoResponseToken("test-token-123");
@@ -306,7 +306,7 @@ class JobCreationControllerTest {
   @MethodSource("provideInvalidCompanyInfoRequests")
   @DisplayName("Given invalid company info with validation errors, when sending company info, then returns bad " +
       "request")
-  void givenInvalidCompanyInfo_whenSendCompanyInfo_thenReturnsBadRequest(CompanyInfoRequestDto request,
+  void givenInvalidCompanyInfo_whenCreateCompanyInfo_thenReturnsBadRequest(CompanyInfoRequestDto request,
       String expectedField,
       String expectedMessagePart)
       throws Exception {

@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
 import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
 import com.jobly_jobs.prompt.dto.CompanyInfoSearchAction;
-import com.jobly_jobs.prompt.dto.PromptFormat;
+import com.jobly_jobs.prompt.dto.PromptValues;
 import com.jobly_jobs.prompt.generator.CompanyInfoPromptGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,7 +29,7 @@ class CompanyInfoPromptGeneratorTest {
     CompanyInfoRequestDto companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
 
     // When
-    PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
+    PromptValues result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
 
     // Then
     assertNotNull(result);
@@ -51,7 +51,7 @@ class CompanyInfoPromptGeneratorTest {
     CompanyInfoRequestDto companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
 
     // When
-    PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
+    PromptValues result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
 
     // Then
     assertNotNull(result.getScope());
@@ -68,7 +68,7 @@ class CompanyInfoPromptGeneratorTest {
     CompanyInfoRequestDto companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
 
     // When
-    PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
+    PromptValues result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
 
     // Then
     assertNotNull(result.getAction());
@@ -86,7 +86,7 @@ class CompanyInfoPromptGeneratorTest {
     CompanyInfoRequestDto companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
 
     // When
-    PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
+    PromptValues result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
 
     // Then
     assertNotNull(result.getLimits());
@@ -105,7 +105,7 @@ class CompanyInfoPromptGeneratorTest {
         CompanyInfoRequestDtoFactory.createCompanyInfoRequestDtoWithoutVacancyUrl();
 
     // When
-    PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
+    PromptValues result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
 
     // Then
     assertNotNull(result);
@@ -124,7 +124,7 @@ class CompanyInfoPromptGeneratorTest {
     CompanyInfoRequestDto companyInfoRequestDto = CompanyInfoRequestDtoFactory.createCompanyInfoRequestDto();
 
     // When
-    PromptFormat result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
+    PromptValues result = companyInfoPromtGenerator.getPrompt(companyInfoRequestDto);
 
     // Then
     String task = result.getTask();

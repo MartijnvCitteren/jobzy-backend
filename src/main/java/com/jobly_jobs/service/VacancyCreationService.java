@@ -9,6 +9,11 @@ import org.springframework.stereotype.Service;
 public class VacancyCreationService {
 
   public GeneratedVacancyDto createVacancy(JobInfoRequestDto jobInfo, UUID requestId) {
+
+
+
+
+
     return null;
   }
 }

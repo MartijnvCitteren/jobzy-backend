@@ -1,19 +1,19 @@
 package com.jobly_jobs.factory;
 
-import com.jobly_jobs.domain.dto.AiCompanyInfo;
+import com.jobly_jobs.domain.dto.agent.CompanyInfoAiResponse;
 
 public class AiCompanyInfoFactory {
 
-  public static AiCompanyInfo createAiCompanyInfo() {
-    return new AiCompanyInfo("A leading technology company specializing in innovative software solutions",
+  public static CompanyInfoAiResponse createAiCompanyInfo() {
+    return new CompanyInfoAiResponse("A leading technology company specializing in innovative software solutions",
         "To revolutionize the tech industry through cutting-edge software development",
         "Competitive salary, flexible working hours, continuous learning opportunities, and " +
             "a collaborative work environment",
         "Professional, innovative, and approachable");
   }
 
-  public static AiCompanyInfo createAiCompanyInfoWithCustomDescription(String description) {
-    return new AiCompanyInfo(description,
+  public static CompanyInfoAiResponse createAiCompanyInfoWithCustomDescription(String description) {
+    return new CompanyInfoAiResponse(description,
         "To revolutionize the tech industry through cutting-edge software development",
         "Competitive salary, flexible working hours, continuous learning opportunities",
         "Professional, innovative, and approachable");

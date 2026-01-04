@@ -5,9 +5,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-class DefaultLimits {
+public class DefaultLimits {
 
-  static Limits getDefaultLimits() {
+  public static Limits getDefaultLimits() {
     return Limits.builder()
         .missingInfo("If information is uncertain or unavailable, explicitly state 'unknown'.")
         .factuality(

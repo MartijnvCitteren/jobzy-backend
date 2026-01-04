@@ -28,7 +28,7 @@ public class JobCreationController {
   private final VacancyCreationService vacancyCreationService;
 
   @PostMapping("/create-company-info")
-  public ResponseEntity<CompanyInfoResponseToken> sendCompanyInfo(
+  public ResponseEntity<CompanyInfoResponseToken> createCompanyInfo(
       @RequestBody @Valid CompanyInfoRequestDto companyInfoRequestDto) {
     log.debug("Received companyInfoRequestDto {}", companyInfoRequestDto);
     var response = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
