@@ -26,6 +26,7 @@ public class CompanyInfoAgent implements Agent<PromptValues<CompanyInfoRequestDt
       OpenAiChatOptions openAiChatOptions = new OpenAiChatOptions();
       openAiChatOptions.setWebSearchOptions(webSearchOptions);
 
+    log.info(prompt.toString());
       String toonPrompt = JToon.encode(prompt);
       log.debug(toonPrompt);
 
