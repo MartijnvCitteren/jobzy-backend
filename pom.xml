@@ -20,6 +20,8 @@
 		<lombok.version>1.18.42</lombok.version>
 		<toon.version>1.0.7</toon.version>
 		<caffeine.version>3.2.3</caffeine.version>
+		<mssql.version>13.2.0.jre11</mssql.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
 	</properties>
 
 
@@ -63,7 +65,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>13.2.0.jre11</version>
+            <version>${mssql.version}</version>
         </dependency>
 
 <!--	LOMBOK	-->
@@ -84,6 +86,12 @@
 			<artifactId>caffeine</artifactId>
 			<version>${caffeine.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
+		</dependency>
+
 
 
 <!--	TESTING-->
@@ -147,7 +155,10 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>${lombok.version}</version>
+						</path>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
