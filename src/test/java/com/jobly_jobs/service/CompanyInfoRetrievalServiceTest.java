@@ -38,7 +38,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CompanyInfoTokenServiceTest {
+class CompanyInfoRetrievalServiceTest {
 
     @Mock
     private PromptGenerator<CompanyInfoRequestDto> promptGenerator;
@@ -56,7 +56,7 @@ class CompanyInfoTokenServiceTest {
     private CacheIdCompanyInfo cacheIdCompanyInfo;
 
     @InjectMocks
-    private CompanyInfoTokenService companyInfoTokenService;
+    private CompanyInfoRetrievalService companyInfoRetrievalService;
 
     @Captor
     private ArgumentCaptor<UUID> uuidCaptor;
@@ -89,7 +89,7 @@ class CompanyInfoTokenServiceTest {
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
         // When
-        companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
+        companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
         // Then
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
@@ -109,7 +109,7 @@ class CompanyInfoTokenServiceTest {
 
         // When & Then
         InvalidUrlException exception = assertThrows(InvalidUrlException.class,
-                                                     () -> companyInfoTokenService.getCompanyInfoResponseToken(
+                                                     () -> companyInfoRetrievalService.getCompanyInfoResponseToken(
                                                              companyInfoRequestDto));
 
         assertNotNull(exception);
@@ -130,7 +130,7 @@ class CompanyInfoTokenServiceTest {
 
         // When & Then
         InvalidUrlException exception = assertThrows(InvalidUrlException.class,
-                                                     () -> companyInfoTokenService.getCompanyInfoResponseToken(
+                                                     () -> companyInfoRetrievalService.getCompanyInfoResponseToken(
                                                              companyInfoRequestDto));
 
         assertNotNull(exception);
@@ -152,7 +152,7 @@ class CompanyInfoTokenServiceTest {
         when(aiClient.getCompanyInfo(promptFormat, requestWithoutVacancy)).thenReturn(aiCompanyInfo);
 
         // When
-        companyInfoTokenService.getCompanyInfoResponseToken(requestWithoutVacancy);
+        companyInfoRetrievalService.getCompanyInfoResponseToken(requestWithoutVacancy);
 
         // Then
         verify(urlValidation, times(1)).isValid(requestWithoutVacancy.companyWebsite());
@@ -171,7 +171,7 @@ class CompanyInfoTokenServiceTest {
         when(cacheIdCompanyInfo.getUuid(companyInfoRequestDto.companyWebsite())).thenReturn(Optional.of(cachedUuid));
 
         // When
-        companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
+        companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
         // Then
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
@@ -194,7 +194,7 @@ class CompanyInfoTokenServiceTest {
         when(aiClient.getCompanyInfo(promptFormat, companyInfoRequestDto)).thenReturn(aiCompanyInfo);
 
         // When
-        CompanyInfoResponseToken result = companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto);
+        CompanyInfoResponseToken result = companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto);
 
         // Then
         verify(cacheCompanyInfoService).putCompanyInfo(uuidCaptor.capture(), aiCompanyInfoCaptor.capture());
@@ -218,7 +218,7 @@ class CompanyInfoTokenServiceTest {
 
         // When & Then
         assertThrows(InvalidUrlException.class,
-                     () -> companyInfoTokenService.getCompanyInfoResponseToken(companyInfoRequestDto));
+                     () -> companyInfoRetrievalService.getCompanyInfoResponseToken(companyInfoRequestDto));
 
         verify(urlValidation).isValid(companyInfoRequestDto.companyWebsite());
         verifyNoInteractions(promptGenerator);

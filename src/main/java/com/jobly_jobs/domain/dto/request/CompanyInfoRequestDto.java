@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
-import static com.jobly_jobs.constants.AppConstants.VALID_WEBSITE_REGEX;
+import static com.jobly_jobs.validation.ValidationRegex.VALID_WEBSITE_REGEX;
 
 public record CompanyInfoRequestDto(
         @Size(min = 1, max = 50, message = "Company name must be between 1 and 50 characters") String companyName,

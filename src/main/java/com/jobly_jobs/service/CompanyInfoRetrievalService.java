@@ -21,11 +21,10 @@ import java.util.UUID;
 @Log4j2
 @RequiredArgsConstructor
 @Service
-public class CompanyInfoTokenService {
+public class CompanyInfoRetrievalService {
     private final PromptGenerator<CompanyInfoRequestDto> promptGenerator;
     private final UrlValidation urlValidation;
     private final AiClient aiClient;
-
     private final CacheCompanyInfoService cacheCompanyInfoService;
     private final CacheIdCompanyInfo cacheIdCompanyInfo;
 
