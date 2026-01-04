@@ -20,9 +20,9 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class JobsInfoMapperTest {
+class JobInfoMapperTest {
   @InjectMocks
-  JobsInfoMapperImpl jobsInfoMapper;
+  JobInfoMapperImpl jobsInfoMapper;
 
   @Test
   @DisplayName("Given valid JobInfoRequestDto and UUID, when mapping to JobInfo, then all fields are correctly mapped")

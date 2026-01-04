@@ -5,8 +5,9 @@ import com.jobly_jobs.domain.dto.request.JobInfoRequestDto;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 
-@Mapper
-public interface JobsInfoMapper {
+@Mapper(componentModel = "spring")
+public interface JobInfoMapper {
+
   JobInfo toJobInfo(JobInfoRequestDto dto, UUID companyInfoToken);
 
 }

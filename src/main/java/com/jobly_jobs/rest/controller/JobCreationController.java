@@ -5,7 +5,6 @@ import com.jobly_jobs.domain.dto.request.JobInfoRequestDto;
 import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
 import com.jobly_jobs.domain.dto.response.GeneratedVacancyDto;
 import com.jobly_jobs.service.CompanyInfoRetrievalService;
-import com.jobly_jobs.service.JobRequestService;
 import com.jobly_jobs.service.VacancyCreationService;
 import jakarta.validation.Valid;
 import java.util.UUID;
