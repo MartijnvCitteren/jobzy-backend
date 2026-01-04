@@ -14,10 +14,9 @@ public record CompanyInfoRequestDto(
     String companyName,
 
     @Pattern(regexp = VALID_WEBSITE_REGEX, message = "website address should look like 'www.example.com'")
-    String companyWebsite,
-
     @Size(min = 1, max = 50, message = "website must be between 1 and 50 characters")
     @NotBlank
+    String companyWebsite,
 
     @NotNull
     Country country,

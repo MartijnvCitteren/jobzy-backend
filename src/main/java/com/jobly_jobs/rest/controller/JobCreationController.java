@@ -22,8 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 @Log4j2
 public class JobCreationController {
-
-  private final JobRequestService jobRequestService;
   private final CompanyInfoRetrievalService companyInfoRetrievalService;
   private final VacancyCreationService vacancyCreationService;
 
