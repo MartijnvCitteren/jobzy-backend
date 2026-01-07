@@ -32,8 +32,6 @@ public class CoreVacancyAgent implements Agent<PromptValues<JobInfo>, CoreVacanc
       openAiChatOptions.setWebSearchOptions(searchOptions);
 
       String promptAsString = objectMapper.writeValueAsString(prompt);
-
-      log.info(prompt.toString());
       String toonPrompt = JToon.encode(promptAsString);
       log.debug(toonPrompt);
 

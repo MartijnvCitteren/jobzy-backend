@@ -19,4 +19,4 @@ spring:
       chat:
         completions-path: v1/chat/completions
         options:
-          model: gpt-4o-mini
+          model: gpt-5.2
