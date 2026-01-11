@@ -19,4 +19,12 @@ spring:
       chat:
         completions-path: v1/chat/completions
         options:
-          model: gpt-4o-mini
+          model: gpt-5.2
+
+logging:
+  level:
+    com.jobly_jobs: ${LOGGING_LEVEL_APP:DEBUG}
+    org.springframework.web: ${LOGGING_LEVEL_SPRING_WEB:INFO}
+    org.hibernate: ${LOGGING_LEVEL_HIBERNATE:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
