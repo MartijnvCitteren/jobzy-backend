@@ -32,7 +32,7 @@ public class BenefitGenerator implements PromptGenerator<JobInfo>{
     String maximumSalary = jobInfo.benefits().maxSalary().toString();
     String payMentPeriod = jobInfo.benefits().salaryPeriod().toString();
     String otherPerks = jobInfo.benefits().extraPerks();
-    String contact = jobInfo.contactInfo().toString();
+    String contact = jobInfo.contactInfo() == null?null:jobInfo.contactInfo().toString();
 
 
     return String.format("""   

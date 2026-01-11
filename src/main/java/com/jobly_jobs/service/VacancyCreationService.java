@@ -37,9 +37,9 @@ public class VacancyCreationService {
 
   public GeneratedVacancyDto createVacancy(JobInfoRequestDto jobInfoDto, UUID companyToken) {
     JobInfo jobInfo = jobInfoMapper.toJobInfo(jobInfoDto, companyToken);
-    PromptValues teamAndCompanyPrompt = teamAndCompanyGenerator.getPrompt(jobInfo);
-    PromptValues corePrompt = coreVacancyGenerator.getPrompt(jobInfo);
-    PromptValues benefitsPromt = benefitGenerator.getPrompt(jobInfo);
+    PromptValues<JobInfo> teamAndCompanyPrompt = teamAndCompanyGenerator.getPrompt(jobInfo);
+    PromptValues<JobInfo> corePrompt = coreVacancyGenerator.getPrompt(jobInfo);
+    PromptValues<JobInfo> benefitsPrompt = benefitGenerator.getPrompt(jobInfo);
 
     CompletableFuture<CompanyAndTeamAiResponse> teamAndCompanyFuture = CompletableFuture.supplyAsync(() ->
         teamAndCompanyAgent.execute(teamAndCompanyPrompt)
@@ -50,9 +50,9 @@ public class VacancyCreationService {
     );
 
     CompletableFuture<BenefitsVacancyAiResponse> benefitFuture = CompletableFuture.supplyAsync(() ->
-        benefitAgent.execute(benefitsPromt));
+        benefitAgent.execute(benefitsPrompt));
 
-    CompletableFuture.allOf(teamAndCompanyFuture, coreFuture).join();
+    CompletableFuture.allOf(teamAndCompanyFuture, coreFuture, benefitFuture).join();
 
     CompanyAndTeamAiResponse teamAndCompanyResponse = teamAndCompanyFuture.join();
     log.info("teamAndCompanyResponse={}", teamAndCompanyResponse);

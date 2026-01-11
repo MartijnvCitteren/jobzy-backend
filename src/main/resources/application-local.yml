@@ -6,3 +6,7 @@ spring:
       hibernate.dialect: org.hibernate.dialect.SQLServerDialect
     password: ${SPRING_DATASOURCE_PASSWORD}
     username: ${SPRING_DATASOURCE_USERNAME}
+
+logging:
+  level:
+    com.jobly_jobs: DEBUG

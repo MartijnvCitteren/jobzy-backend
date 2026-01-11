@@ -24,7 +24,6 @@ import com.jobly_jobs.domain.enums.SalaryPeriod;
 import com.jobly_jobs.domain.enums.SeniorityLevel;
 import com.jobly_jobs.domain.enums.WritingStyle;
 import com.jobly_jobs.service.CompanyInfoRetrievalService;
-import com.jobly_jobs.service.JobRequestService;
 import com.jobly_jobs.service.VacancyCreationService;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -36,6 +35,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -50,11 +50,103 @@ class JobCreationControllerTest {
   @MockitoBean
   private CompanyInfoRetrievalService companyInfoService;
 
-  @MockitoBean
-  private JobRequestService jobRequestService;
-
+  private static final HttpHeaders HEADERS = new HttpHeaders();
+  static {
+    HEADERS.add("requestId", UUID.randomUUID().toString());
+  }
   @MockitoBean
   private VacancyCreationService vacancyCreationService;
+
+
+  @ParameterizedTest
+  @MethodSource("provideValidCompanyInfoRequests")
+  @DisplayName("Given valid company info with various URL formats, when sending company info, then returns created")
+  void givenValidCompanyInfo_whenCreateCompanyInfo_thenReturnsStatusCreated(CompanyInfoRequestDto request,
+      String testDescription) throws Exception {
+    // given
+    var expectedResponse = new CompanyInfoResponseToken("test-token-123");
+    when(companyInfoService.getCompanyInfoResponseToken(any(CompanyInfoRequestDto.class))).thenReturn(
+        expectedResponse);
+
+    // when & then
+    mockMvc.perform(MockMvcRequestBuilders.post("/create-company-info")
+            .contentType("application/json")
+            .content(convertToJsonString(request)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.token").value("test-token-123"));
+
+    verify(companyInfoService, times(1)).getCompanyInfoResponseToken(any(CompanyInfoRequestDto.class));
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideInvalidCompanyInfoRequests")
+  @DisplayName("Given invalid company info with validation errors, when sending company info, then returns bad " +
+      "request")
+  void givenInvalidCompanyInfo_whenCreateCompanyInfo_thenReturnsBadRequest(CompanyInfoRequestDto request,
+      String expectedField,
+      String expectedMessagePart)
+      throws Exception {
+    // when & then
+    mockMvc.perform(MockMvcRequestBuilders.post("/create-company-info")
+            .contentType("application/json")
+            .content(convertToJsonString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$." + expectedField).exists())
+        .andExpect(jsonPath("$." + expectedField).value(
+            org.hamcrest.Matchers.containsString(expectedMessagePart)));
+
+    verifyNoInteractions(companyInfoService);
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideValidJobInfoRequests")
+  @DisplayName("Given valid job info request, when creating vacancy text, then returns created")
+  void givenValidJobInfo_whenCreateVacancyText_thenReturnsStatusCreated(JobInfoRequestDto request,
+      String testDescription) throws Exception {
+    // given
+    UUID requestId = UUID.randomUUID();
+    GeneratedVacancyDto expectedResponse = GeneratedVacancyDto.builder()
+        .summary("Generated summary")
+        .companyDescription("Company description")
+        .build();
+    when(vacancyCreationService.createVacancy(any(JobInfoRequestDto.class), any(UUID.class)))
+        .thenReturn(expectedResponse);
+
+    // when & then
+    mockMvc.perform(MockMvcRequestBuilders.post("/create-vacancy")
+            .param("requestId", requestId.toString())
+            .headers(HEADERS)
+            .contentType("application/json")
+            .content(convertToJsonString(request)))
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.summary").value("Generated summary"))
+        .andExpect(jsonPath("$.companyDescription").value("Company description"));
+
+    verify(vacancyCreationService, times(1)).createVacancy(any(JobInfoRequestDto.class), any(UUID.class));
+  }
+
+  @ParameterizedTest
+  @MethodSource("provideInvalidJobInfoRequests")
+  @DisplayName("Given invalid job info with validation errors, when creating vacancy text, then returns bad request")
+  void givenInvalidJobInfo_whenCreateVacancyText_thenReturnsBadRequest(JobInfoRequestDto request,
+      String expectedField,
+      String expectedMessagePart)
+      throws Exception {
+    // given
+    UUID requestId = UUID.randomUUID();
+
+    // when & then
+    mockMvc.perform(MockMvcRequestBuilders.post("/create-vacancy")
+            .param("requestId", requestId.toString())
+            .contentType("application/json")
+            .content(convertToJsonString(request)))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$." + expectedField).exists())
+        .andExpect(jsonPath("$." + expectedField).value(
+            org.hamcrest.Matchers.containsString(expectedMessagePart)));
+
+    verifyNoInteractions(vacancyCreationService);
+  }
 
   private static Stream<Arguments> provideValidCompanyInfoRequests() {
     return Stream.of(
@@ -280,95 +372,6 @@ class JobCreationControllerTest {
             .build())
         .contactInfo(new ContactInfoVacancyRequestDto("Jane", "jane@example.com", "+31612345678"))
         .build();
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideValidCompanyInfoRequests")
-  @DisplayName("Given valid company info with various URL formats, when sending company info, then returns created")
-  void givenValidCompanyInfo_whenCreateCompanyInfo_thenReturnsStatusCreated(CompanyInfoRequestDto request,
-      String testDescription) throws Exception {
-    // given
-    var expectedResponse = new CompanyInfoResponseToken("test-token-123");
-    when(companyInfoService.getCompanyInfoResponseToken(any(CompanyInfoRequestDto.class))).thenReturn(
-        expectedResponse);
-
-    // when & then
-    mockMvc.perform(MockMvcRequestBuilders.post("/create-company-info")
-            .contentType("application/json")
-            .content(convertToJsonString(request)))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.token").value("test-token-123"));
-
-    verify(companyInfoService, times(1)).getCompanyInfoResponseToken(any(CompanyInfoRequestDto.class));
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideInvalidCompanyInfoRequests")
-  @DisplayName("Given invalid company info with validation errors, when sending company info, then returns bad " +
-      "request")
-  void givenInvalidCompanyInfo_whenCreateCompanyInfo_thenReturnsBadRequest(CompanyInfoRequestDto request,
-      String expectedField,
-      String expectedMessagePart)
-      throws Exception {
-    // when & then
-    mockMvc.perform(MockMvcRequestBuilders.post("/create-company-info")
-            .contentType("application/json")
-            .content(convertToJsonString(request)))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$." + expectedField).exists())
-        .andExpect(jsonPath("$." + expectedField).value(
-            org.hamcrest.Matchers.containsString(expectedMessagePart)));
-
-    verifyNoInteractions(companyInfoService);
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideValidJobInfoRequests")
-  @DisplayName("Given valid job info request, when creating vacancy text, then returns created")
-  void givenValidJobInfo_whenCreateVacancyText_thenReturnsStatusCreated(JobInfoRequestDto request,
-      String testDescription) throws Exception {
-    // given
-    UUID requestId = UUID.randomUUID();
-    GeneratedVacancyDto expectedResponse = GeneratedVacancyDto.builder()
-        .summary("Generated summary")
-        .companyDescription("Company description")
-        .build();
-    when(vacancyCreationService.createVacancy(any(JobInfoRequestDto.class), any(UUID.class)))
-        .thenReturn(expectedResponse);
-
-    // when & then
-    mockMvc.perform(MockMvcRequestBuilders.post("/create-vacancy")
-            .param("requestId", requestId.toString())
-            .contentType("application/json")
-            .content(convertToJsonString(request)))
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.summary").value("Generated summary"))
-        .andExpect(jsonPath("$.companyDescription").value("Company description"));
-
-    verify(vacancyCreationService, times(1)).createVacancy(any(JobInfoRequestDto.class), any(UUID.class));
-  }
-
-  @ParameterizedTest
-  @MethodSource("provideInvalidJobInfoRequests")
-  @DisplayName("Given invalid job info with validation errors, when creating vacancy text, then returns bad request")
-  void givenInvalidJobInfo_whenCreateVacancyText_thenReturnsBadRequest(JobInfoRequestDto request,
-      String expectedField,
-      String expectedMessagePart)
-      throws Exception {
-    // given
-    UUID requestId = UUID.randomUUID();
-
-    // when & then
-    mockMvc.perform(MockMvcRequestBuilders.post("/create-vacancy")
-            .param("requestId", requestId.toString())
-            .contentType("application/json")
-            .content(convertToJsonString(request)))
-        .andExpect(status().isBadRequest())
-        .andExpect(jsonPath("$." + expectedField).exists())
-        .andExpect(jsonPath("$." + expectedField).value(
-            org.hamcrest.Matchers.containsString(expectedMessagePart)));
-
-    verifyNoInteractions(vacancyCreationService);
   }
 
   private String convertToJsonString(Object object) {

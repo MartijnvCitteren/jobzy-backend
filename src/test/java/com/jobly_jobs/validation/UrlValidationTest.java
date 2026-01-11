@@ -3,19 +3,22 @@ package com.jobly_jobs.validation;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.net.http.HttpClient;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(MockitoExtension.class)
 class UrlValidationTest {
 
-  @InjectMocks
   private UrlValidation urlValidation;
+
+  @BeforeEach
+  void setUp() {
+    HttpClient httpClient = HttpClient.newHttpClient();
+    urlValidation = new UrlValidation(httpClient);
+  }
 
   @ParameterizedTest
   @CsvSource({"https://www.google.com, full https url with existing domain", "www.google.com, www.address.extension" +

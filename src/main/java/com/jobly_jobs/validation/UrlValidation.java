@@ -2,15 +2,14 @@ package com.jobly_jobs.validation;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,9 +17,10 @@ import org.springframework.util.ObjectUtils;
 
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class UrlValidation {
 
-  private final HttpClient client = HttpClient.newHttpClient();
+  private final HttpClient httpClient;
 
   public boolean isValid(String url) {
     if (ObjectUtils.isEmpty(url)) {
@@ -50,13 +50,16 @@ public class UrlValidation {
 
   private boolean hostExists(String url) {
     try {
-      URL parsedUrl = new URL(url);
-      InetAddress.getByName(parsedUrl.getHost());
+      URI uri = new URI(url);
+      String host = uri.getHost();
+      if (host == null) {
+        return false;
+      }
+      InetAddress.getByName(host);
       return true;
-    } catch (MalformedURLException | UnknownHostException e) {
+    } catch (URISyntaxException | UnknownHostException e) {
       return false;
     }
-
   }
 
   private boolean websiteIsReachable(String url) {
@@ -67,7 +70,7 @@ public class UrlValidation {
           .timeout(Duration.ofSeconds(2))
           .build();
 
-      HttpResponse<Void> headResponse = client.send(head, HttpResponse.BodyHandlers.discarding());
+      HttpResponse<Void> headResponse = httpClient.send(head, HttpResponse.BodyHandlers.discarding());
 
       if (indicatesWebsiteIsReachable(headResponse.statusCode())) {
         return true;
@@ -78,12 +81,16 @@ public class UrlValidation {
           .GET()
           .timeout(Duration.ofSeconds(2))
           .build();
-      HttpResponse<Void> getResponse = client.send(get, HttpResponse.BodyHandlers.discarding());
+      HttpResponse<Void> getResponse = httpClient.send(get, HttpResponse.BodyHandlers.discarding());
 
       return indicatesWebsiteIsReachable(getResponse.statusCode());
 
-    } catch (InterruptedException | IOException e) {
-      log.info(e.getMessage());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.warn("Thread interrupted during URL validation: {}", e.getMessage());
+      return false;
+    } catch (IOException e) {
+      log.info("URL validation failed: {}", e.getMessage());
       return false;
     }
 

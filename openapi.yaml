@@ -79,7 +79,7 @@ paths:
       operationId: createVacancyText
       parameters:
         - name: requestId
-          in: query
+          in: header
           required: true
           description: Token received from the create-company-info endpoint
           schema:

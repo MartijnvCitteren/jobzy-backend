@@ -3,6 +3,7 @@ package com.jobly_jobs.rest;
 import com.jobly_jobs.domain.dto.response.ErrorDto;
 import com.jobly_jobs.exceptions.BaseException;
 import com.jobly_jobs.exceptions.InvalidUrlException;
+import com.jobly_jobs.exceptions.VacancySessionExpired;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,10 @@ public class GlobalExceptionHandler {
     Map<String, String> exceptionMap = e.getBindingResult()
         .getFieldErrors()
         .stream()
-        .collect(Collectors.toMap(FieldError::getField, FieldError::getDefaultMessage));
+        .collect(Collectors.toMap(
+            FieldError::getField,
+            error -> error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid value"
+        ));
     return ResponseEntity.badRequest().body(exceptionMap);
   }
 
@@ -31,10 +35,20 @@ public class GlobalExceptionHandler {
     return ResponseEntity.status(e.getHttpStatus()).body(buildErrorDto(e));
   }
 
+  @ExceptionHandler(VacancySessionExpired.class)
+  public ResponseEntity<ErrorDto> handleVacancySessionExpired(VacancySessionExpired e) {
+    return ResponseEntity.status(e.getHttpStatus()).body(buildErrorDto(e));
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<ErrorDto> handleUnspecifiedExceptions(Exception e) {
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .body(buildErrorDto(HttpStatus.INTERNAL_SERVER_ERROR, e, INTERNAL_SERVER_ERROR_DISPLAY));
+        .body(ErrorDto.builder()
+            .status(String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()))
+            .error(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase())
+            .message(e.getMessage())
+            .displayMessage(INTERNAL_SERVER_ERROR_DISPLAY)
+            .build());
   }
 
   private ErrorDto buildErrorDto(BaseException e) {
@@ -45,15 +59,5 @@ public class GlobalExceptionHandler {
         .displayMessage(e.getDisplayMessage())
         .build();
   }
-
-  private ErrorDto buildErrorDto(HttpStatus httpStatus, Exception e, String displayMessage) {
-    return ErrorDto.builder()
-        .status(String.valueOf(httpStatus.value()))
-        .error(httpStatus.getReasonPhrase())
-        .message(e.getMessage())
-        .displayMessage(displayMessage)
-        .build();
-  }
-
 
 }
