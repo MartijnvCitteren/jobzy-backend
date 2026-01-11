@@ -14,14 +14,14 @@ class SalaryRangeValidatorTest {
 
 
   @Test
-  @DisplayName("min salary is less then max salary, then is valid")
+  @DisplayName("min salary is less than max salary, then is valid")
   void minSalaryIsLessThenMaxSalary() {
     var dto = getBenefitsRequestDto("100", "200");
     assertTrue(salaryRangeValidator.isValid(dto, null));
   }
 
   @Test
-  @DisplayName("min salary is more then max salary, then is not valid")
+  @DisplayName("min salary is more than max salary, then is not valid")
   void minSalaryIsMoreThenMaxSalary() {
     var dto = getBenefitsRequestDto("200", "100");
     assertFalse(salaryRangeValidator.isValid(dto, null));
