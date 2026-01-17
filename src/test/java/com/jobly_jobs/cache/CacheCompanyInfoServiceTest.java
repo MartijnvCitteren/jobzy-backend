@@ -1,10 +1,10 @@
-package com.jobly_jobs.cache;
+package app.jobzy.cache;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.jobly_jobs.domain.dto.agent.CompanyInfoAiResponse;
+import app.jobzy.domain.dto.agent.CompanyInfoAiResponse;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

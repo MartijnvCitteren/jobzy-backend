@@ -1,10 +1,10 @@
-package com.jobly_jobs.domain.mapper;
+package app.jobzy.domain.mapper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.jobly_jobs.domain.dto.request.GeneralJobDescriptionInfoDto;
-import com.jobly_jobs.domain.entity.JobCreationRequest;
-import com.jobly_jobs.factory.GeneralJobInfoDtoFactory;
+import app.jobzy.domain.dto.request.GeneralJobDescriptionInfoDto;
+import app.jobzy.domain.entity.JobCreationRequest;
+import app.jobzy.factory.GeneralJobInfoDtoFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

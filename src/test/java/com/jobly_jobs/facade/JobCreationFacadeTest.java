@@ -1,13 +1,13 @@
-//package com.jobly_jobs.facade;
+//package app.jobzy.facade;
 //
-//import com.jobly_jobs.domain.dto.request.JobInfoRequestDto;
-//import com.jobly_jobs.exceptions.JobRequestAlreadyExists;
-//import com.jobly_jobs.factory.GeneralJobInfoDtoFactory;
-//import com.jobly_jobs.factory.GeneratedVacancyDtoFactory;
-//import com.jobly_jobs.factory.JobCreationRequestDtoFactory;
-//import com.jobly_jobs.prompt.generator.PromptCreator;
-//import com.jobly_jobs.service.JobRequestService;
-//import com.jobly_jobs.service.VacancyTextService;
+//import app.jobzy.domain.dto.request.JobInfoRequestDto;
+//import app.jobzy.exceptions.JobRequestAlreadyExists;
+//import app.jobzy.factory.GeneralJobInfoDtoFactory;
+//import app.jobzy.factory.GeneratedVacancyDtoFactory;
+//import app.jobzy.factory.JobCreationRequestDtoFactory;
+//import app.jobzy.prompt.generator.PromptCreator;
+//import app.jobzy.service.JobRequestService;
+//import app.jobzy.service.VacancyTextService;
 //import org.junit.jupiter.api.Test;
 //import org.junit.jupiter.api.extension.ExtendWith;
 //import org.mockito.InjectMocks;

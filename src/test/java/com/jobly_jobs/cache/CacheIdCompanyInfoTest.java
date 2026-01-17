@@ -1,4 +1,4 @@
-package com.jobly_jobs.cache;
+package app.jobzy.cache;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

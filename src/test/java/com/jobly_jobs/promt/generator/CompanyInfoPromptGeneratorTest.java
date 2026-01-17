@@ -1,15 +1,15 @@
-package com.jobly_jobs.promt.generator;
+package app.jobzy.promt.generator;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
-import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
-import com.jobly_jobs.prompt.dto.CompanyInfoSearchAction;
-import com.jobly_jobs.prompt.dto.PromptValues;
-import com.jobly_jobs.prompt.generator.CompanyInfoPromptGenerator;
+import app.jobzy.domain.dto.request.CompanyInfoRequestDto;
+import app.jobzy.factory.CompanyInfoRequestDtoFactory;
+import app.jobzy.prompt.dto.CompanyInfoSearchAction;
+import app.jobzy.prompt.dto.PromptValues;
+import app.jobzy.prompt.generator.CompanyInfoPromptGenerator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

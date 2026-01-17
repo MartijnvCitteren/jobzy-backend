@@ -1,6 +1,6 @@
-package com.jobly_jobs.factory;
+package app.jobzy.factory;
 
-import com.jobly_jobs.domain.dto.response.GeneratedVacancyDto;
+import app.jobzy.domain.dto.response.GeneratedVacancyDto;
 
 public class GeneratedVacancyDtoFactory {
 

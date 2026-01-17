@@ -1,6 +1,6 @@
-package com.jobly_jobs.factory;
+package app.jobzy.factory;
 
-import com.jobly_jobs.domain.dto.agent.CompanyInfoAiResponse;
+import app.jobzy.domain.dto.agent.CompanyInfoAiResponse;
 
 public class AiCompanyInfoFactory {
 

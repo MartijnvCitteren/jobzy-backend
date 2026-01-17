@@ -1,16 +1,16 @@
-package com.jobly_jobs.mapper;
+package app.jobzy.mapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.jobly_jobs.domain.dto.JobInfo;
-import com.jobly_jobs.domain.dto.request.BenefitsRequestDto;
-import com.jobly_jobs.domain.dto.request.ContactInfoVacancyRequestDto;
-import com.jobly_jobs.domain.dto.request.JobInfoRequestDto;
-import com.jobly_jobs.domain.dto.request.WritingStyleRequestDto;
-import com.jobly_jobs.domain.enums.Language;
-import com.jobly_jobs.domain.enums.SalaryPeriod;
-import com.jobly_jobs.domain.enums.SeniorityLevel;
-import com.jobly_jobs.domain.enums.WritingStyle;
+import app.jobzy.domain.dto.JobInfo;
+import app.jobzy.domain.dto.request.BenefitsRequestDto;
+import app.jobzy.domain.dto.request.ContactInfoVacancyRequestDto;
+import app.jobzy.domain.dto.request.JobInfoRequestDto;
+import app.jobzy.domain.dto.request.WritingStyleRequestDto;
+import app.jobzy.domain.enums.Language;
+import app.jobzy.domain.enums.SalaryPeriod;
+import app.jobzy.domain.enums.SeniorityLevel;
+import app.jobzy.domain.enums.WritingStyle;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;

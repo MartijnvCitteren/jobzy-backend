@@ -1,7 +1,7 @@
-package com.jobly_jobs.factory;
+package app.jobzy.factory;
 
-import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
-import com.jobly_jobs.domain.enums.Country;
+import app.jobzy.domain.dto.request.CompanyInfoRequestDto;
+import app.jobzy.domain.enums.Country;
 
 public class CompanyInfoRequestDtoFactory {
 

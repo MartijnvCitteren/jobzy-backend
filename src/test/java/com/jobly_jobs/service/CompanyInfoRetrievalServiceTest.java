@@ -1,4 +1,4 @@
-package com.jobly_jobs.service;
+package app.jobzy.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -12,18 +12,18 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.jobly_jobs.cache.CacheCompanyInfoService;
-import com.jobly_jobs.cache.CacheIdCompanyInfo;
-import com.jobly_jobs.agent.Agent;
-import com.jobly_jobs.domain.dto.agent.CompanyInfoAiResponse;
-import com.jobly_jobs.domain.dto.request.CompanyInfoRequestDto;
-import com.jobly_jobs.domain.dto.response.CompanyInfoResponseToken;
-import com.jobly_jobs.exceptions.InvalidUrlException;
-import com.jobly_jobs.factory.AiCompanyInfoFactory;
-import com.jobly_jobs.factory.CompanyInfoRequestDtoFactory;
-import com.jobly_jobs.prompt.dto.PromptValues;
-import com.jobly_jobs.prompt.generator.PromptGenerator;
-import com.jobly_jobs.validation.UrlValidation;
+import app.jobzy.cache.CacheCompanyInfoService;
+import app.jobzy.cache.CacheIdCompanyInfo;
+import app.jobzy.agent.Agent;
+import app.jobzy.domain.dto.agent.CompanyInfoAiResponse;
+import app.jobzy.domain.dto.request.CompanyInfoRequestDto;
+import app.jobzy.domain.dto.response.CompanyInfoResponseToken;
+import app.jobzy.exceptions.InvalidUrlException;
+import app.jobzy.factory.AiCompanyInfoFactory;
+import app.jobzy.factory.CompanyInfoRequestDtoFactory;
+import app.jobzy.prompt.dto.PromptValues;
+import app.jobzy.prompt.generator.PromptGenerator;
+import app.jobzy.validation.UrlValidation;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

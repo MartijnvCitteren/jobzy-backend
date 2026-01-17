@@ -1,10 +1,10 @@
-package com.jobly_jobs.repository;
+package app.jobzy.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.jobly_jobs.domain.entity.JobCreationRequest;
-import com.jobly_jobs.domain.enums.FunctionGroup;
+import app.jobzy.domain.entity.JobCreationRequest;
+import app.jobzy.domain.enums.FunctionGroup;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;

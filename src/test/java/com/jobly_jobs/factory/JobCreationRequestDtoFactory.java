@@ -1,8 +1,8 @@
-//package com.jobly_jobs.factory;
+//package app.jobzy.factory;
 //
-//import com.jobly_jobs.domain.dto.request.JobInfoRequestDto;
-//import com.jobly_jobs.domain.enums.Language;
-//import com.jobly_jobs.domain.enums.WritingStyle;
+//import app.jobzy.domain.dto.request.JobInfoRequestDto;
+//import app.jobzy.domain.enums.Language;
+//import app.jobzy.domain.enums.WritingStyle;
 //
 //public class JobCreationRequestDtoFactory {
 //    public static JobInfoRequestDto.JobCreationRequestDtoBuilder createJobDescriptionInputDto() {

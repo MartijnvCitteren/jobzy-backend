@@ -1,9 +1,9 @@
-package com.jobly_jobs.domain.entity;
+package app.jobzy.domain.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import com.jobly_jobs.factory.JobCreationRequestFactory;
+import app.jobzy.factory.JobCreationRequestFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

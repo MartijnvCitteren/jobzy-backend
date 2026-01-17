@@ -1,12 +1,12 @@
-package com.jobly_jobs.rest;
+package app.jobzy.rest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.jobly_jobs.domain.dto.response.ErrorDto;
-import com.jobly_jobs.exceptions.InvalidUrlException;
+import app.jobzy.domain.dto.response.ErrorDto;
+import app.jobzy.exceptions.InvalidUrlException;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;

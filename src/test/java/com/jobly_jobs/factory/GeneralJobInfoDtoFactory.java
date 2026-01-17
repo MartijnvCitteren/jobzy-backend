@@ -1,7 +1,7 @@
-package com.jobly_jobs.factory;
+package app.jobzy.factory;
 
-import com.jobly_jobs.domain.dto.request.GeneralJobDescriptionInfoDto;
-import com.jobly_jobs.domain.enums.FunctionGroup;
+import app.jobzy.domain.dto.request.GeneralJobDescriptionInfoDto;
+import app.jobzy.domain.enums.FunctionGroup;
 import java.math.BigDecimal;
 
 public class GeneralJobInfoDtoFactory {

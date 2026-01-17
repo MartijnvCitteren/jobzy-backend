@@ -1,9 +1,9 @@
-package com.jobly_jobs.validation;
+package app.jobzy.validation;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.jobly_jobs.domain.dto.request.BenefitsRequestDto;
+import app.jobzy.domain.dto.request.BenefitsRequestDto;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
