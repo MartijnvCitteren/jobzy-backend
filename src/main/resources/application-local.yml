@@ -9,4 +9,4 @@ spring:
 
 logging:
   level:
-    com.jobly_jobs: DEBUG
+    app.jobzy: DEBUG

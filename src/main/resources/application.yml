@@ -23,8 +23,6 @@ spring:
 
 logging:
   level:
-    com.jobly_jobs: ${LOGGING_LEVEL_APP:DEBUG}
-    org.springframework.web: ${LOGGING_LEVEL_SPRING_WEB:INFO}
-    org.hibernate: ${LOGGING_LEVEL_HIBERNATE:INFO}
+    app.jobzy: ${LOGGING_LEVEL_APP:DEBUG}
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
