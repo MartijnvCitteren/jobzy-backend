@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Jobly Jobs API
+  title: Jobzy API
   description: |
     API for creating job vacancy content using AI-powered generation.
     
@@ -9,7 +9,7 @@ info:
     2. Generate vacancy text based on job information and company context
   version: 1.0.0
   contact:
-    name: Jobly Jobs Support
+    name: Jobzy Support
 
 servers:
   - url: http://localhost:8090/api/v1
