@@ -28,7 +28,7 @@ Build REST APIs for Jobzy's job vacancy generation system.
 - `@Log4j2` for logging
 - Proper HTTP status codes
 - See [error handling guide](../skills/error-handling.md) for exceptions
-- Use Mapstruct for mapping between dto's and entities
+- Use MapStruct for mapping between DTOs and entities
 
 ### Do
 - Always validate functionalities with unit tests
