@@ -41,7 +41,7 @@ Write comprehensive tests for Jobzy backend using JUnit, Mockito, and RestAssure
 ✅ Business rule validation
 
 ### What NOT to Mock
-- DTO's, entities and POJOs
+- DTOs, entities and POJOs
 - Value objects
 - Testing all null value possibilities when mapping objects.
 
