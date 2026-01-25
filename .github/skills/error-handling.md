@@ -28,7 +28,15 @@ Always return `ErrorDto`:
 
 ## HTTP Status Codes
 
+Use standard HTTP statuses that match the exception semantics:
 
+- `400 Bad Request` – Validation failures, malformed input.
+- `401 Unauthorized` – Missing or invalid authentication.
+- `403 Forbidden` – Authenticated, but not allowed to access the resource.
+- `404 Not Found` – Resource does not exist (e.g., `VacancyNotFoundException`).
+- `409 Conflict` – State conflicts (e.g., duplicate resource, illegal state transition).
+- `422 Unprocessable Entity` – Business rule violations on otherwise valid input.
+- `500 Internal Server Error` – Unexpected errors not mapped to a specific status.
 ## Rules
 
 ✅ **Internal message**: Technical details, IDs, for debugging
