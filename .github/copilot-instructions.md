@@ -24,12 +24,12 @@ In this project we use the following technology
 
 ### projectstructure
 project-root-
-├── scr/
+├── src/
     ├── main/java/
     │       ├── app.jobzy/  
     │       │          └──[all packages with api logic]
     │       │           
-    │       └── resources [applation.yml for each environment]
+    │       └── resources [application.yml for each environment]
     │
     ├── test/java/
     │      └── app.jobzy/  
