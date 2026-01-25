@@ -14,13 +14,13 @@ principles.
 ### Technology stack
 In this project we use the following technology
 - Java 21
-- Springboot
-- Unit Testing: Mockito / Junit
-- Integration Testing: Restassured and wiremock
+- Spring Boot
+- Unit Testing: Mockito / JUnit
+- Integration Testing: REST Assured and WireMock
 - Docker
 - Jenkins CI/CD pipeline
 - Hosted on Azure
-- (out side this project, there is front-end in Javascript/react)
+- (outside this project, there is front-end in JavaScript/React)
 
 ### projectstructure
 project-root-
