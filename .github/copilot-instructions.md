@@ -7,8 +7,8 @@ applyTo: '**/*.java'
 ## Jobzy
 
 ### Goal of Jobzy
-Jobzy(api) is a backend application that's helps people to make recruitment easy. The core functionality
-in this phase is to write a good job vacancy within seconds. Jobzy does this based on valid data, known marketing
+Jobzy (API) is a backend application that helps make recruitment easy for people. The core functionality
+in this phase is to write a good job vacancy within seconds. Jobzy does this based on valid data and established marketing
 principles. 
 
 ### Technology stack
