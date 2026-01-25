@@ -6,7 +6,7 @@ Write comprehensive tests for Jobzy backend using JUnit, Mockito, and RestAssure
 ## Unit Tests (Mockito + JUnit)
 
 ### format rules
-- Use @Displayname to explain what the test does
+- Use @DisplayName to explain what the test does
 - Use Gherkin formatting (given, when, then)
 - Use Parameterized test when repetitive tests need to be done
 
