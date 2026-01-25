@@ -27,7 +27,7 @@ Build REST APIs for Jobzy's job vacancy generation system.
 - Constructor injection, via Lombok `@RequiredArgsConstructor` with `final`
 - `@Log4j2` for logging
 - Proper HTTP status codes
-- See `/skills/error-handling.md` for exceptions
+- See [error handling guide](../skills/error-handling.md) for exceptions
 - Use Mapstruct for mapping between dto's and entities
 
 ### Do
