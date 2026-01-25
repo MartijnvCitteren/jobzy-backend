@@ -6,7 +6,7 @@ Secure all Jobzy API endpoints using Spring Security.
 ## Key Rules
 - **Never** log sensitive data (passwords, tokens)
 - **Always** use HTTPS in production (Azure handles this)
-- **Validate** all input (see `backend-api-agent.md`)
+- **Validate** all input (see [Backend API Agent](./backend-agent.md))
 - **Use** UUIDs not sequential IDs
 - **Store** secrets in Azure Key Vault, not in code
 
