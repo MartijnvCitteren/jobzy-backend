@@ -1,5 +1,0 @@
-services:
-  app:
-    image: jobly.azurecr.io/jobly/jobs:latest
-    ports: []
-    restart: unless-stopped
