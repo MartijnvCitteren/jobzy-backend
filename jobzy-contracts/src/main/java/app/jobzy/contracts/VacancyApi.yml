@@ -547,7 +547,7 @@ components:
           pattern: '^[A-Z]{3}$'
         salaryPeriod:
           $ref: '#/components/schemas/SalaryPeriod'
-        holidaysDays:
+        numberOfHolidays:
           type: [number, 'null']
           description: >
             Full-time-equivalent holiday days. Never pre-computed/prorated server-side.
