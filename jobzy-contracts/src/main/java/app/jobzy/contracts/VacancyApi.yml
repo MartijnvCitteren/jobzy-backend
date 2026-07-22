@@ -56,6 +56,52 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /vacancy/{id}/generate-description:
+    parameters:
+      - $ref: '#/components/parameters/VacancyId'
+    post:
+      operationId: generateVacancyDescription
+      tags: [ Vacancy ]
+      summary: Start an AI-assisted vacancy description generation
+      description: >
+        Starts an asynchronous generation of a draft `description` (summary, job description,
+        tasks, what we offer, about us) for an existing vacancy from a few short inputs. Generation
+        runs against an external AI provider and is not guaranteed to complete within a single
+        request/response cycle, so this endpoint only starts the job and returns a `generationId`
+        immediately. Poll `GET /vacancy/{id}/generate-description/{generationId}` until `status` is
+        `COMPLETED` (or `FAILED`) to retrieve the draft. The result is a suggestion only and is
+        never persisted automatically — the client shows it to the user for editing and only then
+        submits the (possibly edited) result via `PATCH /vacancy/{id}`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateVacancyDescriptionRequest'
+      responses:
+        '202':
+          description: Generation started.
+          headers:
+            Location:
+              description: URL to poll for the generation result.
+              schema:
+                type: string
+                format: uri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VacancyDescriptionGeneration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
 
     get:
       operationId: listVacancies
@@ -99,20 +145,27 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
-  /vacancy/{id}:
+
+
+  /vacancy/{id}/generate-description/{generationId}:
     parameters:
       - $ref: '#/components/parameters/VacancyId'
+      - $ref: '#/components/parameters/GenerationId'
     get:
-      operationId: getVacancy
+      operationId: getVacancyDescriptionGeneration
       tags: [Vacancy]
-      summary: Fetch a single vacancy
+      summary: Poll the status of a description generation job
+      description: >
+        Returns the current status of a description-generation job started via
+        `POST /vacancy/{id}/generate-description`. `description` is present only once `status` is
+        `COMPLETED`.
       responses:
         '200':
-          description: The requested vacancy.
+          description: Current generation status.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/VacancyResponse'
+                $ref: '#/components/schemas/VacancyDescriptionGeneration'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -123,6 +176,10 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+
+  /vacancy/{id}:
+    parameters:
+      - $ref: '#/components/parameters/VacancyId'
     patch:
       operationId: updateVacancy
       tags: [Vacancy]
@@ -148,6 +205,27 @@ paths:
       responses:
         '200':
           description: Updated vacancy.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VacancyResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    get:
+      operationId: getVacancy
+      tags: [Vacancy]
+      summary: Fetch a single vacancy
+      responses:
+        '200':
+          description: The requested vacancy.
           content:
             application/json:
               schema:
@@ -288,6 +366,12 @@ components:
       required: true
       schema:
         $ref: '#/components/schemas/VacancyId'
+    GenerationId:
+      name: generationId
+      in: path
+      required: true
+      schema:
+        $ref: '#/components/schemas/GenerationId'
     JobTitleFilter:
       name: jobTitle
       in: query
@@ -440,6 +524,15 @@ components:
       format: uuid
       readOnly: true
 
+    GenerationId:
+      type: string
+      format: uuid
+      readOnly: true
+
+    VacancyDescriptionGenerationStatus:
+      type: string
+      enum: [PENDING, COMPLETED, FAILED]
+
     VacancyStatus:
       type: string
       enum: [DRAFT, PUBLISHED, FILLED, CLOSED, ARCHIVED]
@@ -452,21 +545,26 @@ components:
       description: >
         Internal Jobzy job-function taxonomy.
       enum:
-        - ENGINEERING
-        - SALES
-        - MARKETING
-        - CUSTOMER_SUPPORT
-        - FINANCE
-        - HUMAN_RESOURCES
-        - OPERATIONS
-        - PRODUCT
-        - DESIGN
-        - LEGAL
-        - HEALTHCARE
-        - EDUCATION
-        - LOGISTICS
+        - ADMINISTRATION
         - CONSTRUCTION
+        - CUSTOMER_SUPPORT
+        - DESIGN_CREATIVE
+        - EDUCATION
+        - ENGINEERING
+        - FACILITY_SERVICES
+        - FINANCE
+        - HEALTHCARE
         - HOSPITALITY
+        - HUMAN_RESOURCES
+        - LEGAL
+        - LOGISTICS_SUPPLY_CHAIN
+        - MANAGEMENT
+        - MARKETING
+        - OPERATIONS
+        - PRODUCTION_MANUFACTURING
+        - RETAIL
+        - SALES
+        - SCIENCE_RESEARCH
         - OTHER
 
     WorkplaceType:
@@ -618,10 +716,48 @@ components:
         hoursPerWeek:
           type: number
           exclusiveMinimum: 0
+          maximum: 60
 
     VacancyDescriptionRequest:
       allOf:
         - $ref: '#/components/schemas/VacancyDescription'
+
+    VacancyDescriptionGeneration:
+      type: object
+      description: >
+        Status of an asynchronous description-generation job started via
+        `POST /vacancy/{id}/generate-description`. `description` is populated only once `status`
+        is `COMPLETED`; absent while `PENDING`, and absent (with the failure detail returned
+        instead as a problem response) if `FAILED`.
+      required: [generationId, status]
+      properties:
+        generationId:
+          $ref: '#/components/schemas/GenerationId'
+        status:
+          $ref: '#/components/schemas/VacancyDescriptionGenerationStatus'
+        description:
+          $ref: '#/components/schemas/VacancyDescription'
+
+    GenerateVacancyDescriptionRequest:
+      type: object
+      description: >
+        Short inputs used to generate an AI-assisted `description` draft for an existing vacancy
+        (`POST /vacancy/{id}/generate-description`). The result is a suggestion only, shown to the
+        user for editing before being submitted via `PATCH /vacancy/{id}`.
+      required: [mostImportantTasks, team, whyNiceJob]
+      properties:
+        mostImportantTasks:
+          type: string
+          maxLength: 1000
+          description: The most important day-to-day tasks for this role.
+        team:
+          type: string
+          maxLength: 1000
+          description: Description of the team the candidate will join.
+        whyNiceJob:
+          type: string
+          maxLength: 1000
+          description: Why this is a compelling job to candidates.
 
     VacancyOfferRequest:
       type: object
@@ -665,7 +801,7 @@ components:
 
     VacancyListResponse:
       type: object
-      required: [items, totalVacancies, vacanciesMatchingCriteria]
+      required: [items, totalVacancies, vacanciesMatchingCriteria, nextCursor]
       properties:
         items:
           type: array
@@ -675,6 +811,11 @@ components:
           type: integer
         vacanciesMatchingCriteria:
           type: integer
+        nextCursor:
+          type: [string, 'null']
+          description: >
+            Opaque cursor for the next page, to be echoed back via the `cursor` query parameter.
+            `null` when this is the last page.
 
 
 
