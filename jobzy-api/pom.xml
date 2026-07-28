@@ -17,29 +17,44 @@
 
 	<properties>
 		<openapi-generator.version>7.23.0</openapi-generator.version>
-		<swagger-annotations.version>2.2.52</swagger-annotations.version>
 		<vacancy-api.spec>${project.basedir}/../jobzy-contracts/src/main/java/app/jobzy/contracts/VacancyApi.yml</vacancy-api.spec>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
+		<!--	==JOBZY==	 -->
 		<dependency>
 			<groupId>app.jobzy</groupId>
 			<artifactId>jobzy-contracts</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+
+		<!--	==SPRING==	 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<!--	==OTHER==	 -->
 		<dependency>
 			<groupId>io.swagger.core.v3</groupId>
 			<artifactId>swagger-annotations-jakarta</artifactId>
-			<version>${swagger-annotations.version}</version>
 		</dependency>
+		<dependency>
+		<groupId>org.mapstruct</groupId>
+		<artifactId>mapstruct</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
@@ -47,6 +62,20 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.mapstruct</groupId>
+							<artifactId>mapstruct-processor</artifactId>
+							<version>${mapstruct.version}</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.openapitools</groupId>
@@ -76,6 +105,7 @@
 								<dateLibrary>java8</dateLibrary>
 								<openApiNullable>false</openApiNullable>
 								<interfaceOnly>true</interfaceOnly>
+								<skipDefaultInterface>true</skipDefaultInterface>
 							</configOptions>
 						</configuration>
 					</execution>

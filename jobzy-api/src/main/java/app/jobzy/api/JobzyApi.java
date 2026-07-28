@@ -9,5 +9,4 @@ public class JobzyApi {
   static void main(String[] args) {
     SpringApplication.run(JobzyApi.class, args);
   }
-
 }

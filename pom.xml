@@ -18,9 +18,11 @@
 	<properties>
 		<java.version>25</java.version>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
-		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+		<mapstruct.version>1.6.3</mapstruct.version>
+		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<spotless.version>3.8.0</spotless.version>
 		<spring-boot.version>4.1.0</spring-boot.version>
+		<swagger-annotations.version>2.2.52</swagger-annotations.version>
 	</properties>
 
 	<dependencyManagement>
@@ -32,6 +34,18 @@
 				<version>${spring-boot.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+
+		<!-- OTHER			-->
+			<dependency>
+			<groupId>org.mapstruct</groupId>
+			<artifactId>mapstruct</artifactId>
+			<version>${mapstruct.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.swagger.core.v3</groupId>
+				<artifactId>swagger-annotations-jakarta</artifactId>
+				<version>${swagger-annotations.version}</version>
 			</dependency>
 
 
@@ -65,10 +79,15 @@
 						</execution>
 					</executions>
 				</plugin>
-
 			</plugins>
-
 		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
 	</build>
 
 </project>
