@@ -27,6 +27,13 @@
 .idea/**/dictionaries
 .idea/**/shelf
 
+# Claude
+.claude/**/settings.local.json
+
+# Specify
+.specify
+
+
 # AWS User-specific
 .idea/**/aws.xml
 
