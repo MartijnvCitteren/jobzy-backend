@@ -6,9 +6,12 @@
   "hooks": {
     "TaskCompleted": [
       {
-        "matcher": null,
+        "matcher": "",
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/require-review-signoff.sh" }
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/require-review-signoff.sh"
+          }
         ]
       }
     ]

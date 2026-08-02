@@ -26,8 +26,6 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
 - **Maven** as build tool, multi-module reactor.
 - **Azure** (Container Apps for dev/prod, custom domain jobzy.app) as target environment.
 
-> Fill in once known: exact Maven module names/artifactIds, database (Postgres?), CI pipeline. This file should grow as that
-> becomes concrete — don't guess, just add.
 
 ## Repository structure (multi-module)
 
