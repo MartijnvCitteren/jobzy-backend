@@ -1,4 +1,4 @@
-package app.jobzy.api.vacancy.adapter.in.web.mapper;
+package app.jobzy.api.vacancy.adapter.in.web.mapper.vacancyCoreRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,13 +13,23 @@ import app.jobzy.api.vacancy.domain.rest.WorkplaceType;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
+@SpringBootTest(classes = VacancyCoreRequestMapperTest.MapperTestConfig.class)
 class VacancyCoreRequestMapperTest {
 
-  private final VacancyCoreRequestMapper mapper = new VacancyCoreRequestMapperImpl();
+  @Configuration
+  @ComponentScan(basePackageClasses = VacancyCoreRequestMapper.class)
+  static class MapperTestConfig {}
+
+  @Autowired private VacancyCoreRequestMapper mapper;
 
   @Test
-  @DisplayName("given vacancy core request, when toDto then maps all fields")
+  @DisplayName(
+      "given vacancy core request, when toDto then maps all fields, delegating to sub-mappers")
   void givenVacancyCoreRequestWhenToDtoThenMapsAllFields() {
     VacancyCoreRequest request =
         new VacancyCoreRequest(
