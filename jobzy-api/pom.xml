@@ -74,6 +74,11 @@
 				<configuration>
 					<annotationProcessorPaths>
 						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>${lombok.version}</version>
+						</path>
+						<path>
 							<groupId>org.mapstruct</groupId>
 							<artifactId>mapstruct-processor</artifactId>
 							<version>${mapstruct.version}</version>
@@ -95,7 +100,7 @@
 							<inputSpec>${vacancy-api.spec}</inputSpec>
 							<generatorName>spring</generatorName>
 							<output>${project.build.directory}/generated-sources/openapi</output>
-							<modelPackage>app.jobzy.api.vacancy.domain.rest</modelPackage>
+							<modelPackage>app.jobzy.api.vacancy.adapter.in.web.contract</modelPackage>
 							<apiPackage>app.jobzy.api.vacancy.adapter.in.web</apiPackage>
 							<generateApis>true</generateApis>
 							<generateSupportingFiles>true</generateSupportingFiles>

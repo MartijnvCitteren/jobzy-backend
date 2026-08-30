@@ -1,7 +1,7 @@
-package app.jobzy.api.vacancy.adapter.in.web.mapper.vacancyCoreRequest;
+package app.jobzy.api.vacancy.adapter.in.web.mapper.request;
 
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
 import app.jobzy.api.vacancy.application.port.in.dto.VacancyCategoryDto;
-import app.jobzy.api.vacancy.domain.rest.VacancyCategory;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 

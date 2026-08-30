@@ -1,0 +1,20 @@
+package app.jobzy.api.vacancy.adapter.in.web.mapper.response;
+
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
+import app.jobzy.api.vacancy.domain.Vacancy;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
+
+@Mapper(
+    componentModel = "spring",
+    unmappedSourcePolicy = ReportingPolicy.IGNORE,
+    unmappedTargetPolicy = ReportingPolicy.WARN)
+public interface VacancyResponseMapper {
+
+  @Mapping(target = "id", source = "id.value")
+  @Mapping(
+      target = "createdAt",
+      expression = "java(vacancy.getCreatedAt().atOffset(java.time.ZoneOffset.UTC))")
+  VacancyResponse toVacancyResponse(Vacancy vacancy);
+}

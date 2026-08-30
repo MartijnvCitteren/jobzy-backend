@@ -1,15 +1,15 @@
-package app.jobzy.api.vacancy.adapter.in.web.mapper.vacancyCoreRequest;
+package app.jobzy.api.vacancy.adapter.in.web.mapper.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import app.jobzy.api.vacancy.adapter.in.web.contract.Location;
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
+import app.jobzy.api.vacancy.adapter.in.web.contract.WorkplaceType;
 import app.jobzy.api.vacancy.application.port.in.dto.LocationDto;
 import app.jobzy.api.vacancy.application.port.in.dto.VacancyCategoryDto;
 import app.jobzy.api.vacancy.application.port.in.dto.VacancyCoreRequestDto;
 import app.jobzy.api.vacancy.application.port.in.dto.WorkplaceTypeDto;
-import app.jobzy.api.vacancy.domain.rest.Location;
-import app.jobzy.api.vacancy.domain.rest.VacancyCategory;
-import app.jobzy.api.vacancy.domain.rest.VacancyCoreRequest;
-import app.jobzy.api.vacancy.domain.rest.WorkplaceType;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
