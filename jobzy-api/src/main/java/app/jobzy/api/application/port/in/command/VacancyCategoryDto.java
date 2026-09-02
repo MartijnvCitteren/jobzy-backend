@@ -1,4 +1,4 @@
-package app.jobzy.api.application.port.in.dto;
+package app.jobzy.api.application.port.in.command;
 
 public enum VacancyCategoryDto {
   ADMINISTRATION(1),

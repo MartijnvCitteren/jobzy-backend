@@ -1,6 +1,6 @@
 package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
-import app.jobzy.api.application.port.in.dto.VacancyCoreRequestDto;
+import app.jobzy.api.application.port.in.command.CreateVacancyCommand;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -12,5 +12,5 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface VacancyCoreRequestMapper {
 
-  VacancyCoreRequestDto toDto(VacancyCoreRequest vacancyCoreRequest);
+  CreateVacancyCommand toDto(VacancyCoreRequest vacancyCoreRequest);
 }

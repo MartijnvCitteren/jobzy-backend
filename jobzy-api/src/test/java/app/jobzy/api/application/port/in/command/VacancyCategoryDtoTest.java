@@ -1,4 +1,4 @@
-package app.jobzy.api.application.port.in.dto;
+package app.jobzy.api.application.port.in.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
