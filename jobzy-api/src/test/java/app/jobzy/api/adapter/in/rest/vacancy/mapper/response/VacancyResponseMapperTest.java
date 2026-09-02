@@ -1,4 +1,4 @@
-package app.jobzy.api.vacancy.adapter.in.web.mapper.response;
+package app.jobzy.api.adapter.in.rest.vacancy.mapper.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

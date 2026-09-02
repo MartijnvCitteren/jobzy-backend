@@ -1,8 +1,7 @@
-package app.jobzy.api.vacancy.adapter.in.web.mapper.request;
+package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyCoreRequestMapper;
 import app.jobzy.api.application.port.in.dto.LocationDto;
 import app.jobzy.api.application.port.in.dto.VacancyCategoryDto;
 import app.jobzy.api.application.port.in.dto.VacancyCoreRequestDto;

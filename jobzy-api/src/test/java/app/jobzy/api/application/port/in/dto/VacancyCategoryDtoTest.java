@@ -1,9 +1,8 @@
-package app.jobzy.api.vacancy.application.port.in.dto;
+package app.jobzy.api.application.port.in.dto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import app.jobzy.api.application.port.in.dto.VacancyCategoryDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
