@@ -2,8 +2,8 @@ package app.jobzy.api.application.service;
 
 import app.jobzy.api.application.port.in.CreateVacancyUseCase;
 import app.jobzy.api.application.port.in.dto.VacancyCoreRequestDto;
-import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.Vacancy;
+import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
 import org.springframework.stereotype.Service;

@@ -2,12 +2,12 @@ package app.jobzy.api.vacancy.adapter.in.web.mapper.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
-import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.Vacancy;
+import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
 import java.math.BigDecimal;
 import java.time.ZoneOffset;
 import org.junit.jupiter.api.DisplayName;
@@ -19,8 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class VacancyResponseMapperTest {
 
-  @InjectMocks
-  private VacancyResponseMapperImpl mapper;
+  @InjectMocks private VacancyResponseMapperImpl mapper;
 
   @Test
   @DisplayName("given vacancy, when toVacancyResponse then maps all fields")

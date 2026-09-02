@@ -1,6 +1,9 @@
 package app.jobzy.api.adapter.in.rest.vacancy;
 
-import app.jobzy.api.vacancy.adapter.in.web.VacancyApi;
+import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyCoreRequestMapper;
+import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyResponseMapper;
+import app.jobzy.api.application.port.in.CreateVacancyUseCase;
+import app.jobzy.api.vacancy.adapter.in.rest.VacancyApi;
 import app.jobzy.api.vacancy.adapter.in.web.contract.GenerateVacancyDescriptionRequest;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
@@ -9,9 +12,6 @@ import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyListResponse;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyStatus;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyUpdateRequest;
-import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyCoreRequestMapper;
-import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyResponseMapper;
-import app.jobzy.api.application.port.in.CreateVacancyUseCase;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
