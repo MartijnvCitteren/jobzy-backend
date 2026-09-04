@@ -2,7 +2,7 @@ package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import app.jobzy.api.application.port.in.command.CreateVacancyCommand;
+import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
 import app.jobzy.api.application.port.in.command.LocationDto;
 import app.jobzy.api.application.port.in.command.VacancyCategoryDto;
 import app.jobzy.api.application.port.in.command.WorkplaceTypeDto;
@@ -39,7 +39,7 @@ class VacancyCoreRequestMapperTest {
             WorkplaceType.HYBRID,
             BigDecimal.valueOf(32));
 
-    CreateVacancyCommand result = mapper.toDto(request);
+    CreateCoreVacancyCommand result = mapper.toCommand(request);
 
     assertEquals("Backend Engineer", result.jobTitle());
     assertEquals(VacancyCategoryDto.ENGINEERING, result.category());

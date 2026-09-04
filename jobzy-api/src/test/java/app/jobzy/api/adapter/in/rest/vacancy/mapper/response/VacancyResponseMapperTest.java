@@ -2,8 +2,7 @@ package app.jobzy.api.adapter.in.rest.vacancy.mapper.response;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import app.jobzy.api.domain.vacancy.Vacancy;
-import app.jobzy.api.domain.vacancy.valueobject.Location;
+import app.jobzy.api.TestSupport.VacancyFactory;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
@@ -24,13 +23,7 @@ class VacancyResponseMapperTest {
   @Test
   @DisplayName("given vacancy, when toVacancyResponse then maps all fields")
   void givenVacancyWhenToVacancyResponseThenMapsAllFields() {
-    Vacancy vacancy =
-        Vacancy.createCore(
-            "Backend Engineer",
-            VacancyCategory.ENGINEERING,
-            new Location("NL", "Leiden"),
-            WorkplaceType.HYBRID,
-            BigDecimal.valueOf(32));
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
 
     VacancyResponse result = mapper.toVacancyResponse(vacancy);
 

@@ -1,22 +1,22 @@
 package app.jobzy.api.domain.vacancy;
 
+import app.jobzy.api.domain.BaseObject;
+import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyId;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
-import java.math.BigDecimal;
-import java.time.Instant;
+import java.util.Objects;
 
-public class Vacancy {
+public class Vacancy extends BaseObject {
 
   private final VacancyId id;
-  private final String jobTitle;
-  private final VacancyCategory category;
-  private final Location location;
-  private final WorkplaceType workplaceType;
-  private final BigDecimal hoursPerWeek;
-  private final Instant createdAt;
+  private String jobTitle;
+  private VacancyCategory category;
+  private Location location;
+  private WorkplaceType workplaceType;
+  private HoursPerWeek hoursPerWeek;
   private VacancyStatus status;
 
   private Vacancy(
@@ -25,24 +25,8 @@ public class Vacancy {
       VacancyCategory category,
       Location location,
       WorkplaceType workplaceType,
-      BigDecimal hoursPerWeek,
-      VacancyStatus status,
-      Instant createdAt) {
-    if (jobTitle == null || jobTitle.isBlank()) {
-      throw new IllegalArgumentException("Vacancy requires a job title");
-    }
-    if (category == null) {
-      throw new IllegalArgumentException("Vacancy requires a category");
-    }
-    if (location == null) {
-      throw new IllegalArgumentException("Vacancy requires a location");
-    }
-    if (workplaceType == null) {
-      throw new IllegalArgumentException("Vacancy requires a workplace type");
-    }
-    if (hoursPerWeek == null || hoursPerWeek.signum() <= 0) {
-      throw new IllegalArgumentException("Vacancy requires a positive number of hours per week");
-    }
+      HoursPerWeek hoursPerWeek,
+      VacancyStatus status) {
     this.id = id;
     this.jobTitle = jobTitle;
     this.category = category;
@@ -50,24 +34,6 @@ public class Vacancy {
     this.workplaceType = workplaceType;
     this.hoursPerWeek = hoursPerWeek;
     this.status = status;
-    this.createdAt = createdAt;
-  }
-
-  public static Vacancy createCore(
-      String jobTitle,
-      VacancyCategory category,
-      Location location,
-      WorkplaceType workplaceType,
-      BigDecimal hoursPerWeek) {
-    return new Vacancy(
-        VacancyId.newId(),
-        jobTitle,
-        category,
-        location,
-        workplaceType,
-        hoursPerWeek,
-        VacancyStatus.DRAFT,
-        Instant.now());
   }
 
   public VacancyId getId() {
@@ -78,27 +44,131 @@ public class Vacancy {
     return jobTitle;
   }
 
+  public void setJobTitle(String jobTitle) {
+    this.jobTitle = jobTitle;
+  }
+
   public VacancyCategory getCategory() {
     return category;
+  }
+
+  public void setCategory(VacancyCategory category) {
+    this.category = category;
   }
 
   public Location getLocation() {
     return location;
   }
 
+  public void setLocation(Location location) {
+    this.location = location;
+  }
+
   public WorkplaceType getWorkplaceType() {
     return workplaceType;
   }
 
-  public BigDecimal getHoursPerWeek() {
+  public void setWorkplaceType(WorkplaceType workplaceType) {
+    this.workplaceType = workplaceType;
+  }
+
+  public HoursPerWeek getHoursPerWeek() {
     return hoursPerWeek;
+  }
+
+  public void setHoursPerWeek(HoursPerWeek hoursPerWeek) {
+    this.hoursPerWeek = hoursPerWeek;
   }
 
   public VacancyStatus getStatus() {
     return status;
   }
 
-  public Instant getCreatedAt() {
-    return createdAt;
+  public void setStatus(VacancyStatus status) {
+    this.status = status;
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Vacancy vacancy)) {
+      return false;
+    }
+    return Objects.equals(getId(), vacancy.getId());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(getId());
+  }
+
+  @Override
+  public String toString() {
+    return "Vacancy{"
+        + "id="
+        + id
+        + ", jobTitle='"
+        + jobTitle
+        + '\''
+        + ", category="
+        + category
+        + ", location="
+        + location
+        + ", workplaceType="
+        + workplaceType
+        + ", hoursPerWeek="
+        + hoursPerWeek
+        + ", status="
+        + status
+        + '}';
+  }
+
+  public static class Builder {
+    private final VacancyId id = VacancyId.newId();
+    private String jobTitle;
+    private VacancyCategory category;
+    private Location location;
+    private WorkplaceType workplaceType;
+    private HoursPerWeek hoursPerWeek;
+    private VacancyStatus status = VacancyStatus.DRAFT;
+
+    private Builder() {}
+
+    public Builder jobTitle(String jobTitle) {
+      this.jobTitle = jobTitle;
+      return this;
+    }
+
+    public Builder category(VacancyCategory category) {
+      this.category = category;
+      return this;
+    }
+
+    public Builder location(Location location) {
+      this.location = location;
+      return this;
+    }
+
+    public Builder workplaceType(WorkplaceType workplaceType) {
+      this.workplaceType = workplaceType;
+      return this;
+    }
+
+    public Builder hoursPerWeek(HoursPerWeek hoursPerWeek) {
+      this.hoursPerWeek = hoursPerWeek;
+      return this;
+    }
+
+    public Builder status(VacancyStatus status) {
+      this.status = status;
+      return this;
+    }
+
+    public Vacancy build() {
+      return new Vacancy(id, jobTitle, category, location, workplaceType, hoursPerWeek, status);
+    }
   }
 }

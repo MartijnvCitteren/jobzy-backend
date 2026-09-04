@@ -713,11 +713,14 @@ components:
           $ref: '#/components/schemas/Location'
         workplaceType:
           $ref: '#/components/schemas/WorkplaceType'
-        hoursPerWeek:
+        minHoursPerWeek:
           type: number
           exclusiveMinimum: 0
           maximum: 60
-
+        maxHoursPerWeek:
+          type: number
+          exclusiveMinimum: 1
+          maximum: 60
     VacancyDescriptionRequest:
       allOf:
         - $ref: '#/components/schemas/VacancyDescription'

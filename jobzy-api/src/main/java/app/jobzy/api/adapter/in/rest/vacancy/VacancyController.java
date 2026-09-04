@@ -42,8 +42,8 @@ public class VacancyController implements VacancyApi {
   @Override
   public ResponseEntity<VacancyResponse> createVacancy(VacancyCoreRequest vacancyCoreRequest) {
     log.info("Received creation request: {}", vacancyCoreRequest);
-    var vacancyRequestDto = coreRequestMapper.toDto(vacancyCoreRequest);
-    var coreVacancy = createVacancyUseCase.createCoreVacancy(vacancyRequestDto);
+    var createCoreVacancyCommand = coreRequestMapper.toCommand(vacancyCoreRequest);
+    var coreVacancy = createVacancyUseCase.createCoreVacancy(createCoreVacancyCommand);
     var response = responseMapper.toVacancyResponse(coreVacancy);
     return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }

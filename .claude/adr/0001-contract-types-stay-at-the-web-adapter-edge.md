@@ -28,7 +28,7 @@ when it is precisely inverted.
 
 ```java
 public interface CreateVacancyUseCase {
-  ResponseEntity<VacancyResponse> createCoreVacancy(VacancyCoreRequestDto vacancyCoreRequestDto);
+  ResponseEntity<VacancyResponse> createCoreVacancy(VacancyCoreRequestDto createCoreVacancyCommand);
 }
 ```
 
@@ -37,7 +37,7 @@ a core-owned port. This makes the application layer untestable without Spring an
 status-code decision in the wrong layer. It must change. The open question is what it changes *to*.
 
 There is an asymmetry to be aware of: the codebase already has an inbound application DTO layer
-(`VacancyCoreRequestDto`, `LocationDto`, `VacancyCategoryDto`, `WorkplaceTypeDto`) that insulates the
+(`CreateCoreVacancyCommand`, `LocationDto`, `VacancyCategoryDto`, `WorkplaceTypeDto`) that insulates the
 core from `VacancyCoreRequest`. So the input side has already been built in the stricter style.
 
 ## Decision
@@ -54,7 +54,7 @@ monotonically with every feature added on top of the wrong package.
 
 ```java
 public interface CreateVacancyUseCase {
-  VacancyDto createCoreVacancy(VacancyCoreRequestDto vacancyCoreRequestDto);
+  VacancyDto createCoreVacancy(VacancyCoreRequestDto createCoreVacancyCommand);
 }
 ```
 
@@ -126,7 +126,7 @@ pattern every subsequent use case in this codebase is expected to follow.
 - `VacancyResponseMapper` in the web adapter maps **`VacancyDto` → `VacancyResponse`**, not
   `Vacancy` → `VacancyResponse`. No domain type appears anywhere in the web adapter.
 - Three mapping hops per request in total:
-  `VacancyCoreRequest` → `VacancyCoreRequestDto` → `Vacancy` → `VacancyDto` → `VacancyResponse`.
+  `VacancyCoreRequest` → `CreateCoreVacancyCommand` → `Vacancy` → `VacancyDto` → `VacancyResponse`.
   The first and last hops are in the web adapter; the middle two are in the application layer.
 - HTTP status codes and the `Location` header are decided in exactly one place, the controller.
 - A future ArchUnit rule can be stated simply: nothing under `..domain..` may import `..adapter..`,

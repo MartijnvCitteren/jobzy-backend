@@ -1,24 +1,28 @@
 package app.jobzy.api.application.service;
 
 import app.jobzy.api.application.port.in.CreateVacancyUseCase;
-import app.jobzy.api.application.port.in.command.CreateVacancyCommand;
+import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
 import app.jobzy.api.domain.vacancy.Vacancy;
-import app.jobzy.api.domain.vacancy.valueobject.Location;
-import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
-import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
+import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 @Service
+@Log4j2
 public class CreateVacancyService implements CreateVacancyUseCase {
 
   @Override
-  public Vacancy createCoreVacancy(CreateVacancyCommand createVacancyCommand) {
-    return Vacancy.createCore(
-        createVacancyCommand.jobTitle(),
-        VacancyCategory.valueOf(createVacancyCommand.category().name()),
-        new Location(
-            createVacancyCommand.location().country(), createVacancyCommand.location().city()),
-        WorkplaceType.valueOf(createVacancyCommand.workplaceType().name()),
-        createVacancyCommand.hoursPerWeek());
+  public Vacancy createCoreVacancy(CreateCoreVacancyCommand command) {
+    var vacancy =
+        Vacancy.builder()
+            .jobTitle(command.jobTitle())
+            .location(command.location())
+            .category(command.category())
+            .status(VacancyStatus.DRAFT)
+            .hoursPerWeek(command.hoursPerWeek())
+            .workplaceType(command.workplaceType())
+            .build();
+
+    log.info("Vacancy is created: {}", vacancy);
   }
 }

@@ -97,7 +97,7 @@ Split FR-006 into its data-model half and its enforcement half, and deliver only
    ```
 
    This matches the contract's explicit statement that org scoping comes from the token, not the
-   body, and it means `VacancyCoreRequestDto` gains no organization field (it must not — a client
+   body, and it means `CreateCoreVacancyCommand` gains no organization field (it must not — a client
    could then forge it).
 
 3. **The only implementation today is a temporary fixed adapter**,

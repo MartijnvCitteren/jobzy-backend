@@ -72,5 +72,5 @@ vacancy/
 Add `vacancy/domain/Vacancy.java` as a plain Java aggregate (no annotations), modeling only the
 invariants that matter now (e.g. a vacancy needs a job title, category, location, workplace type,
 hours/week before it can be published). Do not model persistence or REST concerns in it. Map to it
-from `CreateVacancyCommand` inside the (currently missing) use-case implementation, not in the
+from `CreateCoreVacancyCommand` inside the (currently missing) use-case implementation, not in the
 controller.

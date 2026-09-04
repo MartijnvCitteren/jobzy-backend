@@ -13,8 +13,5 @@ import org.mapstruct.ReportingPolicy;
 public interface VacancyResponseMapper {
 
   @Mapping(target = "id", source = "id.value")
-  @Mapping(
-      target = "createdAt",
-      expression = "java(vacancy.getCreatedAt().atOffset(java.time.ZoneOffset.UTC))")
   VacancyResponse toVacancyResponse(Vacancy vacancy);
 }
