@@ -1,11 +1,11 @@
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: jdbc:sqlserver://localhost:1433;databaseName=jobzy;trustServerCertificate=true
     driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
     properties:
       hibernate.dialect: org.hibernate.dialect.SQLServerDialect
-    password: ${SPRING_DATASOURCE_PASSWORD}
-    username: ${SPRING_DATASOURCE_USERNAME}
+    password: Super_secret-123
+    username: sa
 
 logging:
   level:
