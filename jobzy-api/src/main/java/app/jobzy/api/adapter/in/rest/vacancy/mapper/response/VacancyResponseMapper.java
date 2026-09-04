@@ -16,7 +16,6 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface VacancyResponseMapper {
 
-  @Mapping(target = "id", source = "id.value")
   @Mapping(target = "minHoursPerWeek", source = "hoursPerWeek.minHours")
   @Mapping(target = "maxHoursPerWeek", source = "hoursPerWeek.maxHours")
   VacancyResponse toVacancyResponse(Vacancy vacancy);

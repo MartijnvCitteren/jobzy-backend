@@ -29,6 +29,6 @@ public class CreateVacancyService implements CreateVacancyUseCase {
 
     log.info("Vacancy is created: {}", vacancy);
 
-    return null;
+    return vacancy;
   }
 }

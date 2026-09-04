@@ -1,17 +1,18 @@
 package app.jobzy.api.domain.vacancy;
 
 import app.jobzy.api.domain.BaseObject;
+import app.jobzy.api.domain.UuidV7Generator;
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
-import app.jobzy.api.domain.vacancy.valueobject.VacancyId;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
 import java.util.Objects;
+import java.util.UUID;
 
 public class Vacancy extends BaseObject {
 
-  private final VacancyId id;
+  private final UUID id;
   private String jobTitle;
   private VacancyCategory category;
   private Location location;
@@ -20,7 +21,7 @@ public class Vacancy extends BaseObject {
   private VacancyStatus status;
 
   private Vacancy(
-      VacancyId id,
+      UUID id,
       String jobTitle,
       VacancyCategory category,
       Location location,
@@ -36,7 +37,7 @@ public class Vacancy extends BaseObject {
     this.status = status;
   }
 
-  public VacancyId getId() {
+  public UUID getId() {
     return id;
   }
 
@@ -127,7 +128,7 @@ public class Vacancy extends BaseObject {
   }
 
   public static class Builder {
-    private final VacancyId id = VacancyId.newId();
+    private final UUID id = UuidV7Generator.getUUID();
     private String jobTitle;
     private VacancyCategory category;
     private Location location;

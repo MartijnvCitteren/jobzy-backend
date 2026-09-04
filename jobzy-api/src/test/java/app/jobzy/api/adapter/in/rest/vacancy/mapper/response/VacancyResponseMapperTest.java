@@ -23,7 +23,7 @@ class VacancyResponseMapperTest {
 
     VacancyResponse result = mapper.toVacancyResponse(vacancy);
 
-    assertEquals(vacancy.getId().value(), result.getId());
+    assertEquals(vacancy.getId(), result.getId());
     assertEquals(vacancy.getStatus().name(), result.getStatus().getValue());
     assertEquals(vacancy.getJobTitle(), result.getJobTitle());
     assertEquals(vacancy.getCategory().name(), result.getCategory().getValue());
