@@ -675,10 +675,14 @@ components:
           $ref: '#/components/schemas/Location'
         workplaceType:
           $ref: '#/components/schemas/WorkplaceType'
-        hoursPerWeek:
+        minHoursPerWeek:
           type: number
           description: Hours per week; decimals allowed for part-time roles (e.g. 32.5).
           exclusiveMinimum: 0
+        maxHoursPerWeek:
+          type: number
+          description: Hours per week; decimals allowed for part-time roles (e.g. 32.5).
+          exclusiveMinimum: 1
         description:
           $ref: '#/components/schemas/VacancyDescription'
         contactPerson:
