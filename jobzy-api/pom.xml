@@ -17,6 +17,7 @@
 
   <properties>
     <openapi-generator.version>7.23.0</openapi-generator.version>
+
     <vacancy-api.spec>${project.basedir}/../jobzy-contracts/src/main/java/app/jobzy/contracts/VacancyApi.yml
     </vacancy-api.spec>
   </properties>
@@ -70,6 +71,12 @@
       <groupId>com.microsoft.sqlserver</groupId>
       <artifactId>mssql-jdbc</artifactId>
       <scope>runtime</scope>
+    </dependency>
+
+    <!-- TESTING			-->
+    <dependency>
+      <groupId>io.rest-assured</groupId>
+      <artifactId>rest-assured</artifactId>
     </dependency>
 
   </dependencies>

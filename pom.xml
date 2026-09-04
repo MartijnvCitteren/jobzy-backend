@@ -21,6 +21,7 @@
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
+		<rest-assured.version>5.5.0</rest-assured.version>
 		<spotless.version>3.8.0</spotless.version>
 		<spring-boot.version>4.1.0</spring-boot.version>
 		<swagger-annotations.version>2.2.52</swagger-annotations.version>
@@ -63,6 +64,14 @@
 				<groupId>io.swagger.core.v3</groupId>
 				<artifactId>swagger-annotations-jakarta</artifactId>
 				<version>${swagger-annotations.version}</version>
+			</dependency>
+
+			<!-- TESTING			-->
+			<dependency>
+				<groupId>io.rest-assured</groupId>
+				<artifactId>rest-assured</artifactId>
+				<version>${rest-assured.version}</version>
+				<scope>test</scope>
 			</dependency>
 
 
