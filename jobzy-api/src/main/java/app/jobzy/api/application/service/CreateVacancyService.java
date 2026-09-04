@@ -28,6 +28,7 @@ public class CreateVacancyService implements CreateVacancyUseCase {
             .build();
 
     log.info("Vacancy is created: {}", vacancy);
+    vacancyRepository.save(vacancy);
 
     return vacancy;
   }
