@@ -2,7 +2,6 @@ package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import app.jobzy.api.adapter.in.rest.vacancy.mapper.HoursPerWeekMapper;
 import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.vacancy.adapter.in.web.contract.Location;

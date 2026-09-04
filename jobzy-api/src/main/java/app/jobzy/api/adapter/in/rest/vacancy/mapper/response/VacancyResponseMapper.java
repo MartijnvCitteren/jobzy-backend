@@ -1,6 +1,6 @@
 package app.jobzy.api.adapter.in.rest.vacancy.mapper.response;
 
-import app.jobzy.api.adapter.in.rest.vacancy.mapper.HoursPerWeekMapper;
+import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.HoursPerWeekMapper;
 import app.jobzy.api.domain.vacancy.Vacancy;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
 import java.time.LocalDateTime;

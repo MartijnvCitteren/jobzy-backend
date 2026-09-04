@@ -1,4 +1,4 @@
-package app.jobzy.api.adapter.in.rest.vacancy.mapper;
+package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
