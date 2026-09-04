@@ -3,9 +3,7 @@ package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
-import app.jobzy.api.application.port.in.command.LocationDto;
-import app.jobzy.api.application.port.in.command.VacancyCategoryDto;
-import app.jobzy.api.application.port.in.command.WorkplaceTypeDto;
+import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.vacancy.adapter.in.web.contract.Location;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
@@ -37,14 +35,19 @@ class VacancyCoreRequestMapperTest {
             VacancyCategory.ENGINEERING,
             new Location("NL", "Leiden"),
             WorkplaceType.HYBRID,
-            BigDecimal.valueOf(32));
+            BigDecimal.valueOf(32),
+            BigDecimal.valueOf(40));
 
     CreateCoreVacancyCommand result = mapper.toCommand(request);
 
     assertEquals("Backend Engineer", result.jobTitle());
-    assertEquals(VacancyCategoryDto.ENGINEERING, result.category());
-    assertEquals(new LocationDto("NL", "Leiden"), result.location());
-    assertEquals(WorkplaceTypeDto.HYBRID, result.workplaceType());
-    assertEquals(BigDecimal.valueOf(32), result.hoursPerWeek());
+    assertEquals(
+        app.jobzy.api.domain.vacancy.valueobject.VacancyCategory.ENGINEERING, result.category());
+    assertEquals(
+        new app.jobzy.api.domain.vacancy.valueobject.Location("NL", "Leiden"), result.location());
+    assertEquals(
+        app.jobzy.api.domain.vacancy.valueobject.WorkplaceType.HYBRID, result.workplaceType());
+    assertEquals(
+        new HoursPerWeek(BigDecimal.valueOf(32), BigDecimal.valueOf(40)), result.hoursPerWeek());
   }
 }

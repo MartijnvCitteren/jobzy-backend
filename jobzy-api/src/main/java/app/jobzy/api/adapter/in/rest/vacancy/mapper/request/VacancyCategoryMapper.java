@@ -1,6 +1,5 @@
 package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
-import app.jobzy.api.application.port.in.command.VacancyCategoryDto;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -11,5 +10,6 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.WARN)
 interface VacancyCategoryMapper {
 
-  VacancyCategoryDto toDto(VacancyCategory category);
+  app.jobzy.api.domain.vacancy.valueobject.VacancyCategory toDomainCategory(
+      VacancyCategory category);
 }

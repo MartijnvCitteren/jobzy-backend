@@ -702,7 +702,7 @@ components:
     VacancyCoreRequest:
       type: object
       description: Minimum fields to create a vacancy in `DRAFT` status. No `id` — the resource is identified by the URL.
-      required: [jobTitle, category, location, workplaceType, hoursPerWeek]
+      required: [jobTitle, category, location, workplaceType, hoursPerWeek, minHoursPerWeek, maxHoursPerWeek]
       properties:
         jobTitle:
           type: string

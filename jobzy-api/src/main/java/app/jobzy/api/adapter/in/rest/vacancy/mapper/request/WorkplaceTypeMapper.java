@@ -1,6 +1,5 @@
 package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
-import app.jobzy.api.application.port.in.command.WorkplaceTypeDto;
 import app.jobzy.api.vacancy.adapter.in.web.contract.WorkplaceType;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -11,5 +10,6 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.WARN)
 interface WorkplaceTypeMapper {
 
-  WorkplaceTypeDto toDto(WorkplaceType workplaceType);
+  app.jobzy.api.domain.vacancy.valueobject.WorkplaceType toDomainWorkplaceType(
+      WorkplaceType workplaceType);
 }
