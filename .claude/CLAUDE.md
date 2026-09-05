@@ -29,23 +29,34 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
 
 ## Repository structure (multi-module)
 
-- **`contractz`** — the API contract as source of truth. Contains the OpenAPI/YAML spec(s); shared models and API interfaces
-  are generated from these (codegen during the build, likely via `openapi-generator-maven-plugin` or similar).
+Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**. Root package for both:
+`app.jobzy`.
+
+- **`jobzy-contracts`** — the API contract as source of truth. Contains the OpenAPI/YAML spec(s) (e.g.
+  `src/main/java/app/jobzy/contracts/VacancyApi.yml`); shared models and API interfaces are generated from these via
+  `openapi-generator-maven-plugin`.
     - **Never** hand-edit generated classes. Changes always go through the YAML.
     - Contract changes are breaking-change-sensitive as soon as there's a consumer outside this monorepo (multiposting
       aggregator, future integrations) — treat the YAML with the same care as a published API, even though there's no
       external customer yet.
-    - Regeneration happens via this module's Maven build (`mvn generate-sources` or the relevant lifecycle phase — confirm in
-      the module pom).
-- **`api`** (or similarly named) — the application core, built following **DDD + Hexagonal (Ports & Adapters)**:
-    - Domain layer: entities, value objects, domain services, domain events. No framework dependencies (no Spring annotations
-      in the domain).
-    - Application/use-case layer: orchestration, transactions, invokes the domain via ports.
-    - Ports: interfaces defined by the core (e.g. `CandidateRepository`, `JobBoardPublisher`).
-    - Adapters: infrastructure implementations of those ports (JPA/Postgres, Azure services, aggregator client, LLM calls).
-      Adapters know the domain, not the other way around.
-    - Generated models from `contractz` belong at the edge (adapters/REST layer), not in the domain model. Map explicitly
-      between contract DTOs and domain models — no leaking contract types into the core.
+    - Codegen is configured in `jobzy-api/pom.xml` (`openapi-generator-maven-plugin`, bound to `generate-sources`), with
+      generated model/API packages under `app.jobzy.api.<aggregate>.adapter.in.*` — i.e. codegen output already lands at
+      the adapter edge, not under `domain`. Keep it that way: a generated model landing under a `domain` package is a bug,
+      not a style nit (see ADR 0001).
+- **`jobzy-api`** — the application core, built following **DDD + Hexagonal (Ports & Adapters)**. Actual package layout
+  under `app.jobzy.api.<aggregate>` (e.g. `app.jobzy.api.vacancy`, root shared code under `app.jobzy.api.shared`):
+    - `domain/<aggregate>/` — entities, value objects (`domain/<aggregate>/valueobject/`), domain services, domain
+      events. **Zero** framework dependencies, no Spring annotations.
+    - `application/service/` — use-case orchestration and transactions.
+    - `application/port/in/` (with `application/port/in/command/` for inbound command DTOs) and `application/port/out/`
+      — ports owned by the core.
+    - `adapter/in/rest/<aggregate>/` — inbound REST adapter, with `mapper/request/` and `mapper/response/` subpackages
+      for explicit contract-DTO ↔ domain mapping.
+    - `adapter/out/persistence/<aggregate>/` — outbound JPA/Postgres adapter, with its own `mapper/` subpackage.
+    - `shared/exception/` — cross-cutting exception types (e.g. `GlobalExceptionHandler`) not specific to one aggregate.
+    - Adapters know the domain, never the reverse. Generated `jobzy-contracts` models belong at the `adapter/in/rest`
+      edge, not in the domain model — map explicitly between contract DTOs and domain models, never leak contract types
+      into `domain` or `application`.
 
 ## Architecture principles for changes
 
@@ -60,18 +71,25 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
 
 ## Build & test
 
-> The commands below are the Maven standard for a multi-module reactor — verify against the root `pom.xml` and adjust once
-> module names are confirmed.
-
 ```
-mvn clean install                 # full build incl. contract codegen
-mvn -pl contractz -am generate-sources   # regenerate contract only
-mvn test                          # unit tests
-mvn -pl api test                  # tests for a single module
+mvn clean install                         # full build incl. contract codegen
+mvn -pl jobzy-contracts -am generate-sources   # regenerate contract only
+mvn test                                  # unit tests, all modules
+mvn -pl jobzy-api test                    # tests for the api module only
 ```
 
 Use Maven/the linter for style and compile errors — not Claude as a linter. Run existing tests/checks yourself via bash
-rather than relying on your own judgment of correctness.
+rather than relying on your own judgment of correctness. `mvn clean install` is not cheap — run it once per verification
+pass, not repeatedly "to be sure"; only re-run it if you have a concrete new reason to suspect flakiness (a fresh change
+to test isolation/config), not because an area was flaky once before.
+
+## Speckit specs
+
+Feature specs live at repo root: `specs/<NNN-feature-slug>/` (`spec.md`, `plan.md`, `tasks.md`, `checklists/`) — **not**
+under `.specify/specs/`. `.specify/` holds the Speckit tool machinery itself (templates, scripts, and
+`.specify/memory/constitution.md`, the project constitution — the canonical, more detailed source for the principles
+summarized in this file; when the two disagree, the constitution wins and this file should be updated to match).
+Existing ADRs live in `.claude/adr/`.
 
 ## Language policy (strict)
 

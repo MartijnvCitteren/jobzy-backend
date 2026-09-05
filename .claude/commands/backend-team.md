@@ -41,41 +41,58 @@ the `jobzy-architect` agent type. Have it:
 
 - Read the spec and any existing plan output.
 - Produce or review the `/speckit.plan` output for this codebase's actual module
-  structure (`contractz` vs `api`).
+  structure (`jobzy-contracts` vs `jobzy-api`), giving exact target packages, not just
+  layer names.
 - Break the work into the shared task list, with each task description referencing the
-  corresponding Speckit task ID from `tasks.md` for traceability.
+  corresponding Speckit task ID from `tasks.md` for traceability, **ending with exactly
+  one trailing task titled `[review-gate] Final review: <feature-slug>`** that depends
+  on every implementation task. That single task is the only review/doc checkpoint for
+  the whole feature — see step 4.
 
 Review what it produces yourself before moving on. If it flags architectural risks or a
 pragmatic-vs-academic trade-off, that decision may need the human — relay it rather than
 picking one yourself.
 
-## 3. Backend developer: implement, one task at a time
+## 3. Backend developer: implement every task back-to-back
 
-Spawn a teammate using the `jobzy-backend-developer` agent type. It works strictly
-TDD, claiming or being assigned one task at a time from the shared list. Let it
-self-claim if the task breakdown is clean; assign explicitly if some tasks need a
-particular order.
+Spawn a teammate using the `jobzy-backend-developer` agent type. It works strictly TDD,
+claiming or being assigned tasks from the shared list, one at a time — but it moves
+straight from one implementation task to the next without waiting for review in between,
+marking each complete itself as it goes (the `TaskCompleted` hook doesn't gate ordinary
+tasks). It stops once only the `[review-gate]` task remains and reports the feature
+implementation-complete. Let it self-claim if the task breakdown is clean; assign
+explicitly if some tasks need a particular order.
 
-## 4. Code reviewer: the only path to "done"
+## 4. Code reviewer: one pass, at the end, gates `[review-gate]`
 
-A task is not done until a teammate using the `jobzy-code-reviewer` agent type has
-signed off on all three axes (coding standards, architecture, functionality). This is
-enforced mechanically: the `TaskCompleted` hook
-(`.claude/hooks/require-review-signoff.sh`) blocks marking a task complete unless its
-description carries a `Reviewed-by: jobzy-code-reviewer` marker. Don't try to route
-around this hook — if a teammate reports being blocked, that means review didn't happen
-yet, not that the hook is wrong.
+**This team reviews once per feature, not once per task.** Spawn a teammate using the
+`jobzy-code-reviewer` agent type only after the backend developer reports every
+implementation task done. Have it diff the *entire* feature branch against its base and
+review the whole thing on all three axes (coding standards, architecture, functionality)
+in one pass.
 
-Spawn the reviewer once the backend developer reports a task's tests are green. For
-unusually high-stakes changes (security, GDPR/personal-data handling, schema
+This is enforced mechanically: the `TaskCompleted` hook
+(`.claude/hooks/require-review-signoff.sh`) blocks marking the `[review-gate]` task
+complete unless its description carries a `Reviewed-by: jobzy-code-reviewer` marker
+(ordinary implementation tasks are unaffected). Don't try to route around this hook — if
+a teammate reports being blocked on `[review-gate]`, that means the full-feature review
+didn't happen yet, not that the hook is wrong.
+
+For unusually high-stakes changes (security, GDPR/personal-data handling, schema
 migrations), consider spawning the reviewer with `model: opus` instead of its default
-Sonnet.
+Sonnet, or spawning it once mid-feature for an interim look as a deliberate exception —
+but the end-of-feature pass over the full diff still happens regardless.
 
-## 5. Documentation writer: only after sign-off
+If it comes back `REQUEST_CHANGES`, send the findings to the backend developer, wait for
+fixes, and re-review only the delta — don't restart the whole-feature review from
+scratch.
 
-Once a task carries the review sign-off marker, spawn a teammate using the
-`jobzy-documentation-writer` agent type, scoped only to what changed in that task
-(Javadoc, README/docs, `contractz` OpenAPI YAML). Never spawn it before review sign-off.
+## 5. Documentation writer: only after `[review-gate]` is signed off
+
+Once `[review-gate]` carries the review sign-off marker, spawn a teammate using the
+`jobzy-documentation-writer` agent type, scoped to the *entire* feature diff (Javadoc,
+README/docs, `jobzy-contracts` OpenAPI YAML) — also one pass, not per task. Never spawn
+it before `[review-gate]` is signed off.
 
 ## 6. Retro before shutdown
 
