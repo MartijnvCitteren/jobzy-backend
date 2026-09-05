@@ -3,6 +3,7 @@ package app.jobzy.api.integration.vacancy;
 import static app.jobzy.api.integration.IntegrationCommons.JSON_MAPPER;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,10 +13,12 @@ import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyStatus;
 import io.restassured.http.ContentType;
 import java.math.BigDecimal;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 
 /**
  * Runs against an in-memory H2 database so the vacancy is persisted through the real JPA adapter.
@@ -46,28 +49,31 @@ class VacancyControllerIntegrationTest extends BaseIntegrationTest {
         }
         """;
 
-    var responseBody =
-        given()
-            .contentType(ContentType.JSON)
-            .body(requestBody)
-            .when()
-            .post("/vacancy")
-            .then()
-            .statusCode(201)
-            .extract()
-            .asString();
+    var result = makeRequestAndExpectedStatus(requestBody, HttpStatus.CREATED);
 
-    var vacancyResponse = JSON_MAPPER.readValue(responseBody, VacancyResponse.class);
+    assertInstanceOf(UUID.class, result.getId());
+    assertEquals(VacancyStatus.DRAFT, result.getStatus());
+    assertEquals("Sales Manager", result.getJobTitle());
+    assertEquals("NL", result.getLocation().getCountry());
+    assertEquals("Amsterdam", result.getLocation().getCity());
+    assertEquals(BigDecimal.valueOf(32), result.getMinHoursPerWeek());
+    assertEquals(BigDecimal.valueOf(40), result.getMaxHoursPerWeek());
+    assertNotNull(result.getCreatedAt());
 
-    assertNotNull(vacancyResponse.getId());
-    assertEquals(VacancyStatus.DRAFT, vacancyResponse.getStatus());
-    assertEquals("Sales Manager", vacancyResponse.getJobTitle());
-    assertEquals("NL", vacancyResponse.getLocation().getCountry());
-    assertEquals("Amsterdam", vacancyResponse.getLocation().getCity());
-    assertEquals(BigDecimal.valueOf(32), vacancyResponse.getMinHoursPerWeek());
-    assertEquals(BigDecimal.valueOf(40), vacancyResponse.getMaxHoursPerWeek());
-    assertNotNull(vacancyResponse.getCreatedAt());
-
-    assertTrue(vacancyJpaRepository.findById(vacancyResponse.getId()).isPresent());
+    assertTrue(vacancyJpaRepository.findById(result.getId()).isPresent());
   }
+  private VacancyResponse makeRequestAndExpectedStatus(String requestBody ,HttpStatus status) {
+    var response = given()
+        .contentType(ContentType.JSON)
+        .body(requestBody)
+        .when()
+        .post("/vacancy")
+        .then()
+        .statusCode(status.value())
+        .extract()
+        .asString();
+    return JSON_MAPPER.readValue(response, VacancyResponse.class);
+  }
+
+
 }
