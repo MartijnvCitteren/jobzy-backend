@@ -1,8 +1,12 @@
 package app.jobzy.api.adapter.in.rest.vacancy;
 
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyCoreRequestMapper;
+import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyDescriptionRequestMapper;
+import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyDescriptionResponseMapper;
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyResponseMapper;
+import app.jobzy.api.adapter.in.rest.vacancy.validation.VacancyDescriptionContentValidator;
 import app.jobzy.api.application.port.in.CreateVacancyUseCase;
+import app.jobzy.api.application.port.in.ManualVacancyDescriptionUseCase;
 import app.jobzy.api.vacancy.adapter.in.rest.VacancyApi;
 import app.jobzy.api.vacancy.adapter.in.web.contract.GenerateVacancyDescriptionRequest;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
@@ -25,8 +29,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Only {@link #createVacancy} is wired up so far; every other operation falls through to {@link
- * VacancyApi}'s default methods, which respond with 501 Not Implemented.
+ * Only {@link #createVacancy} and {@link #manualVacancyDescription} are wired up so far; every
+ * other operation falls through to {@link VacancyApi}'s default methods, which respond with 501 Not
+ * Implemented.
  */
 @Log4j2
 @RestController
@@ -35,6 +40,10 @@ public class VacancyController implements VacancyApi {
   private final VacancyCoreRequestMapper coreRequestMapper;
   private final VacancyResponseMapper responseMapper;
   private final CreateVacancyUseCase createVacancyUseCase;
+  private final VacancyDescriptionContentValidator descriptionContentValidator;
+  private final VacancyDescriptionRequestMapper descriptionRequestMapper;
+  private final VacancyDescriptionResponseMapper descriptionResponseMapper;
+  private final ManualVacancyDescriptionUseCase manualVacancyDescriptionUseCase;
 
   @Override
   public ResponseEntity<VacancyResponse> closeVacancy(UUID id) {
@@ -98,7 +107,11 @@ public class VacancyController implements VacancyApi {
   @Override
   public ResponseEntity<VacancyDescriptionResponse> manualVacancyDescription(
       UUID id, VacancyDescriptionRequest vacancyDescriptionRequest) {
-    return null;
+    descriptionContentValidator.validate(vacancyDescriptionRequest);
+    var command = descriptionRequestMapper.toCommand(id, vacancyDescriptionRequest);
+    var vacancy = manualVacancyDescriptionUseCase.setManualDescription(command);
+    var response = descriptionResponseMapper.toResponse(vacancy.getDescription());
+    return ResponseEntity.status(HttpStatus.CREATED).body(response);
   }
 
   @Override

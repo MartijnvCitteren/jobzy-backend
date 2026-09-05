@@ -5,6 +5,7 @@ import app.jobzy.api.domain.UuidV7Generator;
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
+import app.jobzy.api.domain.vacancy.valueobject.VacancyDescription;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class Vacancy extends BaseObject {
   private WorkplaceType workplaceType;
   private HoursPerWeek hoursPerWeek;
   private VacancyStatus status;
+  private VacancyDescription description;
 
   private Vacancy(
       UUID id,
@@ -27,7 +29,8 @@ public class Vacancy extends BaseObject {
       Location location,
       WorkplaceType workplaceType,
       HoursPerWeek hoursPerWeek,
-      VacancyStatus status) {
+      VacancyStatus status,
+      VacancyDescription description) {
     this.id = id;
     this.jobTitle = jobTitle;
     this.category = category;
@@ -35,6 +38,7 @@ public class Vacancy extends BaseObject {
     this.workplaceType = workplaceType;
     this.hoursPerWeek = hoursPerWeek;
     this.status = status;
+    this.description = description;
   }
 
   public UUID getId() {
@@ -89,6 +93,14 @@ public class Vacancy extends BaseObject {
     this.status = status;
   }
 
+  public VacancyDescription getDescription() {
+    return description;
+  }
+
+  public void setDescription(VacancyDescription description) {
+    this.description = description;
+  }
+
   public static Builder builder() {
     return new Builder();
   }
@@ -124,19 +136,27 @@ public class Vacancy extends BaseObject {
         + hoursPerWeek
         + ", status="
         + status
+        + ", description="
+        + description
         + '}';
   }
 
   public static class Builder {
-    private final UUID id = UuidV7Generator.getUUID();
+    private UUID id = UuidV7Generator.getUUID();
     private String jobTitle;
     private VacancyCategory category;
     private Location location;
     private WorkplaceType workplaceType;
     private HoursPerWeek hoursPerWeek;
     private VacancyStatus status = VacancyStatus.DRAFT;
+    private VacancyDescription description;
 
     private Builder() {}
+
+    public Builder id(UUID id) {
+      this.id = id;
+      return this;
+    }
 
     public Builder jobTitle(String jobTitle) {
       this.jobTitle = jobTitle;
@@ -168,8 +188,14 @@ public class Vacancy extends BaseObject {
       return this;
     }
 
+    public Builder description(VacancyDescription description) {
+      this.description = description;
+      return this;
+    }
+
     public Vacancy build() {
-      return new Vacancy(id, jobTitle, category, location, workplaceType, hoursPerWeek, status);
+      return new Vacancy(
+          id, jobTitle, category, location, workplaceType, hoursPerWeek, status, description);
     }
   }
 }
