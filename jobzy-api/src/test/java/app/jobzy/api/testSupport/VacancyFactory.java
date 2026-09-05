@@ -30,7 +30,8 @@ public class VacancyFactory {
         .workplaceType(WORKPLACE_TYPE);
   }
 
-  public static CreateCoreVacancyCommand.CreateCoreVacancyCommandBuilder getFilledCreateCoreVacancyCommand() {
+  public static CreateCoreVacancyCommand.CreateCoreVacancyCommandBuilder
+      getFilledCreateCoreVacancyCommand() {
     return CreateCoreVacancyCommand.builder()
         .jobTitle(JOB_TITLE)
         .category(CATEGORY)
