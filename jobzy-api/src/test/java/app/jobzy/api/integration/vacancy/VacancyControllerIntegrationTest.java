@@ -121,8 +121,7 @@ class VacancyControllerIntegrationTest extends BaseIntegrationTest {
             "{\"country\": \"NL\", \"city\": " + TOO_LONG + "}"),
         arguments("workplaceType is missing", "workplaceType", "workplaceType", "null"),
         arguments("minHoursPerWeek is missing", "minHoursPerWeek", "minHoursPerWeek", "null"),
-        arguments(
-            "minHoursPerWeek is not greater than 0", "minHoursPerWeek", "minHoursPerWeek", "0"),
+        arguments("minHoursPerWeek is less than 0", "minHoursPerWeek", "minHoursPerWeek", "-1"),
         arguments("minHoursPerWeek exceeds 60", "minHoursPerWeek", "minHoursPerWeek", "61"),
         arguments("maxHoursPerWeek is missing", "maxHoursPerWeek", "maxHoursPerWeek", "null"),
         arguments(

@@ -8,6 +8,8 @@ import app.jobzy.api.vacancy.adapter.in.web.contract.GenerateVacancyDescriptionR
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyDescriptionGeneration;
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyDescriptionRequest;
+import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyDescriptionResponse;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyListResponse;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyResponse;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyStatus;
@@ -90,6 +92,12 @@ public class VacancyController implements VacancyApi {
       String sortDir,
       @Nullable String cursor,
       Integer limit) {
+    return null;
+  }
+
+  @Override
+  public ResponseEntity<VacancyDescriptionResponse> manualVacancyDescription(
+      UUID id, VacancyDescriptionRequest vacancyDescriptionRequest) {
     return null;
   }
 

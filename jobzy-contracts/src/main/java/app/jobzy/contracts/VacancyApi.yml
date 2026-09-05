@@ -56,6 +56,42 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /vacancy/{id}/description:
+    parameters:
+      - $ref: '#/components/parameters/VacancyId'
+    post:
+      operationId: manualVacancyDescription
+      tags: [ Vacancy ]
+      summary: User manually creates a vacancy description
+      description: >
+        Sets the `description` (summary, job description, tasks, what we offer, about us) for an
+        existing vacancy from manually entered fields, as an alternative to the AI-assisted flow via
+        `POST /vacancy/{id}/generate-description`. Replaces the vacancy's current `description` in
+        full.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VacancyDescriptionRequest'
+      responses:
+        '201':
+          description: Vacancy description saved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VacancyDescriptionResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /vacancy/{id}/generate-description:
     parameters:
       - $ref: '#/components/parameters/VacancyId'
@@ -587,7 +623,7 @@ components:
           type: string
           maxLength: 200
 
-    VacancyDescription:
+    VacancyDescriptionResponse:
       type: object
       description: >
         All fields optional and populated incrementally, including via a separate, explicit
@@ -597,19 +633,19 @@ components:
       properties:
         summary:
           type: string
-          maxLength: 500
+          maxLength: 1000
         jobDescription:
           type: string
           maxLength: 5000
         tasks:
           type: string
-          maxLength: 3000
+          maxLength: 5000
         whatWeOffer:
           type: string
-          maxLength: 2000
+          maxLength: 2500
         aboutUs:
           type: string
-          maxLength: 2000
+          maxLength: 2500
 
     ContactPerson:
       type: object
@@ -617,6 +653,7 @@ components:
       properties:
         name:
           type: string
+          minLength: 2
           maxLength: 50
         role:
           type: string
@@ -684,7 +721,7 @@ components:
           description: Hours per week; decimals allowed for part-time roles (e.g. 32.5).
           exclusiveMinimum: 1
         description:
-          $ref: '#/components/schemas/VacancyDescription'
+          $ref: '#/components/schemas/VacancyDescriptionResponse'
         contactPerson:
           $ref: '#/components/schemas/ContactPerson'
         offer:
@@ -710,7 +747,8 @@ components:
       properties:
         jobTitle:
           type: string
-          maxLength: 200
+          minLength: 2
+          maxLength: 100
         category:
           $ref: '#/components/schemas/VacancyCategory'
         location:
@@ -719,7 +757,7 @@ components:
           $ref: '#/components/schemas/WorkplaceType'
         minHoursPerWeek:
           type: number
-          exclusiveMinimum: 0
+          minimum: 0
           maximum: 60
         maxHoursPerWeek:
           type: number
@@ -727,7 +765,7 @@ components:
           maximum: 60
     VacancyDescriptionRequest:
       allOf:
-        - $ref: '#/components/schemas/VacancyDescription'
+        - $ref: '#/components/schemas/VacancyDescriptionResponse'
 
     VacancyDescriptionGeneration:
       type: object
@@ -743,7 +781,7 @@ components:
         status:
           $ref: '#/components/schemas/VacancyDescriptionGenerationStatus'
         description:
-          $ref: '#/components/schemas/VacancyDescription'
+          $ref: '#/components/schemas/VacancyDescriptionResponse'
 
     GenerateVacancyDescriptionRequest:
       type: object
