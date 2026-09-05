@@ -65,7 +65,7 @@ public class ArchitectureTest {
             .resideInAPackage("..application..")
             .should()
             .dependOnClassesThat()
-                .resideInAnyPackage("..adapter..");
+            .resideInAnyPackage("..adapter..");
     myRule.check(classes);
   }
 }
