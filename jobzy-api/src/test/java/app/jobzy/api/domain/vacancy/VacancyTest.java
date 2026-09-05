@@ -3,18 +3,41 @@ package app.jobzy.api.domain.vacancy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
+import app.jobzy.api.domain.vacancy.valueobject.VacancyDescription;
+import app.jobzy.api.domain.vacancy.valueobject.VacancyDescriptionSource;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
 import java.math.BigDecimal;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class VacancyTest {
+
+  @Test
+  @DisplayName("given builder with an explicit id, when build then vacancy has exactly that id")
+  void givenBuilderWithExplicitIdWhenBuildThenVacancyHasExactlyThatId() {
+    var id = UUID.randomUUID();
+
+    var vacancy = Vacancy.builder().id(id).build();
+
+    assertEquals(id, vacancy.getId());
+  }
+
+  @Test
+  @DisplayName("given builder with no explicit id, when build then vacancy has a generated id")
+  void givenBuilderWithNoExplicitIdWhenBuildThenVacancyHasGeneratedId() {
+    var vacancy = Vacancy.builder().build();
+
+    assertNotNull(vacancy.getId());
+  }
 
   @Test
   @DisplayName("given builder with no status, when build then status defaults to draft")
@@ -53,6 +76,32 @@ class VacancyTest {
     assertEquals(WorkplaceType.HYBRID, vacancy.getWorkplaceType());
     assertEquals(hoursPerWeek, vacancy.getHoursPerWeek());
     assertEquals(VacancyStatus.PUBLISHED, vacancy.getStatus());
+  }
+
+  @Test
+  @DisplayName("given builder with no description, when build then description defaults to null")
+  void givenBuilderWithNoDescriptionWhenBuildThenDescriptionDefaultsToNull() {
+    var vacancy = Vacancy.builder().build();
+
+    assertNull(vacancy.getDescription());
+  }
+
+  @Test
+  @DisplayName("given vacancy, when description is set then getter reflects the new value")
+  void givenVacancyWhenDescriptionIsSetThenGetterReflectsTheNewValue() {
+    var vacancy = Vacancy.builder().build();
+    var description =
+        new VacancyDescription(
+            "Summary",
+            "Job description",
+            "Tasks",
+            "What we offer",
+            "About us",
+            VacancyDescriptionSource.MANUAL);
+
+    vacancy.setDescription(description);
+
+    assertEquals(description, vacancy.getDescription());
   }
 
   @Test
