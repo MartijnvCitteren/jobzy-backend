@@ -16,6 +16,7 @@
 	</modules>
 
 	<properties>
+		<arch-unit.version>1.5.0</arch-unit.version>
 		<java.version>25</java.version>
 		<lombok.version>1.18.46</lombok.version>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
@@ -71,6 +72,12 @@
 				<groupId>io.rest-assured</groupId>
 				<artifactId>rest-assured</artifactId>
 				<version>${rest-assured.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.tngtech.archunit</groupId>
+				<artifactId>archunit-junit5</artifactId>
+				<version>${arch-unit.version}</version>
 				<scope>test</scope>
 			</dependency>
 

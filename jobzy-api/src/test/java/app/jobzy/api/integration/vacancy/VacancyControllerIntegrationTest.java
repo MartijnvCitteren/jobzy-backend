@@ -62,18 +62,18 @@ class VacancyControllerIntegrationTest extends BaseIntegrationTest {
 
     assertTrue(vacancyJpaRepository.findById(result.getId()).isPresent());
   }
-  private VacancyResponse makeRequestAndExpectedStatus(String requestBody ,HttpStatus status) {
-    var response = given()
-        .contentType(ContentType.JSON)
-        .body(requestBody)
-        .when()
-        .post("/vacancy")
-        .then()
-        .statusCode(status.value())
-        .extract()
-        .asString();
+
+  private VacancyResponse makeRequestAndExpectedStatus(String requestBody, HttpStatus status) {
+    var response =
+        given()
+            .contentType(ContentType.JSON)
+            .body(requestBody)
+            .when()
+            .post("/vacancy")
+            .then()
+            .statusCode(status.value())
+            .extract()
+            .asString();
     return JSON_MAPPER.readValue(response, VacancyResponse.class);
   }
-
-
 }
