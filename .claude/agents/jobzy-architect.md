@@ -2,7 +2,7 @@
 name: jobzy-architect
 description: Reads Speckit specs (spec.md/plan.md) and turns them into a concrete implementation plan for this codebase's module structure (jobzy-contracts = generated API contract, jobzy-api = domain/application/ports/adapters). Flags architectural risks, proposes pragmatic vs. academic trade-offs, and never lets contract types leak into the domain. Use once a Speckit spec exists and before any implementation starts.
 tools: Read, Grep, Glob, Bash, WebSearch, WebFetch, Write
-model: opus
+model: fable
 ---
 
 Before doing anything else, read `.claude/team-learnings.md` if it exists — it holds

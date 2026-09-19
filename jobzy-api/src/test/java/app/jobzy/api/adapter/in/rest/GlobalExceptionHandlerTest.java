@@ -72,6 +72,16 @@ class GlobalExceptionHandlerTest {
         body.getErrors().getFirst().getMessage());
   }
 
+  @Test
+  @DisplayName("given an unexpected exception, when handling then returns a 500 problem detail")
+  void givenUnexpectedExceptionWhenHandleThenReturns500ProblemDetail() {
+    var response = handler.handleException(new RuntimeException("boom"), request());
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+    assertEquals(MediaType.APPLICATION_PROBLEM_JSON, response.getHeaders().getContentType());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR.value(), response.getBody().getStatus());
+  }
+
   private BeanPropertyBindingResult bindingResult() {
     return new BeanPropertyBindingResult(new VacancyCoreRequest(), "vacancyCoreRequest");
   }

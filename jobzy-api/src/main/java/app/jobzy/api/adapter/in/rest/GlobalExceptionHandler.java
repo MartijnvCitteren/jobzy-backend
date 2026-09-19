@@ -1,10 +1,14 @@
 package app.jobzy.api.adapter.in.rest;
 
+import app.jobzy.api.shared.Constants;
 import app.jobzy.api.vacancy.adapter.in.web.contract.ProblemDetails;
 import app.jobzy.api.vacancy.adapter.in.web.contract.ProblemDetailsErrorsInner;
 import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,14 +20,20 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /**
  * Translates exceptions from every REST controller into the {@code ProblemDetails} representation
- * of the API contract.
+ * of the API contract. Aggregate-specific exceptions are handled by their own advice classes (e.g.
+ * {@code VacancyExceptionHandler}); this class only covers cross-cutting concerns that apply to
+ * every controller.
+ *
+ * <p>Ordered at lowest precedence so its catch-all {@code Exception} handler is only consulted
+ * after every aggregate-specific advice has had a chance to handle the exception more precisely:
+ * Spring picks the best-matching handler within the first applicable advice bean it visits, not the
+ * best match across all advice beans, so an unordered catch-all here would shadow more specific
+ * handlers declared in other advice classes.
  */
+@Log4j2
 @RestControllerAdvice
+@Order(Ordered.LOWEST_PRECEDENCE)
 public class GlobalExceptionHandler {
-
-  private static final String VALIDATION_FAILED_TITLE = "Validation failed";
-  private static final String VALIDATION_FAILED_DETAIL =
-      "The request failed validation on one or more fields, see 'errors' for details.";
 
   /**
    * Turns bean-validation failures on a request body into an RFC 9457 problem response. Every
@@ -44,8 +54,8 @@ public class GlobalExceptionHandler {
         ex.getBindingResult().getAllErrors().stream().map(this::toError).toList();
 
     var problemDetails =
-        new ProblemDetails(VALIDATION_FAILED_TITLE, HttpStatus.BAD_REQUEST.value());
-    problemDetails.setDetail(VALIDATION_FAILED_DETAIL);
+        new ProblemDetails(Constants.VALIDATION_FAILED_TITLE, HttpStatus.BAD_REQUEST.value());
+    problemDetails.setDetail(Constants.VALIDATION_FAILED_DETAIL);
     problemDetails.setInstance(URI.create(request.getRequestURI()));
     problemDetails.setErrors(errors);
 
@@ -59,5 +69,24 @@ public class GlobalExceptionHandler {
       return new ProblemDetailsErrorsInner(fieldError.getField(), fieldError.getDefaultMessage());
     }
     return new ProblemDetailsErrorsInner(error.getObjectName(), error.getDefaultMessage());
+  }
+
+  /**
+   * Fallback for every exception not handled more specifically, so failures (e.g. a database error
+   * during save) surface as RFC 9457 Problem Details instead of Spring's default error response. No
+   * internal details are leaked in {@code detail}.
+   */
+  @ExceptionHandler(Exception.class)
+  ResponseEntity<ProblemDetails> handleException(Exception ex, HttpServletRequest request) {
+    log.error("Unhandled exception while processing request", ex);
+    var problemDetails =
+        new ProblemDetails(
+            Constants.INTERNAL_SERVER_ERROR_TITLE, HttpStatus.INTERNAL_SERVER_ERROR.value());
+    problemDetails.setDetail(Constants.INTERNAL_SERVER_ERROR_DETAIL);
+    problemDetails.setInstance(URI.create(request.getRequestURI()));
+
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+        .body(problemDetails);
   }
 }
