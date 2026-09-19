@@ -1,6 +1,6 @@
 package app.jobzy.api.testSupport;
 
-import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
+import app.jobzy.api.application.port.in.vacancy.command.CreateCoreVacancyCommand;
 import app.jobzy.api.domain.vacancy.Vacancy;
 import app.jobzy.api.domain.vacancy.Vacancy.Builder;
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;

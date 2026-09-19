@@ -5,8 +5,8 @@ import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyDescriptionRe
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyDescriptionResponseMapper;
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyResponseMapper;
 import app.jobzy.api.adapter.in.rest.vacancy.validation.VacancyDescriptionContentValidator;
-import app.jobzy.api.application.port.in.CreateVacancyUseCase;
-import app.jobzy.api.application.port.in.ManualVacancyDescriptionUseCase;
+import app.jobzy.api.application.port.in.vacancy.CreateVacancyUseCase;
+import app.jobzy.api.application.port.in.vacancy.ManualVacancyDescriptionUseCase;
 import app.jobzy.api.vacancy.adapter.in.rest.VacancyApi;
 import app.jobzy.api.vacancy.adapter.in.web.contract.GenerateVacancyDescriptionRequest;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCategory;
@@ -71,7 +71,7 @@ public class VacancyController implements VacancyApi {
 
   @Override
   public ResponseEntity<VacancyDescriptionGeneration> generateVacancyDescription(
-      UUID id, GenerateVacancyDescriptionRequest generateVacancyDescriptionRequest) {
+      UUID vacancyId, GenerateVacancyDescriptionRequest generateVacancyDescriptionRequest) {
     return null;
   }
 

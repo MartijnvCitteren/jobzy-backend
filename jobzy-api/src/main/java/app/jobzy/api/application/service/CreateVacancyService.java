@@ -1,7 +1,7 @@
 package app.jobzy.api.application.service;
 
-import app.jobzy.api.application.port.in.CreateVacancyUseCase;
-import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
+import app.jobzy.api.application.port.in.vacancy.CreateVacancyUseCase;
+import app.jobzy.api.application.port.in.vacancy.command.CreateCoreVacancyCommand;
 import app.jobzy.api.application.port.out.VacancyRepository;
 import app.jobzy.api.domain.vacancy.Vacancy;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;

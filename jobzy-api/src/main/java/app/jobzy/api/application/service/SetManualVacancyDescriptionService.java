@@ -1,7 +1,7 @@
 package app.jobzy.api.application.service;
 
-import app.jobzy.api.application.port.in.ManualVacancyDescriptionUseCase;
-import app.jobzy.api.application.port.in.command.SetManualVacancyDescriptionCommand;
+import app.jobzy.api.application.port.in.vacancy.ManualVacancyDescriptionUseCase;
+import app.jobzy.api.application.port.in.vacancy.command.SetManualVacancyDescriptionCommand;
 import app.jobzy.api.application.port.out.VacancyRepository;
 import app.jobzy.api.domain.vacancy.Vacancy;
 import app.jobzy.api.domain.vacancy.VacancyNotFoundException;

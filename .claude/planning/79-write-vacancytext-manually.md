@@ -238,7 +238,7 @@ time a command reaches this service, content has already passed the adapter-leve
 so the service has no content-validation responsibility and no invalid-content test case — it can
 assume the command it receives is safe.
 
-- New file: `jobzy-api/src/main/java/app/jobzy/api/application/port/in/command/SetManualVacancyDescriptionCommand.java`
+- New file: `../../jobzy-api/src/main/java/app/jobzy/api/application/port/in/vacancy/command`
   — record `(UUID vacancyId, String summary, String jobDescription, String tasks, String whatWeOffer,
   String aboutUs)`.
 - New file: `jobzy-api/src/main/java/app/jobzy/api/application/port/in/ManualVacancyDescriptionUseCase.java`

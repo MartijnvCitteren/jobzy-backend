@@ -8,7 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import app.jobzy.api.application.port.in.command.SetManualVacancyDescriptionCommand;
+import app.jobzy.api.application.port.in.vacancy.command.SetManualVacancyDescriptionCommand;
 import app.jobzy.api.application.port.out.VacancyRepository;
 import app.jobzy.api.domain.vacancy.VacancyNotFoundException;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyDescriptionSource;

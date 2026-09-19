@@ -1,6 +1,6 @@
 package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
-import app.jobzy.api.application.port.in.command.SetManualVacancyDescriptionCommand;
+import app.jobzy.api.application.port.in.vacancy.command.SetManualVacancyDescriptionCommand;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyDescriptionRequest;
 import java.util.UUID;
 import org.mapstruct.Mapper;

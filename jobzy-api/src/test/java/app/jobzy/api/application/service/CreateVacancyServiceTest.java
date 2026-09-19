@@ -3,7 +3,7 @@ package app.jobzy.api.application.service;
 import static app.jobzy.api.testSupport.VacancyFactory.getFilledCreateCoreVacancyCommand;
 import static org.mockito.Mockito.verify;
 
-import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
+import app.jobzy.api.application.port.in.vacancy.command.CreateCoreVacancyCommand;
 import app.jobzy.api.application.port.out.VacancyRepository;
 import app.jobzy.api.domain.vacancy.Vacancy;
 import org.junit.jupiter.api.DisplayName;

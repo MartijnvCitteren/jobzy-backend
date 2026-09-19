@@ -25,6 +25,7 @@
 		<rest-assured.version>5.5.0</rest-assured.version>
 		<spotless.version>3.8.0</spotless.version>
 		<spring-boot.version>4.1.0</spring-boot.version>
+		<spring-ai.version>2.0.1</spring-ai.version>
 		<swagger-annotations.version>2.2.52</swagger-annotations.version>
 		<uuid-generator.version>5.2.0</uuid-generator.version>
 	</properties>
@@ -43,6 +44,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 			<version>${spring-boot.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework.ai</groupId>
+				<artifactId>spring-ai-model</artifactId>
+				<version>${spring-ai.version}</version>
 			</dependency>
 
 		<!-- OTHER			-->
@@ -84,7 +90,6 @@
 
 		</dependencies>
 	</dependencyManagement>
-
 	<build>
 		<pluginManagement>
 			<plugins>
