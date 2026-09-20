@@ -21,6 +21,10 @@ spring:
         options:
           model: gpt-5.2
 
+jobzy:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:}
+
 logging:
   level:
     app.jobzy: ${LOGGING_LEVEL_APP:DEBUG}

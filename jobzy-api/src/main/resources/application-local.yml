@@ -7,6 +7,10 @@ spring:
     password: Super_secret-123
     username: sa
 
+jobzy:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+
 logging:
   level:
     app.jobzy: DEBUG
