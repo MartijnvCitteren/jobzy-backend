@@ -2,6 +2,8 @@ package app.jobzy.api.adapter.in.rest.vacancy;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import app.jobzy.api.adapter.in.rest.vacancy.exception.InvalidVacancyDescriptionRequestException;
+import app.jobzy.api.adapter.in.rest.vacancy.exception.VacancyExceptionHandler;
 import app.jobzy.api.domain.vacancy.VacancyNotFoundException;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;

@@ -1,4 +1,4 @@
-package app.jobzy.api.adapter.in.rest.vacancy;
+package app.jobzy.api.adapter.in.rest.vacancy.exception;
 
 import app.jobzy.api.domain.vacancy.VacancyNotFoundException;
 import app.jobzy.api.shared.Constants;

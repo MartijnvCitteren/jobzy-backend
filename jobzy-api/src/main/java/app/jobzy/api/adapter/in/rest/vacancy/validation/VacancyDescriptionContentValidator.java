@@ -1,6 +1,6 @@
 package app.jobzy.api.adapter.in.rest.vacancy.validation;
 
-import app.jobzy.api.adapter.in.rest.vacancy.InvalidVacancyDescriptionRequestException;
+import app.jobzy.api.adapter.in.rest.vacancy.exception.InvalidVacancyDescriptionRequestException;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyDescriptionRequest;
 import java.util.regex.Pattern;
 import org.springframework.stereotype.Component;

@@ -4,6 +4,7 @@ import app.jobzy.api.application.port.in.vacancy.command.GenerateVacancyDescript
 import app.jobzy.api.vacancy.adapter.in.web.contract.GenerateVacancyDescriptionRequest;
 import java.util.UUID;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
@@ -12,5 +13,8 @@ import org.mapstruct.ReportingPolicy;
     unmappedTargetPolicy = ReportingPolicy.WARN)
 public interface GenerateVacancyDescriptionMapper {
 
+  @Mapping(target = "vacancyId", source = "id")
+  @Mapping(target = "tasks", source = "request.mostImportantTasks")
+  @Mapping(target = "niceAboutJob", source = "request.whyNiceJob")
   GenerateVacancyDescriptionCommand toCommand(UUID id, GenerateVacancyDescriptionRequest request);
 }
