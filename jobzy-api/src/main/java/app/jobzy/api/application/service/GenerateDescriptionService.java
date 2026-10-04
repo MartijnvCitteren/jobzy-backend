@@ -15,7 +15,7 @@ public class GenerateDescriptionService implements GenerateDescriptionUseCase {
   private final VacancyRepository vacancyRepository;
 
   @Override
-  public VacancyDescription generateVacancy(GenerateVacancyDescriptionCommand command) {
+  public VacancyDescription generateVacancyDescription(GenerateVacancyDescriptionCommand command) {
 
     return null;
   }

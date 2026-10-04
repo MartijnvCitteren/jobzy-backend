@@ -38,18 +38,11 @@ public class VacancyRepositoryAdapter implements VacancyRepository {
 
     if (vacancy.getDescription() != null) {
       var descriptionEntity = descriptionJpaMapper.toJpaEntity(vacancy.getDescription());
-      // Set the @MapsId-derived id explicitly: without it, Hibernate's merge cascade cannot tell
-      // this is an update of an existing row and always attempts an INSERT, which fails with a
-      // duplicate-key error on the second save for the same vacancy.
       descriptionEntity.setId(jpaVacancy.getId());
       descriptionEntity.setVacancy(jpaVacancy);
       jpaVacancy.setDescription(descriptionEntity);
       jpaRepository.save(jpaVacancy);
     } else {
-      // orphanRemoval does not fire from merging a freshly-built transient parent graph (verified
-      // empirically: no DELETE is ever emitted, even after an explicit flush), since Hibernate has
-      // no prior loaded snapshot of the association to diff against. Deleting the row explicitly
-      // is required; deleteById is a no-op if no description exists yet.
       jpaVacancy.setDescription(null);
       jpaRepository.save(jpaVacancy);
       descriptionJpaRepository.deleteById(jpaVacancy.getId());

@@ -1,0 +1,12 @@
+Write a job description that makes people enthousiast to apply to the job.
+
+Structure (use these sections, translated naturally into the output language, in this order):
+1. A two to three sentence opening that says what the role is and why it exists.
+2. What you will do based on {tasks}: 4 to 7 bullets, each starting with a verb, concrete and outcome-oriented.
+3. The team based on team {team} : one short paragraph. Who you work with and how the team works.
+4. Why this job is good based on {niceAboutJob}: one short paragraph or 3 to 5 bullets. Concrete, no superlatives.
+
+Length: 200 to 350 words.
+
+
+

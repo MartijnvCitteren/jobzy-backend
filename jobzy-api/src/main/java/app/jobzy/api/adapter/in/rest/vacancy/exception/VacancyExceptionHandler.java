@@ -29,7 +29,7 @@ public class VacancyExceptionHandler {
 
   /** Turns a lookup of a vacancy that does not exist into an RFC 9457 404 problem response. */
   @ExceptionHandler(VacancyNotFoundException.class)
-  ResponseEntity<ProblemDetails> handleVacancyNotFoundException(
+  public ResponseEntity<ProblemDetails> handleVacancyNotFoundException(
       VacancyNotFoundException ex, HttpServletRequest request) {
     var problemDetails =
         new ProblemDetails(Constants.NOT_FOUND_TITLE, HttpStatus.NOT_FOUND.value());
@@ -46,7 +46,7 @@ public class VacancyExceptionHandler {
    * problem response, naming the offending field the same way bean-validation failures do.
    */
   @ExceptionHandler(InvalidVacancyDescriptionRequestException.class)
-  ResponseEntity<ProblemDetails> handleInvalidVacancyDescriptionRequestException(
+  public ResponseEntity<ProblemDetails> handleInvalidVacancyDescriptionRequestException(
       InvalidVacancyDescriptionRequestException ex, HttpServletRequest request) {
     var problemDetails =
         new ProblemDetails(Constants.VALIDATION_FAILED_TITLE, HttpStatus.BAD_REQUEST.value());

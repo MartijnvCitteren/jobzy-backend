@@ -319,7 +319,7 @@ validator (Task 9a) as an explicit first step.
 - Replace the `return null;` stub: **validate** the incoming `VacancyDescriptionRequest` (Task 9a's
   validator — first step, before anything else) → map request → command (Task 9's request mapper) →
   call `ManualVacancyDescriptionUseCase.setManualDescription` (Task 8) → map
-  `vacancy.getDescription()` → `VacancyDescriptionResponse` (Task 9's response mapper) →
+  `vacancy.getDescription()` → `AiGeneratedVacancyResponse` (Task 9's response mapper) →
   `ResponseEntity.status(HttpStatus.CREATED).body(response)`, matching the `201` the contract declares.
   Inject the validator, mapper, and use case via constructor (`@RequiredArgsConstructor` already in
   place).

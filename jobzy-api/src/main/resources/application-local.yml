@@ -7,6 +7,10 @@ spring:
     password: Super_secret-123
     username: sa
 
+  ai:
+    mistralai:
+      api-key:${MISTRAL_API_KEY}
+
 jobzy:
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}

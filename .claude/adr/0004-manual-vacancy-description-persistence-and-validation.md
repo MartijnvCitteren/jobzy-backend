@@ -17,10 +17,10 @@ makes room for a `source` distinction and later history/versioning.
 That proposal was written **before** `jobzy-contracts/.../VacancyApi.yml` was finalized. The shipped
 contract already decided the API shape differently:
 
-- `VacancyDescriptionResponse` is a flat object with five independent, all-optional plain-text fields
+- `AiGeneratedVacancyResponse` is a flat object with five independent, all-optional plain-text fields
   (`summary`, `jobDescription`, `tasks`, `whatWeOffer`, `aboutUs`), each with its own `maxLength`. No
   `source` field anywhere in the contract.
-- `VacancyResponse.description` embeds `VacancyDescriptionResponse` directly — not a link/reference to
+- `VacancyResponse.description` embeds `AiGeneratedVacancyResponse` directly — not a link/reference to
   a sub-resource. `VacancyListResponse.items` is an array of full `VacancyResponse`, i.e. **the list
   endpoint already returns the full description inline for every item** — so the issue's "keep list
   queries lean" rationale for a separate table is weaker than it looks once the list endpoint is
