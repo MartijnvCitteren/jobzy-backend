@@ -49,7 +49,7 @@ jobs:
       - name: Build, test, check formatting and generate SBOM
         run: >-
           ./mvnw -B -ntp verify
-          org.cyclonedx:cyclonedx-maven-plugin:${CYCLONEDX_MAVEN_PLUGIN_VERSION}:makeAggregateBom
+          "org.cyclonedx:cyclonedx-maven-plugin:${CYCLONEDX_MAVEN_PLUGIN_VERSION}:makeAggregateBom"
           -DoutputFormat=json
 
       - name: Install OSV-Scanner
@@ -96,8 +96,10 @@ jobs:
       - name: Scan git history for secrets
         run: gitleaks git --redact --no-banner --verbose
 
-      - name: Lint GitHub workflows
-        run: actionlint
+      - name: Lint GitHub workflows and shell scripts
+        run: |
+          actionlint
+          shellcheck .github/scripts/*.sh .claude/hooks/*.sh .githooks/pre-commit
 
       - name: Test agent guardrail hooks
         run: .claude/hooks/test-hooks.sh
