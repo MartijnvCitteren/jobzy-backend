@@ -103,11 +103,13 @@
 						</java>
 					</configuration>
 					<executions>
+						<!-- Fails the build on unformatted code instead of silently rewriting it.
+						     Fix locally with: ./mvnw spotless:apply -->
 						<execution>
-							<id>auto-format</id>
-							<phase>process-sources</phase>
+							<id>format-check</id>
+							<phase>verify</phase>
 							<goals>
-								<goal>apply</goal>
+								<goal>check</goal>
 							</goals>
 						</execution>
 					</executions>
