@@ -16,7 +16,7 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
   asked.
 - Deliberate over-engineering is fine when it serves an explicit learning goal (DDD/Hexagonal, OCP 21 track). Without a
   learning goal: take the pragmatic route.
-- Keep recurring costs (Azure, external APIs like the aggregator in epic 4) low — flag it if a change affects that.
+- Keep recurring costs (cloud hosting, external APIs like the aggregator in epic 4) low — flag it if a change affects that.
 
 ## Tech stack
 
@@ -25,10 +25,12 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
   every Spring dependency is equally far along with Java 25/virtual threads).
 - **Maven** as build tool, multi-module reactor, pinned via the Maven Wrapper (`./mvnw`, version and checksum in
   `.mvn/wrapper/maven-wrapper.properties`).
-- **Azure SQL / SQL Server** as database (`mssql-jdbc`); tests run on in-memory H2 (`test` profile).
+- **SQL Server** as database (`mssql-jdbc`); tests run on in-memory H2 (`test` profile).
 - **Lombok** and **MapStruct** as annotation processors; **ArchUnit** for architecture tests; **RestAssured** for
   integration tests.
-- **Azure** (Container Apps for dev/prod, custom domain jobzy.app) as target environment.
+- **Cloud provider: not decided yet (Azure or AWS)**; custom domain jobzy.app. Keep the application cloud-agnostic:
+  configuration through Spring properties / environment variables, a standard container image, and no Azure or AWS SDK
+  outside an adapter behind a port. Flag any change that would tie the code to one provider.
 
 
 ## Repository structure (multi-module)
