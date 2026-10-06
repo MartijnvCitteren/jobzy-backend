@@ -45,7 +45,7 @@ Constraints:
 |----|-----------|-------|
 | 1 | Clean-up: remove dead hook and Speckit references, rewrite `CLAUDE.md`, Maven Wrapper with checksum pin, `spotless:check` instead of `apply`, deny `gh pr merge`, narrow `gh` allowlist, this ADR | repo |
 | 2 | Claude Code hooks: block bypass commands (skip flags, `--no-verify`, force push, `reset --hard`, `gh pr merge`, adding labels); block writes to `target/` and generated sources; ask before editing guardrail files and skills; Stop hook formats the code and requires green `./mvnw verify`; Gitleaks pre-commit | agent |
-| 3 | GitHub Actions: `build` (`./mvnw -B verify`), `security` (Gitleaks, OSV-Scanner), `contract` (`oasdiff` breaking-change check); actions pinned by SHA; Dependabot (Maven + Actions); branch protection on `main` | CI |
+| 3 | GitHub Actions in two jobs (each job is billed rounded up to a minute on private repos): `build` (`./mvnw -B verify`, CycloneDX SBOM, OSV-Scanner on the SBOM) and `checks` (Gitleaks, actionlint, hook regression tests, `oasdiff` breaking-change check); actions pinned by commit SHA, tools by SHA-256; Dependabot (Maven + Actions); branch protection on `main` | CI |
 | 4 | `guardrail-diff` job: suppression count vs `main`; deleted tests / lower test count; PR size limit (~400 lines production + config, ~800 tests); skills and guardrail-config changes; `schema-change` label on JPA entity changes; paths named in `CLAUDE.md` must exist | CI |
 | 5 | Error Prone + NullAway (JSpecify mode, adopted per package via `@NullMarked`), Maven Enforcer, SpotBugs + FindSecBugs, random test order | build |
 | 6 | ArchUnit ban list for typical agent mistakes (Jackson 2, `javax`, `java.util.Date`, `System.out`, field injection, `@Transactional` outside services, `now()` without `Clock`, `Thread.sleep` in tests); GDPR rule: every persistence-entity field is `@PersonalData` or `@ProcessData` | build |
@@ -85,5 +85,11 @@ Constraints:
 - Estimated CI time ~5–6 minutes per PR including the smoke test (~350 PR runs per month within 2,000 private minutes).
 - Formatting is no longer applied automatically by the build; IDE formatting, the agent hook (PR 2) or
   `./mvnw spotless:apply` must be used.
+- OSV-Scanner must scan an SBOM produced by Maven, not `pom.xml`: on this multi-module build it cannot resolve the
+  internal `jobzy-contracts` module and silently reports zero packages and zero vulnerabilities. The first real scan
+  found 14 known vulnerabilities (4 critical), fixed by upgrading Spring Boot to 4.1.1 and pinning patched Jackson and
+  Tomcat versions.
+- Branch protection (and rulesets) on a private repository requires a paid plan (GitHub Pro for a personal account).
+  Without it, CI still runs but no longer blocks merges.
 - Open risks to verify during rollout: Jackson 3 support in `swagger-request-validator` (PR 7), offline SQL Server DDL
   generation with Hibernate (PR 8), Error Prone together with Lombok and MapStruct (PR 5), PIT on JUnit 6 (deferred).

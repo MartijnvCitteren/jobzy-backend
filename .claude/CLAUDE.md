@@ -132,6 +132,22 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 - After changing a hook, run `.claude/hooks/test-hooks.sh` and extend it with a case for the change.
 - `CLAUDE_SKIP_VERIFY_ON_STOP=1` (set by the human when starting Claude Code) disables the Stop hook for a session.
 
+### CI (`.github/workflows/ci.yml`) — the authoritative gate
+
+| Job | Checks |
+|-----|--------|
+| `build` | `./mvnw verify` (compile, tests, ArchUnit, format check), CycloneDX SBOM, OSV-Scanner vulnerability scan of the SBOM |
+| `checks` | gitleaks over the full history, actionlint on the workflows, `.claude/hooks/test-hooks.sh`, `oasdiff` breaking-change check of the contracts against `main` (PRs only) |
+
+- Both jobs must be green to merge into `main`. A red CI is never fixed by weakening a check.
+- **Known vulnerability**: upgrade the dependency. If Spring Boot doesn't manage a fixed version yet, pin it under
+  "security overrides" in the root `pom.xml` (ahead of the Spring Boot BOM) with the advisory IDs, and remove the pin
+  once Spring Boot catches up. Never ignore a vulnerability without the human.
+- **Breaking contract change**: make it backwards compatible (e.g. add optional fields, deprecate before removing). An
+  intended break is the human's decision.
+- Actions are pinned by commit SHA, downloaded tools by SHA-256 (`env` in `ci.yml`). Bump version and hash together.
+  Dependabot opens weekly grouped update PRs for Maven dependencies and GitHub Actions.
+
 ### One-time setup per clone (human)
 
 ```
