@@ -36,6 +36,11 @@
 # Specify
 .specify
 
+# Environment files (secrets)
+.env
+.env.*
+!.env.example
+
 
 # AWS User-specific
 .idea/**/aws.xml
