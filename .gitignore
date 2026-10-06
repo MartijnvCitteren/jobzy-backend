@@ -33,9 +33,6 @@
 .claude/planning
 .claude/team-learnings.md
 
-# Specify
-.specify
-
 # Environment files (secrets)
 .env
 .env.*

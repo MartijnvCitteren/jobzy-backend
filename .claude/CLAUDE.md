@@ -20,10 +20,14 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
 
 ## Tech stack
 
-- **Java 25**, **Spring Boot 4.0.x** (Spring Framework 7). Boot 4 has Java 17 as its minimum baseline but first-class support
+- **Java 25**, **Spring Boot 4.1.x** (Spring Framework 7, Jackson 3 under `tools.jackson.*`). Boot 4 has Java 17 as its minimum baseline but first-class support
   for 25 (JSpecify null-safety, modular jars) — use those features where it makes sense, but check library compatibility (not
   every Spring dependency is equally far along with Java 25/virtual threads).
-- **Maven** as build tool, multi-module reactor.
+- **Maven** as build tool, multi-module reactor, pinned via the Maven Wrapper (`./mvnw`, version and checksum in
+  `.mvn/wrapper/maven-wrapper.properties`).
+- **Azure SQL / SQL Server** as database (`mssql-jdbc`); tests run on in-memory H2 (`test` profile).
+- **Lombok** and **MapStruct** as annotation processors; **ArchUnit** for architecture tests; **RestAssured** for
+  integration tests.
 - **Azure** (Container Apps for dev/prod, custom domain jobzy.app) as target environment.
 
 
@@ -39,24 +43,29 @@ Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**.
     - Contract changes are breaking-change-sensitive as soon as there's a consumer outside this monorepo (multiposting
       aggregator, future integrations) — treat the YAML with the same care as a published API, even though there's no
       external customer yet.
-    - Codegen is configured in `jobzy-api/pom.xml` (`openapi-generator-maven-plugin`, bound to `generate-sources`), with
-      generated model/API packages under `app.jobzy.api.<aggregate>.adapter.in.*` — i.e. codegen output already lands at
-      the adapter edge, not under `domain`. Keep it that way: a generated model landing under a `domain` package is a bug,
-      not a style nit (see ADR 0001).
-- **`jobzy-api`** — the application core, built following **DDD + Hexagonal (Ports & Adapters)**. Actual package layout
-  under `app.jobzy.api.<aggregate>` (e.g. `app.jobzy.api.vacancy`, root shared code under `app.jobzy.api.shared`):
+    - Codegen is configured in `jobzy-api/pom.xml` (`openapi-generator-maven-plugin`, bound to `generate-sources`, output
+      in `jobzy-api/target/generated-sources/openapi`). Generated code lands at the adapter edge, never under `domain`:
+      models in `app.jobzy.api.vacancy.adapter.in.web.contract`, API interfaces in `app.jobzy.api.vacancy.adapter.in.rest`.
+      A generated model landing under a `domain` package is a bug, not a style nit.
+    - Note: generated packages are aggregate-first (`app.jobzy.api.vacancy.adapter...`), hand-written code is layer-first
+      (see below). Don't "fix" this inconsistency as a side effect of another change.
+- **`jobzy-api`** — the application core, built following **DDD + Hexagonal (Ports & Adapters)**. Hand-written code is
+  organised layer-first under `app.jobzy.api`:
     - `domain/<aggregate>/` — entities, value objects (`domain/<aggregate>/valueobject/`), domain services, domain
-      events. **Zero** framework dependencies, no Spring annotations.
+      events. Shared domain base types (`BaseObject`, `UuidV7Generator`) live directly in `domain/`. **Zero** framework
+      dependencies, no Spring annotations.
     - `application/service/` — use-case orchestration and transactions.
     - `application/port/in/` (with `application/port/in/command/` for inbound command DTOs) and `application/port/out/`
       — ports owned by the core.
-    - `adapter/in/rest/<aggregate>/` — inbound REST adapter, with `mapper/request/` and `mapper/response/` subpackages
-      for explicit contract-DTO ↔ domain mapping.
-    - `adapter/out/persistence/<aggregate>/` — outbound JPA/Postgres adapter, with its own `mapper/` subpackage.
-    - `shared/exception/` — cross-cutting exception types (e.g. `GlobalExceptionHandler`) not specific to one aggregate.
-    - Adapters know the domain, never the reverse. Generated `jobzy-contracts` models belong at the `adapter/in/rest`
-      edge, not in the domain model — map explicitly between contract DTOs and domain models, never leak contract types
-      into `domain` or `application`.
+    - `adapter/in/rest/` — inbound REST adapter: cross-aggregate `GlobalExceptionHandler` at the root,
+      `adapter/in/rest/<aggregate>/` per aggregate with `mapper/request/`, `mapper/response/` and `validation/`
+      subpackages for explicit contract-DTO ↔ domain mapping.
+    - `adapter/out/persistence/` — outbound JPA adapter (SQL Server): `BaseJpaEntity` and JPA auditing config at the root,
+      `adapter/out/persistence/<aggregate>/` per aggregate with its own `mapper/` subpackage.
+    - `shared/` — cross-cutting code: `shared/config/` (e.g. `WebConfig`), `shared/exception/` (e.g. `BaseException`).
+    - Adapters know the domain, never the reverse. Generated contract models belong at the `adapter/in` edge, not in the
+      domain model — map explicitly between contract DTOs and domain models, never leak contract types into `domain` or
+      `application`. `ArchitectureTest` enforces the layer rules.
 
 ## Architecture principles for changes
 
@@ -64,32 +73,49 @@ Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**.
   explicit learning hook for domain modeling). For CRUD-ish edges: no dogma, just be pragmatic.
 - New external integrations (aggregator, LLM providers) always go behind a port with an adapter — never inject the SDK/client
   directly into a use case.
-- For an architecture decision with real trade-offs: capture it as a short ADR instead of deciding it in code alone.
+- For an architecture decision with real trade-offs: capture it as a short ADR in `docs/adr/` (`NNNN-kebab-title.md`)
+  instead of deciding it in code alone. A revised ADR keeps the superseded alternative and why it was rejected.
 - GDPR/personal data: process data (events, channel source, rejection reason) and personal data (name, CV, email) are
   deliberately separated in the data model so anonymization can wipe the latter while leaving the former intact. New
   candidate-related fields: decide explicitly which category they belong to before adding them.
 
 ## Build & test
 
+Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
+
 ```
-mvn clean install                         # full build incl. contract codegen
-mvn -pl jobzy-contracts -am generate-sources   # regenerate contract only
-mvn test                                  # unit tests, all modules
-mvn -pl jobzy-api test                    # tests for the api module only
+./mvnw clean install                           # full build incl. contract codegen, tests and checks
+./mvnw verify                                  # compile, all tests, format check — the definition of "green"
+./mvnw -pl jobzy-contracts -am generate-sources   # regenerate contract only
+./mvnw -pl jobzy-api test                      # tests for the api module only (fast inner loop)
+./mvnw spotless:apply                          # fix formatting (google-java-format)
 ```
 
 Use Maven/the linter for style and compile errors — not Claude as a linter. Run existing tests/checks yourself via bash
-rather than relying on your own judgment of correctness. `mvn clean install` is not cheap — run it once per verification
-pass, not repeatedly "to be sure"; only re-run it if you have a concrete new reason to suspect flakiness (a fresh change
-to test isolation/config), not because an area was flaky once before.
+rather than relying on your own judgment of correctness. `./mvnw clean install` is not cheap — run it once per
+verification pass, not repeatedly "to be sure"; only re-run it if you have a concrete new reason to suspect flakiness (a
+fresh change to test isolation/config), not because an area was flaky once before.
 
-## Speckit specs
+## Guardrails
 
-Feature specs live at repo root: `specs/<NNN-feature-slug>/` (`spec.md`, `plan.md`, `tasks.md`, `checklists/`) — **not**
-under `.specify/specs/`. `.specify/` holds the Speckit tool machinery itself (templates, scripts, and
-`.specify/memory/constitution.md`, the project constitution — the canonical, more detailed source for the principles
-summarized in this file; when the two disagree, the constitution wins and this file should be updated to match).
-Existing ADRs live in `.claude/adr/`.
+Deterministic checks are the source of truth for "does it work" — not an agent's own judgment. The rationale and the
+roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
+
+- **Done means `./mvnw verify` is green.** Never report a task as done on a red or unrun build.
+- **Never weaken a check to get green.** No skipping tests or checks (`-DskipTests`, `-Dmaven.test.skip`,
+  `-D*.skip=true`, `--no-verify`), no `@Disabled`, no new `@SuppressWarnings`, no deleting or loosening assertions, no
+  editing `ArchitectureTest` to make a violation pass. If a check is wrong, say so and stop — the human decides.
+- **Formatting is checked, not auto-applied** by the build (`spotless:check` in `verify`). Run `./mvnw spotless:apply`
+  before finishing.
+- **Agents never merge, force-push, or label PRs.** Agents push branches and open PRs; only the human maintainer merges
+  and applies override labels. `gh pr merge` is denied in `.claude/settings.json`.
+- **Keep PRs reviewable**: aim for at most ~400 changed lines of production code and config per PR. Split larger work
+  into a sequence of PRs that each leave the build green.
+- **Changes to guardrails are changes to the safety net** (`.github/`, `.claude/`, `.agents/skills/`,
+  `skills-lock.json`, `ArchitectureTest`, build plugin config): call them out explicitly in the PR description, never
+  bundle them silently with feature work.
+- **Third-party skills** (`.agents/skills/`, pinned by hash in `skills-lock.json`) are instructions agents execute —
+  review an update like a dependency bump.
 
 ## Language policy (strict)
 
@@ -100,11 +126,10 @@ Existing ADRs live in `.claude/adr/`.
 - **Commit messages and PR descriptions**: English only.
 - **ADRs and in-repo docs**: English only.
 
-Dutch is fine in conversation with human Developer but never leaks into anything that ends up in the repository.
+Dutch is fine in conversation with the human developer but never leaks into anything that ends up in the repository.
 
 ## Working style in this repo
 
 - Be critical and direct in code review and proposals — no cheerleading. If an approach is weak or lets scope creep, say so.
 - When torn between the "clean/academic variant" and the "pragmatic variant": name both with trade-offs, make the choice
   explicit.
-- 
