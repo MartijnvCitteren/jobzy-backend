@@ -117,6 +117,26 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 - **Third-party skills** (`.agents/skills/`, pinned by hash in `skills-lock.json`) are instructions agents execute —
   review an update like a dependency bump.
 
+### Agent hooks (`.claude/hooks/`, wired in `.claude/settings.json`)
+
+| Hook | Effect |
+|------|--------|
+| `guard-bash.sh` (PreToolUse, Bash) | **Blocks** skip/ignore flags (`-D…skip`, `-D…ignore`, `--fail-never`), `--no-verify` / `commit -n` / `core.hooksPath`, force/mirror/delete pushes and pushes to `main`, `reset --hard`, `clean -f`, discarding the whole tree, `gh pr merge`, label changes, branch-protection and repo-setting changes. **Asks** before a shell command writes to guardrail files. |
+| `guard-paths.sh` (PreToolUse, Edit/Write) | **Blocks** edits to `target/` and generated sources. **Asks** before editing `.claude/`, `.github/`, `.githooks/`, `.agents/`, `.mvn/`, `mvnw`, `skills-lock.json` or `ArchitectureTest.java`. |
+| `verify-on-stop.sh` (Stop) | Runs `./mvnw spotless:apply` + `./mvnw verify` when build-relevant files changed since the last green run and **blocks finishing while red** (3 attempts, then the human is warned). State and log in `.git/claude-guard/`. |
+
+- When a hook blocks you, fix the cause — never work around a hook (e.g. by moving the command into a script file).
+  If the hook is wrong, stop and tell the human.
+- After changing a hook, run `.claude/hooks/test-hooks.sh` and extend it with a case for the change.
+- `CLAUDE_SKIP_VERIFY_ON_STOP=1` (set by the human when starting Claude Code) disables the Stop hook for a session.
+
+### One-time setup per clone (human)
+
+```
+brew install gitleaks
+ln -s ../../.githooks/pre-commit .git/hooks/pre-commit   # secret scan on every commit
+```
+
 ## Language policy (strict)
 
 **Everything in this codebase is in English.** No exceptions:

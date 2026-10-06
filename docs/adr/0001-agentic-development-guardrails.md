@@ -44,7 +44,7 @@ Constraints:
 | PR | Guardrail | Layer |
 |----|-----------|-------|
 | 1 | Clean-up: remove dead hook and Speckit references, rewrite `CLAUDE.md`, Maven Wrapper with checksum pin, `spotless:check` instead of `apply`, deny `gh pr merge`, narrow `gh` allowlist, this ADR | repo |
-| 2 | Claude Code hooks: block bypass commands (skip flags, `--no-verify`, force push, `reset --hard`, `gh pr merge`, adding labels); block writes to `target/` and generated sources; ask before editing guardrail files and skills; format edited files; Stop hook requires green `./mvnw verify`; Gitleaks pre-commit | agent |
+| 2 | Claude Code hooks: block bypass commands (skip flags, `--no-verify`, force push, `reset --hard`, `gh pr merge`, adding labels); block writes to `target/` and generated sources; ask before editing guardrail files and skills; Stop hook formats the code and requires green `./mvnw verify`; Gitleaks pre-commit | agent |
 | 3 | GitHub Actions: `build` (`./mvnw -B verify`), `security` (Gitleaks, OSV-Scanner), `contract` (`oasdiff` breaking-change check); actions pinned by SHA; Dependabot (Maven + Actions); branch protection on `main` | CI |
 | 4 | `guardrail-diff` job: suppression count vs `main`; deleted tests / lower test count; PR size limit (~400 lines production + config, ~800 tests); skills and guardrail-config changes; `schema-change` label on JPA entity changes; paths named in `CLAUDE.md` must exist | CI |
 | 5 | Error Prone + NullAway (JSpecify mode, adopted per package via `@NullMarked`), Maven Enforcer, SpotBugs + FindSecBugs, random test order | build |
