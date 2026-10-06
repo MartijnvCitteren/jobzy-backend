@@ -24,13 +24,41 @@
 		<maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
 		<rest-assured.version>5.5.0</rest-assured.version>
 		<spotless.version>3.8.0</spotless.version>
-		<spring-boot.version>4.1.0</spring-boot.version>
+		<spring-boot.version>4.1.1</spring-boot.version>
 		<swagger-annotations.version>2.2.52</swagger-annotations.version>
 		<uuid-generator.version>5.2.0</uuid-generator.version>
+		<!-- Security overrides of Spring Boot managed versions. Remove each one as soon as the Spring Boot
+		     version above manages an equal or newer version. -->
+		<jackson-bom.override.version>3.1.7</jackson-bom.override.version> <!-- GHSA-cxp5-3px4-pw24, GHSA-7hhh-6rmp-j9qf, ... -->
+		<tomcat.override.version>11.0.26</tomcat.override.version> <!-- GHSA-9xv2-5v5q-p794, GHSA-gcx9-497g-6cp6, GHSA-h3x4-894j-xpx5 -->
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+		<!-- SECURITY OVERRIDES (must precede the Spring Boot BOM, see properties) -->
+			<dependency>
+				<groupId>tools.jackson</groupId>
+				<artifactId>jackson-bom</artifactId>
+				<version>${jackson-bom.override.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-core</artifactId>
+				<version>${tomcat.override.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-el</artifactId>
+				<version>${tomcat.override.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.tomcat.embed</groupId>
+				<artifactId>tomcat-embed-websocket</artifactId>
+				<version>${tomcat.override.version}</version>
+			</dependency>
+
 		<!-- SPRING			-->
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
