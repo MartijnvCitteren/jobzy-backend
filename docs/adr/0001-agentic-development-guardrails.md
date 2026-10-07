@@ -89,6 +89,11 @@ Constraints:
   internal `jobzy-contracts` module and silently reports zero packages and zero vulnerabilities. The first real scan
   found 14 known vulnerabilities (4 critical), fixed by upgrading Spring Boot to 4.1.1 and pinning patched Jackson and
   Tomcat versions.
+- The `guardrail-diff` job (PR 4) runs as its own workflow on `pull_request_target`, with the PR head checked out as
+  data only: a PR cannot weaken the script that judges it, and adding a label re-runs only this job. The cost is that a
+  change to the script is not exercised by that job until it is merged; `test-guardrail-diff.sh` in `ci.yml` covers the
+  PR's own copy instead. Rejected: running it on `pull_request` in `ci.yml` (the PR's version of the script would judge
+  the PR, and every label change would re-run the full build).
 - Branch protection (and rulesets) on a private repository requires a paid plan (GitHub Pro for a personal account).
   Without it, CI still runs but no longer blocks merges.
 - Open risks to verify during rollout: Jackson 3 support in `swagger-request-validator` (PR 7), offline SQL Server DDL

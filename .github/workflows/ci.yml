@@ -101,8 +101,10 @@ jobs:
           actionlint
           shellcheck .github/scripts/*.sh .claude/hooks/*.sh .githooks/pre-commit
 
-      - name: Test agent guardrail hooks
-        run: .claude/hooks/test-hooks.sh
+      - name: Test agent guardrail hooks and the guardrail-diff script
+        run: |
+          .claude/hooks/test-hooks.sh
+          .github/scripts/test-guardrail-diff.sh
 
       - name: Check API contract for breaking changes
         if: github.event_name == 'pull_request'

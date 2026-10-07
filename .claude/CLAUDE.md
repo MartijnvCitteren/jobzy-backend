@@ -132,14 +132,18 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 - After changing a hook, run `.claude/hooks/test-hooks.sh` and extend it with a case for the change.
 - `CLAUDE_SKIP_VERIFY_ON_STOP=1` (set by the human when starting Claude Code) disables the Stop hook for a session.
 
-### CI (`.github/workflows/ci.yml`) — the authoritative gate
+### CI (`.github/workflows/`) — the authoritative gate
 
 | Job | Checks |
 |-----|--------|
 | `build` | `./mvnw verify` (compile, tests, ArchUnit, format check), CycloneDX SBOM, OSV-Scanner vulnerability scan of the SBOM |
-| `checks` | gitleaks over the full history, actionlint on the workflows, `.claude/hooks/test-hooks.sh`, `oasdiff` breaking-change check of the contracts against `main` (PRs only) |
+| `checks` | gitleaks over the full history, actionlint and shellcheck, `.claude/hooks/test-hooks.sh` and `.github/scripts/test-guardrail-diff.sh`, `oasdiff` breaking-change check of the contracts against `main` (PRs only) |
+| `guardrail-diff` (own workflow, PRs only) | `.github/scripts/guardrail-diff.sh` compares the PR with `main`; each finding fails unless the maintainer applies its override label (table below) |
 
-- Both jobs must be green to merge into `main`. A red CI is never fixed by weakening a check.
+- All three jobs must be green to merge into `main`. A red CI is never fixed by weakening a check.
+- `guardrail-diff` runs on `pull_request_target`: the script from `main` judges the PR, so editing the script in a PR
+  does not change the verdict on that PR. After changing it, run `.github/scripts/test-guardrail-diff.sh` and extend it
+  with a case for the change.
 - **Known vulnerability**: upgrade the dependency. If Spring Boot doesn't manage a fixed version yet, pin it under
   "security overrides" in the root `pom.xml` (ahead of the Spring Boot BOM) with the advisory IDs, and remove the pin
   once Spring Boot catches up. Never ignore a vulnerability without the human.
@@ -147,6 +151,18 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
   intended break is the human's decision.
 - Actions are pinned by commit SHA, downloaded tools by SHA-256 (`env` in `ci.yml`). Bump version and hash together.
   Dependabot opens weekly grouped update PRs for Maven dependencies and GitHub Actions.
+
+| `guardrail-diff` finding | Override label (human-only) |
+|--------------------------|-----------------------------|
+| More suppressions than `main` (`@SuppressWarnings`, `@Disabled`, assumptions, `NOSONAR`, `spotless:off`, `<skip…>true`, `skip…=true`, `continue-on-error: true`, …) | `suppression-ok` |
+| Fewer test methods than `main`, or a test class deleted | `test-removal-ok` |
+| More than 400 changed lines of production code and config, or 800 of tests (docs and `.agents/` excluded) | `large-pr-ok` |
+| Guardrail files changed (`.github/`, `.claude/`, `.githooks/`, `.agents/`, `.mvn/`, `mvnw`, `skills-lock.json`, `ArchitectureTest`, a `<build>` section in a `pom.xml`) | `guardrail-change-ok` |
+| JPA entity (`@Entity`, `@Embeddable`, `@MappedSuperclass`) or `ddl-auto` changed | `schema-change` |
+| `CLAUDE.md` names a path that does not exist | none — fix `CLAUDE.md` |
+
+- An agent fixes the cause of a finding; when the finding is intended, it says so in the PR description and leaves the
+  label to the maintainer.
 
 ### One-time setup per clone (human)
 

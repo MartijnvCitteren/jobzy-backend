@@ -1,0 +1,47 @@
+# Diff-based guardrails: compares a PR with its base (new suppressions, removed tests, PR size, guardrail and schema
+# changes, stale paths in CLAUDE.md). Each finding can be overridden by a label that only the maintainer applies.
+# See docs/adr/0001-agentic-development-guardrails.md.
+#
+# Runs on pull_request_target, so the workflow and script that judge a PR always come from main: a PR cannot weaken
+# its own check. The PR head is checked out into pr/ as data only and nothing from it is executed; no secrets and a
+# read-only token. The PR's own copy of the script is exercised by test-guardrail-diff.sh in ci.yml.
+# A separate workflow so adding or removing a label re-runs only this job, not the full build.
+name: guardrail-diff
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: guardrail-diff-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  guardrail-diff:
+    name: guardrail-diff
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out main (trusted script)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check out the PR head (data only, never executed)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          path: pr
+          fetch-depth: 0 # base branch history for the merge base
+          persist-credentials: false
+
+      - name: Compare the PR with its base
+        working-directory: pr
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ',') }}
+        run: ../.github/scripts/guardrail-diff.sh "$BASE_SHA" HEAD
