@@ -14,7 +14,9 @@ new_repo() { # a base commit that resembles this repository
   rm -rf "$work/repo" && mkdir -p "$work/repo" && cd "$work/repo" || exit 1
   git_q init -q -b main
   mkdir -p .claude api/src/main/java/app api/src/test/java/app
-  printf 'See `docs/` and `api/pom.xml`, packages like `src/main/java/<pkg>/`.\n' >.claude/CLAUDE.md
+  cat >.claude/CLAUDE.md <<'EOF'
+See `docs/` and `api/pom.xml`, packages like `src/main/java/<pkg>/`.
+EOF
   mkdir -p docs && echo "# docs" >docs/README.md
   printf '<project>\n<dependencies/>\n<build>\n<plugins/>\n</build>\n</project>\n' >api/pom.xml
   printf '@Entity\nclass VacancyJpaEntity {}\n' >api/src/main/java/app/VacancyJpaEntity.java
@@ -100,7 +102,10 @@ mkdir -p api/src/main/resources && echo "ddl-auto: update" >api/src/main/resourc
 expect fail "ddl-auto changed"
 
 new_repo
-printf 'See `docs/` and `api/pom.xml` and `scripts/gone.sh`.\n' >.claude/CLAUDE.md && commit
+cat >.claude/CLAUDE.md <<'EOF'
+See `docs/` and `api/pom.xml` and `scripts/gone.sh`.
+EOF
+commit
 expect fail "CLAUDE.md names a missing path" "guardrail-change-ok"
 
 new_repo
