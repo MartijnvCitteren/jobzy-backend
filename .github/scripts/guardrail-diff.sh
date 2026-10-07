@@ -132,7 +132,7 @@ fi
 if git cat-file -e "$pr_head:.claude/CLAUDE.md" 2>/dev/null; then
   files=$(git ls-tree -r --name-only "$pr_head")
   bt=$'\x60' # backtick: inline code spans in Markdown
-  missing=$(git show "$pr_head:.claude/CLAUDE.md" | filter -o "$bt[^$bt]*$bt" | tr -d "$bt" |
+  missing=$(git show "$pr_head:.claude/CLAUDE.md" | filter -o "${bt}[^${bt}]*${bt}" | tr -d "$bt" |
     filter -E '^[A-Za-z0-9._/<>-]+$' | filter -E '/|\.(md|ya?ml|json|java|sh|xml|properties|cmd)$' |
     filter -vE '(^|/)(target|\.git)/|NNNN' | sort -u |
     while IFS= read -r ref; do
