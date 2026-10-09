@@ -179,6 +179,7 @@
               <generateModelDocumentation>false</generateModelDocumentation>
               <configOptions>
                 <useSpringBoot3>true</useSpringBoot3>
+                <useJspecify>true</useJspecify>
                 <useJakartaEe>true</useJakartaEe>
                 <dateLibrary>java8</dateLibrary>
                 <openApiNullable>false</openApiNullable>
