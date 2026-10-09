@@ -11,6 +11,8 @@ public class WebConfig implements WebMvcConfigurer {
   private final String[] allowedOrigins;
 
   public WebConfig(@Value("${jobzy.cors.allowed-origins:}") String[] allowedOrigins) {
+    // Defensive copy: keeping the caller's array would let it change our CORS config later
+    // (SpotBugs EI_EXPOSE_REP2).
     this.allowedOrigins = allowedOrigins.clone();
   }
 

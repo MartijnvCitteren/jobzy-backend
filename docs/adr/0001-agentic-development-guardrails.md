@@ -99,8 +99,10 @@ Constraints:
 - Static analysis (PR 5) runs inside `./mvnw verify`: Error Prone and NullAway as javac plugins with `-Werror`, so
   any compiler warning fails the build; SpotBugs + FindSecBugs and Maven Enforcer as plugins. Error Prone works
   together with Lombok and MapStruct; it needs `--add-exports`/`--add-opens` for `jdk.compiler` in `.mvn/jvm.config`.
-  NullAway runs in JSpecify mode on `@NullMarked` packages only (`domain` and `application` first), so adoption can
-  grow package by package without a big-bang annotation pass. The SpotBugs exclude filter lives in `config/` and is a
+  NullAway runs in JSpecify mode on `@NullMarked` packages only (`application` first), so adoption can grow package
+  by package without a big-bang annotation pass. `domain` is deliberately not null-marked: it keeps zero external
+  dependencies, JSpecify included, and the maintainer accepts the null risk there in exchange (domain code checks for
+  null itself). Rejected: allowing JSpecify in the domain as an annotation-only dependency. The SpotBugs exclude filter lives in `config/` and is a
   guardrail file. Tests run in random class and method order with a per-build seed that is printed and can be
   replayed with `-Dtest.order.seed`; rejected: Surefire's `runOrder=random`, which only shuffles classes.
 - The ArchUnit ban list and the GDPR rule (PR 6) live in `ArchitectureTest`, which is already a guardrail file, so
