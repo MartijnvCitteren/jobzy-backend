@@ -34,7 +34,7 @@ public class VacancyExceptionHandler {
     var problemDetails =
         new ProblemDetails(Constants.NOT_FOUND_TITLE, HttpStatus.NOT_FOUND.value());
     problemDetails.setDetail(ex.getMessage());
-    problemDetails.setInstance(URI.create(request.getRequestURI()));
+    problemDetails.setInstance(URI.create(request.getRequestURL().toString()));
 
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .contentType(MediaType.APPLICATION_PROBLEM_JSON)
@@ -51,7 +51,7 @@ public class VacancyExceptionHandler {
     var problemDetails =
         new ProblemDetails(Constants.VALIDATION_FAILED_TITLE, HttpStatus.BAD_REQUEST.value());
     problemDetails.setDetail(Constants.VALIDATION_FAILED_DETAIL);
-    problemDetails.setInstance(URI.create(request.getRequestURI()));
+    problemDetails.setInstance(URI.create(request.getRequestURL().toString()));
     problemDetails.setErrors(
         List.of(new ProblemDetailsErrorsInner(ex.getField(), ex.getMessage())));
 

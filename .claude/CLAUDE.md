@@ -116,6 +116,12 @@ Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
 - **Tests run in random order** (classes and methods). The seed is printed at the start of the run ("Random test order
   seed"); reproduce with `./mvnw -pl jobzy-api -am test -Dtest.order.seed=<seed>`. An order-dependent failure is a test
   isolation bug — fix the shared state, don't pin the order.
+- **Responses are validated against the contract.** Every RestAssured call in a test extending
+  `BaseIntegrationTest` goes through `OpenApiResponseValidationFilter`: the operation, status code and content type
+  must be documented, and the body must match the schema, formats included. Objects are closed: a property the
+  contract does not declare fails the test, as does `null` for a field that is not nullable. Requests are not
+  validated, because tests send invalid requests on purpose. A violation means the code or the contract is wrong —
+  fix whichever one is wrong (contract changes stay backwards compatible), never the filter.
 - **ArchUnit ban list** (`ArchitectureTest`, production code unless noted): no Jackson 2 (`com.fasterxml.jackson`
   outside `.annotation`), no Java EE `javax.*` (use `jakarta.*`), no `java.util.Date`/`Calendar`/`SimpleDateFormat`/
   `java.sql` time types, no `System.out`/`System.err`/`printStackTrace` (use `@Log4j2`), no field injection (MapStruct

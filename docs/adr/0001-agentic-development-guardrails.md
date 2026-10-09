@@ -116,5 +116,16 @@ Constraints:
   use other mappers switched to constructor injection, set per mapper. Rejected: the global
   `mapstruct.defaultInjectionStrategy` compiler option, which would change the build config for two mappers. Every
   custom rule was checked against a temporary violation to make sure it actually fails.
-- Open risks to verify during rollout: Jackson 3 support in `swagger-request-validator` (PR 7), offline SQL Server DDL
-  generation with Hibernate (PR 8), PIT on JUnit 6 (deferred).
+- Contract validation (PR 7) is a small RestAssured filter in the test sources on top of networknt
+  `json-schema-validator` 3.x (Jackson 3, OpenAPI 3.1 dialect), registered in `BaseIntegrationTest`. It validates
+  responses only, with format assertions on and object schemas closed (`unevaluatedProperties: false` on the
+  in-memory copy of the contract), so leaked undocumented fields and `null` for non-nullable fields fail the test.
+  Surefire passes the contract path, so the YAML stays the single source of truth. Rejected: Atlassian
+  `swagger-request-validator` 3.0, which depends on Jackson 2, `javax.servlet` and RestAssured 5 and would have
+  needed holes in the Enforcer ban list. Turning it on found three real drifts: `VacancyResponse` required a
+  non-existent `hoursPerWeek`, optional fields were serialized as `null` (fixed with the generator's
+  `generateJsonIncludeAnnotations`), and `ProblemDetails.instance` was a relative path where the contract says
+  `format: uri` (the code now returns the absolute request URL; relaxing the contract to `uri-reference` is a
+  breaking change and was left to the maintainer).
+- Open risks to verify during rollout: offline SQL Server DDL generation with Hibernate (PR 8), PIT on JUnit 6
+  (deferred).

@@ -40,7 +40,7 @@ class GlobalExceptionHandlerTest {
     assertEquals(URI.create("about:blank"), body.getType());
     assertEquals("Validation failed", body.getTitle());
     assertEquals(HttpStatus.BAD_REQUEST.value(), body.getStatus());
-    assertEquals(URI.create("/api/v1/vacancy"), body.getInstance());
+    assertEquals(URI.create("http://localhost/api/v1/vacancy"), body.getInstance());
     assertEquals(
         "The request failed validation on one or more fields, see 'errors' for details.",
         body.getDetail());

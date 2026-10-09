@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     var problemDetails =
         new ProblemDetails(Constants.VALIDATION_FAILED_TITLE, HttpStatus.BAD_REQUEST.value());
     problemDetails.setDetail(Constants.VALIDATION_FAILED_DETAIL);
-    problemDetails.setInstance(URI.create(request.getRequestURI()));
+    problemDetails.setInstance(URI.create(request.getRequestURL().toString()));
     problemDetails.setErrors(errors);
 
     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -83,7 +83,7 @@ public class GlobalExceptionHandler {
         new ProblemDetails(
             Constants.INTERNAL_SERVER_ERROR_TITLE, HttpStatus.INTERNAL_SERVER_ERROR.value());
     problemDetails.setDetail(Constants.INTERNAL_SERVER_ERROR_DETAIL);
-    problemDetails.setInstance(URI.create(request.getRequestURI()));
+    problemDetails.setInstance(URI.create(request.getRequestURL().toString()));
 
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
         .contentType(MediaType.APPLICATION_PROBLEM_JSON)
