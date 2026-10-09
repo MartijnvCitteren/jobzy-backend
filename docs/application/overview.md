@@ -7,8 +7,10 @@ This describes what is on `main` — plans and roadmap live in `.claude/CLAUDE.m
 
 | Module | Role |
 |--------|------|
-| `jobzy-contracts` | OpenAPI spec(s), the source of truth for the HTTP API. Consumed by the frontend team. |
-| `jobzy-api` | The Spring Boot application. Generates the API interfaces and models from the contract at build time. |
+| `jobzy-contracts` | OpenAPI specs, the source of truth for the HTTP API: `VacancyApi.yml` and `IdentityApi.yml`. Consumed by the frontend team. |
+| `jobzy-api` | The Spring Boot application. Generates the API interfaces and models from each contract at build time, one generator execution per contract (`app.jobzy.api.vacancy.adapter…`, `app.jobzy.api.identity.adapter…`). |
+
+Aggregates and their pages: [vacancy](vacancy.md), [identity](identity.md) (company and user, registration).
 
 ## Request flow
 
@@ -16,7 +18,9 @@ A request passes through the hexagon in one direction; each arrow is an explicit
 does not belong to.
 
 ```
-HTTP ─▶ Controller (implements generated *Api interface)
+HTTP ─▶ Security filter chain (permits everything for now)
+          ▼
+        Controller (implements generated *Api interface)
           │  1. bean validation on the generated contract model (@Valid from the spec)
           │  2. adapter-level content validation (e.g. no raw HTML)
           │  3. request mapper: contract model ─▶ command (application/port/in/command)
@@ -41,9 +45,14 @@ The response goes back up the same way: domain object ─▶ response mapper ─
   interfaces with command records; outbound ports are repository interfaces. `@Transactional` is only allowed here.
 - **Inbound REST adapter** (`adapter.in.rest`): controllers implement the generated `*Api` interfaces. MapStruct
   mappers per direction (`mapper/request`, `mapper/response`).
+- **Inbound scheduling adapter** (`adapter.in.scheduling`): `@Scheduled` jobs that call a use case, like a controller
+  does for HTTP.
+- **Other outbound adapters**: `adapter.out.mail` (mail port, logging stand-in), `adapter.out.security` (password
+  hashing) and `adapter.out.emaildomain` (public mail domain block list).
 - **Outbound persistence adapter** (`adapter.out.persistence`): JPA entities separate from domain objects, MapStruct
   mappers in between. `BaseJpaEntity` carries the audit columns, filled by Spring Data JPA auditing.
-- **Shared** (`app.jobzy.api.shared`): config (`Clock`, CORS), `BaseException`, the GDPR annotations and `Constants`.
+- **Shared** (`app.jobzy.api.shared`): config (`Clock`, CORS, security filter chain, scheduling, identity
+  properties), `BaseException`, the GDPR annotations and `Constants`.
 
 ## Cross-cutting behaviour
 
@@ -56,12 +65,25 @@ The response goes back up the same way: domain object ─▶ response mapper ─
 - **Time**: a `Clock` bean (`ClockConfig`, Europe/Amsterdam) is injected wherever "now" is needed.
 - **CORS**: allowed origins come from `jobzy.cors.allowed-origins` (`CORS_ALLOWED_ORIGINS`); empty means no CORS
   mapping at all.
-- **Security**: the contract declares bearer auth, but there is no authentication or authorization yet. Every endpoint
-  is open.
+- **Security**: Spring Security is on the classpath with one `SecurityFilterChain` (`SecurityConfig`) that permits
+  every request. CSRF, form login, HTTP basic and logout are disabled, sessions are stateless, and CORS defers to
+  `WebConfig`. Every endpoint is still open: the vacancy contract declares bearer auth, but nothing checks it yet.
+  Spring Security does add its default response headers (e.g. `X-Content-Type-Options: nosniff`). The login slice
+  (ADR 0003, section 4) tightens this chain.
+- **Scheduling**: `@EnableScheduling` (`SchedulingConfig`). Every instance runs every job, so a job must be safe to
+  run on several instances at once. Today there is one job: the purge of unconfirmed registrations (see
+  [identity](identity.md)).
 
 ## Configuration and running locally
 
 - Context path `/api/v1`, port 8090.
+- Identity settings (`IdentityProperties`):
+
+  | Property | Env variable | Default |
+  |----------|--------------|---------|
+  | `jobzy.identity.confirmation-url` | `IDENTITY_CONFIRMATION_URL` | `https://jobzy.app/registration/confirm` (`local`: `http://localhost:5173/registration/confirm`) |
+  | `jobzy.identity.unconfirmed-retention` | `IDENTITY_UNCONFIRMED_RETENTION` | `PT48H` (verification link validity and purge age) |
+  | `jobzy.identity.purge-interval` | `IDENTITY_PURGE_INTERVAL` | `PT1H` |
 - Profiles: `local` (SQL Server from `docker-compose.yaml`, CORS for the Vite dev server on `localhost:5173`), `dev`
   (datasource from `SPRING_DATASOURCE_*` environment variables), `test` (in-memory H2).
 - **Schema management is `ddl-auto: update`**: Hibernate changes the schema from the entities on startup. There are no
@@ -76,4 +98,5 @@ Open issues an agent should know about before building on top of them. Remove an
   when vacancy text generation is built.
 - Javadoc and code comments refer to ADR 0004 and ADR 0005, which are not in `docs/adr/`.
 - `application-local.yml` connects to database `jobzy`, while `docker-compose.yaml` creates `jobzy_db`.
-- `BaseJpaEntity.modifiedBy` is never filled: there is no `AuditorAware` yet (no users yet).
+- `BaseJpaEntity.modifiedBy` is never filled: there is no `AuditorAware` yet (users exist, but nobody is
+  authenticated yet).
