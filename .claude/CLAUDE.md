@@ -66,10 +66,11 @@ Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**.
       subpackages for explicit contract-DTO ↔ domain mapping.
     - `adapter/out/persistence/` — outbound JPA adapter (SQL Server): `BaseJpaEntity` and JPA auditing config at the root,
       `adapter/out/persistence/<aggregate>/` per aggregate with its own `mapper/` subpackage.
-    - `shared/` — cross-cutting code: `shared/config/` (e.g. `WebConfig`), `shared/exception/` (e.g. `BaseException`).
+    - `shared/` — cross-cutting code: `shared/config/` (e.g. `WebConfig`, `ClockConfig`), `shared/exception/` (e.g.
+      `BaseException`), `shared/gdpr/` (`@PersonalData`, `@ProcessData`).
     - Adapters know the domain, never the reverse. Generated contract models belong at the `adapter/in` edge, not in the
       domain model — map explicitly between contract DTOs and domain models, never leak contract types into `domain` or
-      `application`. `ArchitectureTest` enforces the layer rules.
+      `application`. `ArchitectureTest` enforces the layer rules and the ban list below.
 
 ## Architecture principles for changes
 
@@ -81,7 +82,9 @@ Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**.
   instead of deciding it in code alone. A revised ADR keeps the superseded alternative and why it was rejected.
 - GDPR/personal data: process data (events, channel source, rejection reason) and personal data (name, CV, email) are
   deliberately separated in the data model so anonymization can wipe the latter while leaving the former intact. New
-  candidate-related fields: decide explicitly which category they belong to before adding them.
+  candidate-related fields: decide explicitly which category they belong to before adding them. Every field of a JPA
+  entity, mapped superclass or embeddable carries exactly one of `@PersonalData` or `@ProcessData`; `@Id`, `@Version`,
+  `@Transient` and associations are exempt (the entity they point to classifies its own columns).
 
 ## Build & test
 
@@ -91,7 +94,7 @@ Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
 ./mvnw clean install                           # full build incl. contract codegen, tests and checks
 ./mvnw verify                                  # compile, all tests, format check — the definition of "green"
 ./mvnw -pl jobzy-contracts -am generate-sources   # regenerate contract only
-./mvnw -pl jobzy-api test                      # tests for the api module only (fast inner loop)
+./mvnw -pl jobzy-api -am test                  # tests for the api module only (fast inner loop)
 ./mvnw spotless:apply                          # fix formatting (google-java-format)
 ```
 
@@ -113,6 +116,12 @@ Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
 - **Tests run in random order** (classes and methods). The seed is printed at the start of the run ("Random test order
   seed"); reproduce with `./mvnw -pl jobzy-api -am test -Dtest.order.seed=<seed>`. An order-dependent failure is a test
   isolation bug — fix the shared state, don't pin the order.
+- **ArchUnit ban list** (`ArchitectureTest`, production code unless noted): no Jackson 2 (`com.fasterxml.jackson`
+  outside `.annotation`), no Java EE `javax.*` (use `jakarta.*`), no `java.util.Date`/`Calendar`/`SimpleDateFormat`/
+  `java.sql` time types, no `System.out`/`System.err`/`printStackTrace` (use `@Log4j2`), no field injection (MapStruct
+  mappers with `uses` need `injectionStrategy = InjectionStrategy.CONSTRUCTOR`), `@Transactional` only in
+  `application.service`, no `now()` on `java.time` types without a `Clock` (production and tests — inject the `Clock`
+  bean; the domain receives timestamps, not a clock), no `Thread.sleep`/`TimeUnit.sleep` in tests.
 
 Use Maven/the linter for style and compile errors — not Claude as a linter. Run existing tests/checks yourself via bash
 rather than relying on your own judgment of correctness. `./mvnw clean install` is not cheap — run it once per

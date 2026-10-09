@@ -2,12 +2,14 @@ package app.jobzy.api.adapter.out.persistence.vacancy.mapper;
 
 import app.jobzy.api.adapter.out.persistence.vacancy.VacancyJpaEntity;
 import app.jobzy.api.domain.vacancy.Vacancy;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
 
 /** Maps between {@code Vacancy} domain entity and {@code VacancyJpaEntity}. */
 @Mapper(
     componentModel = "spring",
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     uses = {VacancyDescriptionJpaMapper.class},
     unmappedSourcePolicy = ReportingPolicy.IGNORE,
     unmappedTargetPolicy = ReportingPolicy.WARN)

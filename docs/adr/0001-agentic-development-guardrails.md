@@ -105,5 +105,16 @@ Constraints:
   null itself). Rejected: allowing JSpecify in the domain as an annotation-only dependency. The SpotBugs exclude filter lives in `config/` and is a
   guardrail file. Tests run in random class and method order with a per-build seed that is printed and can be
   replayed with `-Dtest.order.seed`; rejected: Surefire's `runOrder=random`, which only shuffles classes.
+- The ArchUnit ban list and the GDPR rule (PR 6) live in `ArchitectureTest`, which is already a guardrail file, so
+  the hooks and `guardrail-diff` protect them without new patterns. Rejected: a separate rules class, which would have
+  needed new guard patterns to get the same protection. The `javax` ban names the Java EE packages that moved to
+  `jakarta` instead of all of `javax..`, because `javax.annotation.processing`, `javax.crypto` and `javax.sql` are
+  still part of the JDK. The GDPR rule exempts `@Id`, `@Version`, `@Transient` and associations, because they are keys
+  and links whose target entity classifies its own columns. To meet the rules, the domain now receives `createdAt`
+  from the application service, which takes it from an injected `Clock` bean. Rejected: passing the `Clock` into the
+  domain, because MapStruct cannot supply it when it rebuilds an aggregate from the database. MapStruct mappers that
+  use other mappers switched to constructor injection, set per mapper. Rejected: the global
+  `mapstruct.defaultInjectionStrategy` compiler option, which would change the build config for two mappers. Every
+  custom rule was checked against a temporary violation to make sure it actually fails.
 - Open risks to verify during rollout: Jackson 3 support in `swagger-request-validator` (PR 7), offline SQL Server DDL
   generation with Hibernate (PR 8), PIT on JUnit 6 (deferred).

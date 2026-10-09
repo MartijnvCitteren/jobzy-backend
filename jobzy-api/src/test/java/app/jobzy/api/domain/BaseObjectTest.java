@@ -1,7 +1,6 @@
 package app.jobzy.api.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDateTime;
@@ -10,15 +9,22 @@ import org.junit.jupiter.api.Test;
 
 class BaseObjectTest {
 
-  private static class TestObject extends BaseObject {}
+  private static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1, 1, 9, 0);
+
+  private static class TestObject extends BaseObject {
+    TestObject() {
+      super(CREATED_AT);
+    }
+  }
 
   @Test
-  @DisplayName("given new object, when constructed then createdAt and lastModifiedAt are set")
-  void givenNewObjectWhenConstructedThenCreatedAtAndLastModifiedAtAreSet() {
+  @DisplayName(
+      "given createdAt, when constructed then createdAt and lastModifiedAt are both that time")
+  void givenCreatedAtWhenConstructedThenCreatedAtAndLastModifiedAtAreBothThatTime() {
     var testObject = new TestObject();
 
-    assertNotNull(testObject.getCreatedAt());
-    assertEquals(testObject.getCreatedAt(), testObject.getLastModifiedAt());
+    assertEquals(CREATED_AT, testObject.getCreatedAt());
+    assertEquals(CREATED_AT, testObject.getLastModifiedAt());
     assertNull(testObject.getModifiedBy());
   }
 

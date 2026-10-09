@@ -1,18 +1,15 @@
 package app.jobzy.api.domain;
 
-import app.jobzy.api.shared.Constants;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public abstract class BaseObject {
   private final LocalDateTime createdAt;
   private LocalDateTime lastModifiedAt;
   private String modifiedBy;
 
-  protected BaseObject() {
-    var time = LocalDateTime.now(ZoneId.of(Constants.AMS_TIME_ZONE_ID));
-    this.createdAt = time;
-    this.lastModifiedAt = time;
+  protected BaseObject(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+    this.lastModifiedAt = createdAt;
   }
 
   public LocalDateTime getCreatedAt() {

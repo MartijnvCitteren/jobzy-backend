@@ -61,6 +61,7 @@ class VacancyTest {
             .location(new Location("The Netherlands", "Leiden"))
             .workplaceType(WorkplaceType.REMOTE)
             .hoursPerWeek(new HoursPerWeek(BigDecimal.valueOf(32), BigDecimal.valueOf(40)))
+            .createdAt(VacancyFactory.CREATED_AT)
             .build();
 
     assertEquals(VacancyStatus.DRAFT, vacancy.getStatus());
@@ -80,6 +81,7 @@ class VacancyTest {
             .workplaceType(WorkplaceType.HYBRID)
             .hoursPerWeek(hoursPerWeek)
             .status(VacancyStatus.PUBLISHED)
+            .createdAt(VacancyFactory.CREATED_AT)
             .build();
 
     assertEquals("Sales Manager", vacancy.getJobTitle());
@@ -88,6 +90,23 @@ class VacancyTest {
     assertEquals(WorkplaceType.HYBRID, vacancy.getWorkplaceType());
     assertEquals(hoursPerWeek, vacancy.getHoursPerWeek());
     assertEquals(VacancyStatus.PUBLISHED, vacancy.getStatus());
+    assertEquals(VacancyFactory.CREATED_AT, vacancy.getCreatedAt());
+  }
+
+  @Test
+  @DisplayName("given builder without createdAt, when build then throws naming the field")
+  void givenBuilderWithoutCreatedAtWhenBuildThenThrowsNamingTheField() {
+    var builder =
+        Vacancy.builder()
+            .jobTitle("Backend Engineer")
+            .category(VacancyCategory.ENGINEERING)
+            .location(new Location("The Netherlands", "Leiden"))
+            .workplaceType(WorkplaceType.REMOTE)
+            .hoursPerWeek(new HoursPerWeek(BigDecimal.valueOf(32), BigDecimal.valueOf(40)));
+
+    var exception = assertThrows(NullPointerException.class, builder::build);
+
+    assertEquals("createdAt is required", exception.getMessage());
   }
 
   @Test
