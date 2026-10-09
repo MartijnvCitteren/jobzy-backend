@@ -42,6 +42,9 @@
 		     version above manages an equal or newer version. -->
 		<jackson-bom.override.version>3.2.3</jackson-bom.override.version> <!-- GHSA-cxp5-3px4-pw24, GHSA-7hhh-6rmp-j9qf, ... -->
 		<tomcat.override.version>11.0.26</tomcat.override.version> <!-- GHSA-9xv2-5v5q-p794, GHSA-gcx9-497g-6cp6, GHSA-h3x4-894j-xpx5 -->
+		<!-- Spring Boot does not manage BouncyCastle (needed by Argon2PasswordEncoder), so this pin stays; raise it
+		     whenever an advisory lands. -->
+		<bouncycastle.override.version>1.86</bouncycastle.override.version> <!-- GHSA-9pwp-9qqc-pr26, GHSA-qp49-qgx5-5m26 -->
 	</properties>
 
 	<dependencyManagement>
@@ -68,6 +71,11 @@
 				<groupId>org.apache.tomcat.embed</groupId>
 				<artifactId>tomcat-embed-websocket</artifactId>
 				<version>${tomcat.override.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncycastle.override.version}</version>
 			</dependency>
 
 		<!-- SPRING			-->
