@@ -185,6 +185,9 @@
                 <openApiNullable>false</openApiNullable>
                 <interfaceOnly>true</interfaceOnly>
                 <skipDefaultInterface>true</skipDefaultInterface>
+                <!-- One interface per OpenAPI tag (VacancyApi, GenerationApi) instead of per first path
+                     segment, so each aggregate gets its own controller (ADR 0002). -->
+                <useTags>true</useTags>
               </configOptions>
             </configuration>
           </execution>

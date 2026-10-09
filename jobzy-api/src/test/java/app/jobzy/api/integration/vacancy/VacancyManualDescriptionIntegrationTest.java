@@ -135,6 +135,7 @@ class VacancyManualDescriptionIntegrationTest extends BaseIntegrationTest {
         """
         {
           "jobTitle": "Sales Manager",
+          "language": "nl",
           "category": "SALES",
           "location": {"country": "NL", "city": "Amsterdam"},
           "workplaceType": "HYBRID",
