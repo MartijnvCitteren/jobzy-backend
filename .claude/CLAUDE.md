@@ -176,10 +176,13 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 
 | Job | Checks |
 |-----|--------|
-| `build` | `./mvnw verify` (compile, tests, ArchUnit, format check), CycloneDX SBOM, OSV-Scanner vulnerability scan of the SBOM |
+| `build` | `./mvnw verify` (compile, tests, ArchUnit, format check), startup smoke test (`.github/scripts/smoke-test.sh`: the executable jar with the `dev` profile against a SQL Server service container; the actuator health endpoint must report `UP`), CycloneDX SBOM, OSV-Scanner vulnerability scan of the SBOM |
 | `checks` | gitleaks over the full history, actionlint and shellcheck, `.claude/hooks/test-hooks.sh` and `.github/scripts/test-guardrail-diff.sh`, `oasdiff` breaking-change check of the contracts against `main` (PRs only) |
 | `guardrail-diff` (own workflow, PRs only) | `.github/scripts/guardrail-diff.sh` compares the PR with `main`; each finding fails unless the maintainer applies its override label (table below) |
 
+- Run the smoke test locally (slow on Apple Silicon, SQL Server is amd64-only) after `./mvnw verify`:
+  `docker compose up -d`, then
+  `MSSQL_SA_PASSWORD=Super_secret-123 .github/scripts/smoke-test.sh sql-database jobzy-api/target/jobzy-api-0.0.1-SNAPSHOT.jar`.
 - All three jobs must be green to merge into `main`. A red CI is never fixed by weakening a check.
 - `guardrail-diff` runs on `pull_request_target`: the script from `main` judges the PR, so editing the script in a PR
   does not change the verdict on that PR. After changing it, run `.github/scripts/test-guardrail-diff.sh` and extend it
