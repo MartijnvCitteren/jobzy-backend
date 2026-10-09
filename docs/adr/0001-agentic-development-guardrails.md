@@ -134,4 +134,13 @@ Constraints:
   `guardrail-diff` reports a changed snapshot as `schema-change`, which also catches DDL changes from a Hibernate
   upgrade without an entity change. Rejected: a standalone Hibernate `MetadataSources` export, which would duplicate
   Spring Boot's naming strategies and drift from what runs in production.
+- The startup smoke test (PR 9) runs in the existing `build` job, after `./mvnw verify`, against a SQL Server
+  service container pinned by digest (bumped manually, like the downloaded tools). It needs no extra job, so no extra
+  billed minute and no jar hand-over between jobs; SQL Server starts in the background during the Maven build and
+  the script waits for it. The app runs with the `dev` profile, so Hibernate applies its DDL to a real SQL Server
+  (`ddl-auto: update`) and the health check includes the database. This needed `spring-boot-starter-actuator` (only
+  `health` is exposed over HTTP, without details) and a bound `repackage` goal: without `spring-boot-starter-parent`
+  the jar was not executable. Rejected: a separate smoke job (pays an extra job minute and has to pass the jar on as
+  an artifact) and Testcontainers in the Maven build (would run SQL Server on every local `verify`, which is slow on
+  Apple Silicon).
 - Open risks to verify during rollout: PIT on JUnit 6 (deferred).
