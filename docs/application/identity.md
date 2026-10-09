@@ -87,7 +87,7 @@ renews the token, retention runs from the latest verification mail. Tests call t
   provider replaces it behind the same port; that is where recurring cost starts.
 - **Password hashing**: `Argon2PasswordHasher` uses Spring Security's `Argon2PasswordEncoder` with the OWASP minimum:
   19 MiB memory, 2 iterations, parallelism 1, 16-byte salt, 32-byte hash. Argon2 needs BouncyCastle
-  (`bcprov-jdk18on`), which Spring Boot does not manage; its version is pinned in the root `pom.xml`.
+  (`bcprov-jdk18on`), which Spring Boot does not manage; its version is pinned under the security overrides in the root `pom.xml`.
 - **Block list**: `ClasspathPublicEmailDomains` reads `identity/public-email-domains.txt` once at startup. It has
   one domain per line and `#` comments. An entry like `hotmail.*` matches the name under any top-level domain. Extend
   the file to block more domains, no code needed.
