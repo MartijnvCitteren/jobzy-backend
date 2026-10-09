@@ -17,8 +17,7 @@
 
   <properties>
     <openapi-generator.version>7.25.0</openapi-generator.version>
-    <vacancy-api.spec>${project.basedir}/../jobzy-contracts/src/main/java/app/jobzy/contracts/VacancyApi.yml
-    </vacancy-api.spec>
+    <vacancy-api.spec>${project.basedir}/../jobzy-contracts/src/main/java/app/jobzy/contracts/VacancyApi.yml</vacancy-api.spec>
   </properties>
 
   <dependencies>
@@ -91,6 +90,15 @@
       <artifactId>rest-assured</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.networknt</groupId>
+      <artifactId>json-schema-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tools.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.junit.platform</groupId>
       <artifactId>junit-platform-launcher</artifactId>
       <scope>test</scope>
@@ -156,6 +164,17 @@
         </configuration>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <!-- Integration tests validate every response against the contract
+               (OpenApiResponseValidationFilter). -->
+          <systemPropertyVariables>
+            <jobzy.contract.vacancy-api>${vacancy-api.spec}</jobzy.contract.vacancy-api>
+          </systemPropertyVariables>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.openapitools</groupId>
         <artifactId>openapi-generator-maven-plugin</artifactId>
         <version>${openapi-generator.version}</version>
@@ -184,6 +203,9 @@
                 <openApiNullable>false</openApiNullable>
                 <interfaceOnly>true</interfaceOnly>
                 <skipDefaultInterface>true</skipDefaultInterface>
+                <!-- Omit optional, non-nullable fields that are null instead of serializing null,
+                     which the contract does not allow; nullable fields keep their explicit null. -->
+                <generateJsonIncludeAnnotations>true</generateJsonIncludeAnnotations>
               </configOptions>
             </configuration>
           </execution>

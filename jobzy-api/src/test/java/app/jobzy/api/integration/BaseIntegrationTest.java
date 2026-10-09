@@ -10,7 +10,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 /**
  * Base class for RestAssured integration tests: boots the application on a random port against the
- * in-memory H2 database of the {@code test} profile and points RestAssured at it.
+ * in-memory H2 database of the {@code test} profile and points RestAssured at it. Every response is
+ * validated against the OpenAPI contract ({@link OpenApiResponseValidationFilter}), so a test fails
+ * when the API drifts from what the contract promises, even if its own assertions pass.
  */
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -25,6 +27,7 @@ public abstract class BaseIntegrationTest {
   void configureRestAssured() {
     RestAssured.port = port;
     RestAssured.basePath = contextPath;
+    RestAssured.filters(OpenApiResponseValidationFilter.vacancyApi());
   }
 
   @AfterEach
