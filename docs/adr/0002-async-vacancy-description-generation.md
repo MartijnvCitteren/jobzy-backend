@@ -72,6 +72,10 @@ different owners (the AI vs. the user) and different lifetimes.
   `FAILED`.
 - The `AFTER_COMMIT` boundary guarantees the `PENDING` row exists before the worker starts, so a poll can never see a
   `404` for a job that was just started.
+- The completion service runs with `Propagation.REQUIRES_NEW`. An `AFTER_COMMIT` listener still sees the original,
+  already committed transaction as current; a plain `@Transactional` would join it and its writes would never be
+  flushed. This also makes the flow correct when the executor is synchronous, which is how the integration tests run
+  it (no `Thread.sleep`, no polling in tests).
 - State lives in the database because the poll may come from another instance and may come minutes later.
 
 **Rejected:**
@@ -138,6 +142,9 @@ technology.
 - The two generation operations get their own OpenAPI tag, `Generation`. Tags do not change the wire format, but the
   generator creates one interface per tag, so this yields a `GenerationApi` next to `VacancyApi` and therefore its
   own `VacancyDescriptionGenerationController` in `adapter/in/rest/generation/` instead of growing `VacancyController`.
+  The generator currently groups by first path segment (`useTags` is off), so this needs `useTags=true` in the
+  `openapi-generator-maven-plugin` configuration. That is a `<build>` change and therefore a guardrail change
+  (`guardrail-change-ok`), called out in the PR. The `Vacancy` tag keeps producing `VacancyApi`, so nothing else moves.
 
 ## Consequences
 
