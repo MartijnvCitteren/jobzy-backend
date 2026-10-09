@@ -10,7 +10,6 @@ import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
 import java.util.Objects;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
 
 public class Vacancy extends BaseObject {
 
@@ -21,7 +20,7 @@ public class Vacancy extends BaseObject {
   private WorkplaceType workplaceType;
   private HoursPerWeek hoursPerWeek;
   private VacancyStatus status;
-  private @Nullable VacancyDescription description;
+  private VacancyDescription description;
 
   private Vacancy(
       UUID id,
@@ -31,7 +30,7 @@ public class Vacancy extends BaseObject {
       WorkplaceType workplaceType,
       HoursPerWeek hoursPerWeek,
       VacancyStatus status,
-      @Nullable VacancyDescription description) {
+      VacancyDescription description) {
     this.id = id;
     this.jobTitle = jobTitle;
     this.category = category;
@@ -94,11 +93,11 @@ public class Vacancy extends BaseObject {
     this.status = status;
   }
 
-  public @Nullable VacancyDescription getDescription() {
+  public VacancyDescription getDescription() {
     return description;
   }
 
-  public void setDescription(@Nullable VacancyDescription description) {
+  public void setDescription(VacancyDescription description) {
     this.description = description;
   }
 
@@ -107,7 +106,7 @@ public class Vacancy extends BaseObject {
   }
 
   @Override
-  public boolean equals(@Nullable Object o) {
+  public boolean equals(Object o) {
     if (!(o instanceof Vacancy vacancy)) {
       return false;
     }
@@ -141,18 +140,18 @@ public class Vacancy extends BaseObject {
   }
 
   public static class Builder {
-    private @Nullable UUID explicitId;
-    private @Nullable String jobTitle;
-    private @Nullable VacancyCategory category;
-    private @Nullable Location location;
-    private @Nullable WorkplaceType workplaceType;
-    private @Nullable HoursPerWeek hoursPerWeek;
+    private UUID explicitId;
+    private String jobTitle;
+    private VacancyCategory category;
+    private Location location;
+    private WorkplaceType workplaceType;
+    private HoursPerWeek hoursPerWeek;
     private VacancyStatus status = VacancyStatus.DRAFT;
-    private @Nullable VacancyDescription description;
+    private VacancyDescription description;
 
     private Builder() {}
 
-    public Builder id(@Nullable UUID id) {
+    public Builder id(UUID id) {
       this.explicitId = id;
       return this;
     }
@@ -187,7 +186,7 @@ public class Vacancy extends BaseObject {
       return this;
     }
 
-    public Builder description(@Nullable VacancyDescription description) {
+    public Builder description(VacancyDescription description) {
       this.description = description;
       return this;
     }

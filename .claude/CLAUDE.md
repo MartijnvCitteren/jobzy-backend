@@ -99,10 +99,12 @@ Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
 
 - **Compiler warnings fail the build** (`-Werror`): Error Prone bug patterns, MapStruct unmapped properties, javac
   warnings. Fix the cause; for a MapStruct target that is deliberately not mapped, add `@Mapping(target = …, ignore = true)`.
-- **NullAway** checks only packages annotated with `@NullMarked` (JSpecify) in `package-info.java`; currently `domain..`
-  and `application..`. Everything there is non-null unless annotated `org.jspecify.annotations.@Nullable`. A new package
-  under `domain` or `application` gets a `package-info.java` with `@NullMarked`; adopt it in adapters package by
-  package. Never fix a NullAway error with a blanket `@Nullable` — decide whether the value can really be absent.
+- **NullAway** checks only packages annotated with `@NullMarked` (JSpecify) in `package-info.java`; currently
+  `application..`. Everything there is non-null unless annotated `org.jspecify.annotations.@Nullable`. A new package
+  under `application` gets a `package-info.java` with `@NullMarked`; adopt it in adapters package by package. Never fix
+  a NullAway error with a blanket `@Nullable` — decide whether the value can really be absent. **`domain` stays free of
+  JSpecify** (maintainer decision: zero external dependencies there, `ArchitectureTest` enforces it); guard against
+  null in domain code itself (e.g. `Objects.requireNonNull` in builders/constructors).
 - **SpotBugs + FindSecBugs** run in `verify`. Generated code is excluded in `config/spotbugs-exclude.xml`, which is a
   guardrail file: fix a finding instead of adding an exclusion.
 - **Maven Enforcer** requires Maven 3.9+ and Java 25+, dependency convergence, and bans Jackson 2
