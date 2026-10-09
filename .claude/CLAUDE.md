@@ -6,9 +6,41 @@ product/market "why" and the roadmap, see project knowledge (product/market visi
 ## What Jobzy is
 Jobzy is a recruitment hub — ATS, channel-advice engine, and later a marketplace — replacing fragmented point tools. The
 advice engine depends entirely on ATS pipeline data (channel source, rejection reason, stage transitions), so those must be
-captured accurately from day one. Build order is dependency-driven: ATS core → multiposting via an aggregator → channel
-dashboard with rule-based advice; marketplace and payment mediation are explicitly phase 2. Don't build marketplace, payment
-mediation, or a full flow-builder now — out of scope until the ATS core and advice engine prove out.
+captured accurately from day one. Build order is dependency-driven, ATS core first:
+
+1. Manually created vacancies.
+2. AI-generated vacancy texts.
+3. Accounts and login, with company information fed into generated vacancy texts.
+4. Multiposting to job boards (LinkedIn, Indeed, …) via an aggregator.
+5. AI candidate matching and a channel dashboard where AI advises. Matching may move ahead of multiposting: it holds the
+   most complex domain logic and the most value.
+
+Marketplace and payment mediation are explicitly phase 2. Don't build marketplace, payment mediation, or a full
+flow-builder now — out of scope until the ATS core and advice engine prove out.
+
+This repository is the backend only. A separate frontend team builds the frontend against the OpenAPI contracts in
+`jobzy-contracts`.
+
+## AI and human oversight
+
+Jobzy is AI-native: AI capabilities (vacancy text generation, candidate matching, advice) are first-class concepts in the
+domain model, not a layer bolted onto a finished ATS. That does not change the build order above.
+
+- **AI advises, a human decides.** No use case lets AI decide about a candidate (invite, reject, advance a stage). AI
+  produces a recommendation (e.g. a match score with a rationale); a decision is always a separate, explicit action by an
+  identified user. CV screening is high-risk under the EU AI Act — this is a hard rule, not a UX preference.
+- **A decision always carries the user's own reason**, also when it follows the AI's advice. Bulk decisions (e.g.
+  rejecting all remaining candidates because the vacancy is nearly filled) are allowed, but still require a reason and
+  record one decision per candidate. The detailed rules for bulk decisions get designed when that feature is built.
+- **Every AI-assisted decision is auditable**: who decided, when, with which reason, and which recommendation they saw
+  (model, model version, prompt version, score). A recommendation is immutable once shown.
+- **The audit trail holds no personal data** — it references candidates and users by ID only, so anonymization leaves it
+  intact. A match score is process data and survives anonymization; a rationale that quotes or summarizes the CV is
+  personal data and gets wiped with it.
+- **Explainable output**: every recommendation carries a human-readable rationale that the API exposes, so the frontend
+  can show why a candidate ranks where they do.
+- **LLMs**: start with Mistral (European), behind a port. Deviating to a non-European model is a case-by-case decision for
+  the human — flag it, never switch silently.
 
 **This drives how you work here:**
 
@@ -16,7 +48,10 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
   asked.
 - Deliberate over-engineering is fine when it serves an explicit learning goal (DDD/Hexagonal, OCP 21 track). Without a
   learning goal: take the pragmatic route.
-- Keep recurring costs (cloud hosting, external APIs like the aggregator in epic 4) low — flag it if a change affects that.
+- Keep recurring costs (cloud hosting, external APIs like the aggregator in epic 4, LLM calls) low — flag it if a change
+  affects that.
+- Clean, simple-to-read code, also where the logic is complex (matching, scoring): name things after the domain, keep
+  methods small, and explain the *why* of non-obvious domain rules in Javadoc.
 
 ## Tech stack
 
@@ -30,9 +65,11 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
   integration tests.
 - **Error Prone + NullAway** (JSpecify mode) in the compiler, **SpotBugs + FindSecBugs** and **Maven Enforcer** in
   `verify` — see "Static analysis" below.
-- **Cloud provider: not decided yet (Azure or AWS)**; custom domain jobzy.app. Keep the application cloud-agnostic:
-  configuration through Spring properties / environment variables, a standard container image, and no Azure or AWS SDK
-  outside an adapter behind a port. Flag any change that would tie the code to one provider.
+- **Hosting: European provider, EU only — a hard requirement.** Not AWS or Azure, not even their EU regions: they remain
+  under US jurisdiction. The provider itself is not decided yet; custom domain jobzy.app. Keep the application
+  cloud-agnostic: configuration through Spring properties / environment variables, a standard container image, and no
+  cloud SDK outside an adapter behind a port. Flag any change that would tie the code to one provider or send data
+  outside the EU.
 
 
 ## Repository structure (multi-module)
@@ -44,9 +81,8 @@ Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**.
   `src/main/java/app/jobzy/contracts/VacancyApi.yml`); shared models and API interfaces are generated from these via
   `openapi-generator-maven-plugin`.
     - **Never** hand-edit generated classes. Changes always go through the YAML.
-    - Contract changes are breaking-change-sensitive as soon as there's a consumer outside this monorepo (multiposting
-      aggregator, future integrations) — treat the YAML with the same care as a published API, even though there's no
-      external customer yet.
+    - Contract changes are breaking-change-sensitive: the frontend team consumes them today, and the multiposting
+      aggregator and future integrations will later — treat the YAML as a published API.
     - Codegen is configured in `jobzy-api/pom.xml` (`openapi-generator-maven-plugin`, bound to `generate-sources`, output
       in `jobzy-api/target/generated-sources/openapi`). Generated code lands at the adapter edge, never under `domain`:
       models in `app.jobzy.api.vacancy.adapter.in.web.contract`, API interfaces in `app.jobzy.api.vacancy.adapter.in.rest`.
