@@ -18,6 +18,11 @@ public interface VacancyResponseMapper {
 
   @Mapping(target = "minHoursPerWeek", source = "hoursPerWeek.minHours")
   @Mapping(target = "maxHoursPerWeek", source = "hoursPerWeek.maxHours")
+  // Not in the domain model yet.
+  @Mapping(target = "contactPerson", ignore = true)
+  @Mapping(target = "offer", ignore = true)
+  @Mapping(target = "publishedAt", ignore = true)
+  @Mapping(target = "deletedAt", ignore = true)
   VacancyResponse toVacancyResponse(Vacancy vacancy);
 
   default OffsetDateTime map(LocalDateTime localDateTime) {

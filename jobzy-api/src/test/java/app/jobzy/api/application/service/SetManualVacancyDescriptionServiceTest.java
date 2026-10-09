@@ -1,6 +1,7 @@
 package app.jobzy.api.application.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
@@ -46,14 +47,15 @@ class SetManualVacancyDescriptionServiceTest {
             .aboutUs("About us")
             .build();
 
-    var result = service.setManualDescription(command);
+    var description = service.setManualDescription(command).getDescription();
 
-    assertEquals(command.summary(), result.getDescription().summary());
-    assertEquals(command.jobDescription(), result.getDescription().jobDescription());
-    assertEquals(command.tasks(), result.getDescription().tasks());
-    assertEquals(command.whatWeOffer(), result.getDescription().whatWeOffer());
-    assertEquals(command.aboutUs(), result.getDescription().aboutUs());
-    assertEquals(VacancyDescriptionSource.MANUAL, result.getDescription().source());
+    assertNotNull(description);
+    assertEquals(command.summary(), description.summary());
+    assertEquals(command.jobDescription(), description.jobDescription());
+    assertEquals(command.tasks(), description.tasks());
+    assertEquals(command.whatWeOffer(), description.whatWeOffer());
+    assertEquals(command.aboutUs(), description.aboutUs());
+    assertEquals(VacancyDescriptionSource.MANUAL, description.source());
     verify(vacancyRepository).save(vacancy);
   }
 

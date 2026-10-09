@@ -13,4 +13,8 @@ public class BaseException extends RuntimeException {
     super(message);
     this.logCode = logCode;
   }
+
+  public String getLogCode() {
+    return logCode;
+  }
 }

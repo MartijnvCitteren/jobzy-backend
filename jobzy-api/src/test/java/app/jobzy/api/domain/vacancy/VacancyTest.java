@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
@@ -14,6 +15,7 @@ import app.jobzy.api.domain.vacancy.valueobject.VacancyDescription;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyDescriptionSource;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
+import app.jobzy.api.testSupport.VacancyFactory;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +28,7 @@ class VacancyTest {
   void givenBuilderWithExplicitIdWhenBuildThenVacancyHasExactlyThatId() {
     var id = UUID.randomUUID();
 
-    var vacancy = Vacancy.builder().id(id).build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().id(id).build();
 
     assertEquals(id, vacancy.getId());
   }
@@ -34,9 +36,19 @@ class VacancyTest {
   @Test
   @DisplayName("given builder with no explicit id, when build then vacancy has a generated id")
   void givenBuilderWithNoExplicitIdWhenBuildThenVacancyHasGeneratedId() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
 
     assertNotNull(vacancy.getId());
+  }
+
+  @Test
+  @DisplayName("given builder without required fields, when build then throws naming the field")
+  void givenBuilderWithoutRequiredFieldsWhenBuildThenThrowsNamingTheField() {
+    var builder = Vacancy.builder();
+
+    var exception = assertThrows(NullPointerException.class, builder::build);
+
+    assertEquals("jobTitle is required", exception.getMessage());
   }
 
   @Test
@@ -81,7 +93,7 @@ class VacancyTest {
   @Test
   @DisplayName("given builder with no description, when build then description defaults to null")
   void givenBuilderWithNoDescriptionWhenBuildThenDescriptionDefaultsToNull() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
 
     assertNull(vacancy.getDescription());
   }
@@ -89,7 +101,7 @@ class VacancyTest {
   @Test
   @DisplayName("given vacancy, when description is set then getter reflects the new value")
   void givenVacancyWhenDescriptionIsSetThenGetterReflectsTheNewValue() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
     var description =
         new VacancyDescription(
             "Summary",
@@ -107,7 +119,7 @@ class VacancyTest {
   @Test
   @DisplayName("given vacancy, when setters are used then getters reflect the new values")
   void givenVacancyWhenSettersAreUsedThenGettersReflectTheNewValues() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
     var location = new Location("Belgium", "Antwerp");
     var hoursPerWeek = new HoursPerWeek(BigDecimal.valueOf(20), BigDecimal.valueOf(30));
 
@@ -129,7 +141,7 @@ class VacancyTest {
   @Test
   @DisplayName("given two vacancies with the same id, when equals then returns true")
   void givenTwoVacanciesWithSameIdWhenEqualsThenReturnsTrue() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
 
     assertTrue(vacancy.equals(vacancy));
   }
@@ -137,8 +149,8 @@ class VacancyTest {
   @Test
   @DisplayName("given two vacancies with different ids, when equals then returns false")
   void givenTwoVacanciesWithDifferentIdsWhenEqualsThenReturnsFalse() {
-    var vacancy1 = Vacancy.builder().build();
-    var vacancy2 = Vacancy.builder().build();
+    var vacancy1 = VacancyFactory.getFilledCoreVacancy().build();
+    var vacancy2 = VacancyFactory.getFilledCoreVacancy().build();
 
     assertNotEquals(vacancy1, vacancy2);
   }
@@ -146,7 +158,7 @@ class VacancyTest {
   @Test
   @DisplayName("given vacancy and non-vacancy object, when equals then returns false")
   void givenVacancyAndNonVacancyObjectWhenEqualsThenReturnsFalse() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
 
     assertFalse(vacancy.equals("not a vacancy"));
   }
@@ -154,7 +166,7 @@ class VacancyTest {
   @Test
   @DisplayName("given vacancy, when hashCode then matches hash of id")
   void givenVacancyWhenHashCodeThenMatchesHashOfId() {
-    var vacancy = Vacancy.builder().build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().build();
 
     assertEquals(vacancy.getId().hashCode(), vacancy.hashCode());
   }
@@ -162,7 +174,7 @@ class VacancyTest {
   @Test
   @DisplayName("given vacancy, when toString then contains job title")
   void givenVacancyWhenToStringThenContainsJobTitle() {
-    var vacancy = Vacancy.builder().jobTitle("Backend Engineer").build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().jobTitle("Backend Engineer").build();
 
     assertTrue(vacancy.toString().contains("Backend Engineer"));
   }
@@ -178,7 +190,7 @@ class VacancyTest {
             "What we offer",
             "About us",
             VacancyDescriptionSource.MANUAL);
-    var vacancy = Vacancy.builder().description(description).build();
+    var vacancy = VacancyFactory.getFilledCoreVacancy().description(description).build();
 
     assertFalse(vacancy.toString().contains("Summary"));
   }

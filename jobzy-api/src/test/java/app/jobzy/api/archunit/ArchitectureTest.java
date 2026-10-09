@@ -40,7 +40,8 @@ public class ArchitectureTest {
 
   @Test
   @DisplayName(
-      "Domain Classes only depends on java and shared packages, only uuid generation allowed")
+      "Domain Classes only depends on java and shared packages, only uuid generation and JSpecify"
+          + " null annotations allowed")
   void domainClasses_doNot_haveDependencies_onFrameworks() {
     ArchRule myRule =
         classes()
@@ -52,7 +53,8 @@ public class ArchitectureTest {
                 "java..",
                 "app.jobzy.api.shared..",
                 "app.jobzy.api.domain..",
-                "com.fasterxml.uuid..");
+                "com.fasterxml.uuid..",
+                "org.jspecify.annotations..");
     myRule.check(classes);
   }
 

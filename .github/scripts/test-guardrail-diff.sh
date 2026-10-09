@@ -85,6 +85,10 @@ expect fail "workflow added"
 expect pass "workflow added with override label" "guardrail-change-ok"
 
 new_repo
+mkdir -p config && echo '<FindBugsFilter/>' >config/spotbugs-exclude.xml && commit
+expect fail "SpotBugs exclude filter added"
+
+new_repo
 printf '<project>\n<dependencies/>\n<build>\n<plugins><plugin/></plugins>\n</build>\n</project>\n' >api/pom.xml && commit
 expect fail "pom <build> changed"
 

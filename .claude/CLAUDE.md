@@ -28,6 +28,8 @@ mediation, or a full flow-builder now — out of scope until the ATS core and ad
 - **SQL Server** as database (`mssql-jdbc`); tests run on in-memory H2 (`test` profile).
 - **Lombok** and **MapStruct** as annotation processors; **ArchUnit** for architecture tests; **RestAssured** for
   integration tests.
+- **Error Prone + NullAway** (JSpecify mode) in the compiler, **SpotBugs + FindSecBugs** and **Maven Enforcer** in
+  `verify` — see "Static analysis" below.
 - **Cloud provider: not decided yet (Azure or AWS)**; custom domain jobzy.app. Keep the application cloud-agnostic:
   configuration through Spring properties / environment variables, a standard container image, and no Azure or AWS SDK
   outside an adapter behind a port. Flag any change that would tie the code to one provider.
@@ -93,6 +95,23 @@ Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
 ./mvnw spotless:apply                          # fix formatting (google-java-format)
 ```
 
+### Static analysis
+
+- **Compiler warnings fail the build** (`-Werror`): Error Prone bug patterns, MapStruct unmapped properties, javac
+  warnings. Fix the cause; for a MapStruct target that is deliberately not mapped, add `@Mapping(target = …, ignore = true)`.
+- **NullAway** checks only packages annotated with `@NullMarked` (JSpecify) in `package-info.java`; currently `domain..`
+  and `application..`. Everything there is non-null unless annotated `org.jspecify.annotations.@Nullable`. A new package
+  under `domain` or `application` gets a `package-info.java` with `@NullMarked`; adopt it in adapters package by
+  package. Never fix a NullAway error with a blanket `@Nullable` — decide whether the value can really be absent.
+- **SpotBugs + FindSecBugs** run in `verify`. Generated code is excluded in `config/spotbugs-exclude.xml`, which is a
+  guardrail file: fix a finding instead of adding an exclusion.
+- **Maven Enforcer** requires Maven 3.9+ and Java 25+, dependency convergence, and bans Jackson 2
+  (`com.fasterxml.jackson.core:jackson-databind`; `jackson-annotations` is fine, Jackson 3 uses it), `javax.*`, JUnit 4
+  and log4j 1. Don't exclude a banned artifact to make it pass; find the dependency that pulls it in.
+- **Tests run in random order** (classes and methods). The seed is printed at the start of the run ("Random test order
+  seed"); reproduce with `./mvnw -pl jobzy-api -am test -Dtest.order.seed=<seed>`. An order-dependent failure is a test
+  isolation bug — fix the shared state, don't pin the order.
+
 Use Maven/the linter for style and compile errors — not Claude as a linter. Run existing tests/checks yourself via bash
 rather than relying on your own judgment of correctness. `./mvnw clean install` is not cheap — run it once per
 verification pass, not repeatedly "to be sure"; only re-run it if you have a concrete new reason to suspect flakiness (a
@@ -124,7 +143,7 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 | Hook | Effect |
 |------|--------|
 | `guard-bash.sh` (PreToolUse, Bash) | **Blocks** skip/ignore flags (`-D…skip`, `-D…ignore`, `--fail-never`), `--no-verify` / `commit -n` / `core.hooksPath`, force/mirror/delete pushes and pushes to `main`, `reset --hard`, `clean -f`, discarding the whole tree, `gh pr merge`, label changes, branch-protection and repo-setting changes. **Asks** before a shell command writes to guardrail files. |
-| `guard-paths.sh` (PreToolUse, Edit/Write) | **Blocks** edits to `target/` and generated sources. **Asks** before editing `.claude/`, `.github/`, `.githooks/`, `.agents/`, `.mvn/`, `mvnw`, `skills-lock.json` or `ArchitectureTest.java`. |
+| `guard-paths.sh` (PreToolUse, Edit/Write) | **Blocks** edits to `target/` and generated sources. **Asks** before editing `.claude/`, `.github/`, `.githooks/`, `.agents/`, `.mvn/`, `config/`, `mvnw`, `skills-lock.json` or `ArchitectureTest.java`. |
 | `verify-on-stop.sh` (Stop) | Runs `./mvnw spotless:apply` + `./mvnw verify` when build-relevant files changed since the last green run and **blocks finishing while red** (3 attempts, then the human is warned). State and log in `.git/claude-guard/`. |
 
 - When a hook blocks you, fix the cause — never work around a hook (e.g. by moving the command into a script file).
@@ -157,7 +176,7 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 | More suppressions than `main` (`@SuppressWarnings`, `@Disabled`, assumptions, `NOSONAR`, `spotless:off`, `<skip…>true`, `skip…=true`, `continue-on-error: true`, …) | `suppression-ok` |
 | Fewer test methods than `main`, or a test class deleted | `test-removal-ok` |
 | More than 400 changed lines of production code and config, or 800 of tests (docs and `.agents/` excluded) | `large-pr-ok` |
-| Guardrail files changed (`.github/`, `.claude/`, `.githooks/`, `.agents/`, `.mvn/`, `mvnw`, `skills-lock.json`, `ArchitectureTest`, a `<build>` section in a `pom.xml`) | `guardrail-change-ok` |
+| Guardrail files changed (`.github/`, `.claude/`, `.githooks/`, `.agents/`, `.mvn/`, `config/`, `mvnw`, `skills-lock.json`, `ArchitectureTest`, a `<build>` section in a `pom.xml`) | `guardrail-change-ok` |
 | JPA entity (`@Entity`, `@Embeddable`, `@MappedSuperclass`) or `ddl-auto` changed | `schema-change` |
 | `CLAUDE.md` names a path that does not exist | none — fix `CLAUDE.md` |
 

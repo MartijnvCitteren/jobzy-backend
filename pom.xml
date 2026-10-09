@@ -17,16 +17,27 @@
 
 	<properties>
 		<arch-unit.version>1.5.1</arch-unit.version>
+		<error-prone.version>2.50.0</error-prone.version>
+		<findsecbugs.version>1.14.0</findsecbugs.version>
 		<java.version>25</java.version>
+		<jspecify.version>1.0.1</jspecify.version>
 		<lombok.version>1.18.48</lombok.version>
 		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<mapstruct.version>1.6.3</mapstruct.version>
 		<maven-compiler-plugin.version>3.16.0</maven-compiler-plugin.version>
+		<maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
+		<maven-surefire-plugin.version>3.6.0</maven-surefire-plugin.version>
+		<nullaway.version>0.14.2</nullaway.version>
 		<rest-assured.version>6.0.1</rest-assured.version>
+		<spotbugs-maven-plugin.version>4.10.4.1</spotbugs-maven-plugin.version>
 		<spotless.version>3.10.3</spotless.version>
 		<spring-boot.version>4.1.1</spring-boot.version>
 		<swagger-annotations.version>2.2.55</swagger-annotations.version>
 		<uuid-generator.version>5.2.0</uuid-generator.version>
+		<!-- Seed for the random test order. Varies per build; reproduce a failing order with -Dtest.order.seed=<seed>
+		     (the seed is printed at the start of the test run). -->
+		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+		<test.order.seed>${maven.build.timestamp}</test.order.seed>
 		<!-- Security overrides of Spring Boot managed versions. Remove each one as soon as the Spring Boot
 		     version above manages an equal or newer version. -->
 		<jackson-bom.override.version>3.2.3</jackson-bom.override.version> <!-- GHSA-cxp5-3px4-pw24, GHSA-7hhh-6rmp-j9qf, ... -->
@@ -78,6 +89,11 @@
 				<groupId>com.fasterxml.uuid</groupId>
 				<artifactId>java-uuid-generator</artifactId>
 				<version>${uuid-generator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jspecify</groupId>
+				<artifactId>jspecify</artifactId>
+				<version>${jspecify.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.projectlombok</groupId>
@@ -142,6 +158,21 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>${maven-surefire-plugin.version}</version>
+					<configuration>
+						<!-- Random class and method order exposes tests that depend on each other's state. -->
+						<properties>
+							<configurationParameters>
+								junit.jupiter.testclass.order.default=org.junit.jupiter.api.ClassOrderer$Random
+								junit.jupiter.testmethod.order.default=org.junit.jupiter.api.MethodOrderer$Random
+								junit.jupiter.execution.order.random.seed=${test.order.seed}
+							</configurationParameters>
+						</properties>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -149,6 +180,70 @@
 			<plugin>
 				<groupId>com.diffplug.spotless</groupId>
 				<artifactId>spotless-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>${maven-enforcer-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>enforce</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>[3.9,)</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>[${java.version},)</version>
+								</requireJavaVersion>
+								<banDuplicatePomDependencyVersions/>
+								<dependencyConvergence/>
+								<!-- Libraries agents tend to pull in from older training data. -->
+								<bannedDependencies>
+									<excludes>
+										<exclude>com.fasterxml.jackson.core:jackson-core</exclude> <!-- Jackson 2: use tools.jackson -->
+										<exclude>com.fasterxml.jackson.core:jackson-databind</exclude>
+										<exclude>com.fasterxml.jackson.datatype</exclude>
+										<exclude>com.fasterxml.jackson.module</exclude>
+										<exclude>com.fasterxml.jackson.dataformat</exclude>
+										<exclude>javax.*</exclude> <!-- Java EE: use jakarta.* -->
+										<exclude>junit:junit</exclude> <!-- JUnit 4: use JUnit Jupiter -->
+										<exclude>org.junit.vintage</exclude>
+										<exclude>log4j:log4j</exclude>
+									</excludes>
+								</bannedDependencies>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.github.spotbugs</groupId>
+				<artifactId>spotbugs-maven-plugin</artifactId>
+				<version>${spotbugs-maven-plugin.version}</version>
+				<configuration>
+					<effort>Max</effort>
+					<excludeFilterFile>${maven.multiModuleProjectDirectory}/config/spotbugs-exclude.xml</excludeFilterFile>
+					<plugins>
+						<plugin>
+							<groupId>com.h3xstream.findsecbugs</groupId>
+							<artifactId>findsecbugs-plugin</artifactId>
+							<version>${findsecbugs.version}</version>
+						</plugin>
+					</plugins>
+				</configuration>
+				<executions>
+					<execution>
+						<id>spotbugs-check</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
