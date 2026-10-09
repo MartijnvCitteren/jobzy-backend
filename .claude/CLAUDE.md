@@ -3,6 +3,9 @@
 Instructions for Claude (Code) when working in the jobzy-backend repository. This file describes the *code* context — for the
 product/market "why" and the roadmap, see project knowledge (product/market vision, H2 2026 epics).
 
+**Before you start a task, read `docs/application/`** (start with `overview.md`): it describes what is built, how it
+fits together and its known gaps. Keeping it current is part of every change — see "Application docs" below.
+
 ## What Jobzy is
 Jobzy is a recruitment hub — ATS, channel-advice engine, and later a marketplace — replacing fragmented point tools. The
 advice engine depends entirely on ATS pipeline data (channel source, rejection reason, stage transitions), so those must be
@@ -121,6 +124,21 @@ Root modules (`pom.xml` `<modules>`): **`jobzy-contracts`** and **`jobzy-api`**.
   candidate-related fields: decide explicitly which category they belong to before adding them. Every field of a JPA
   entity, mapped superclass or embeddable carries exactly one of `@PersonalData` or `@ProcessData`; `@Id`, `@Version`,
   `@Transient` and associations are exempt (the entity they point to classifies its own columns).
+
+## Application docs
+
+`docs/application/` describes how the application works *as it is on `main`*: `overview.md` for the module layout,
+request flow and cross-cutting behaviour, and one page per aggregate (e.g. `vacancy.md`) for its model, use cases,
+persistence and known gaps. It is written for the next agent or developer: what is built, how it fits together, and
+what a change there affects.
+
+- **Update the docs in the same PR as the code.** A PR that adds or changes behaviour, an endpoint, a domain rule, a
+  persistence mapping or configuration updates the matching page; a new aggregate gets a new page. The docs are
+  reviewed together with the code — never generate or rewrite them after the merge.
+- Describe the current state only. Plans belong in this file or an ADR, decisions and their rationale in `docs/adr/`.
+- Keep it short and factual: explain the *why* and the impact, don't restate the code line by line.
+- When you find a bug or inconsistency you are not fixing, add it under "Known gaps" on the matching page. Remove the
+  entry in the PR that fixes it.
 
 ## Build & test
 
