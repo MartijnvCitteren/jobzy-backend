@@ -114,11 +114,13 @@ if [ -n "$guardrail_files" ]; then
   finding guardrail-change-ok "Guardrail files changed: $guardrail_files. Call this out in the PR description."
 fi
 
-# --- Schema changes: JPA entities and ddl-auto --------------------------------------------------------------------
+# --- Schema changes: JPA entities, the schema snapshot and ddl-auto -----------------------------------------------
 ENTITY='@(Entity|Embeddable|MappedSuperclass)([^A-Za-z]|$)'
 entities=$(changed '*src/main/*.java' | while IFS= read -r f; do
   if contains "$mb" "$ENTITY" "$f" || contains "$pr_head" "$ENTITY" "$f"; then echo "$f"; fi
 done)
+# The snapshot also changes without an entity change, e.g. when a Hibernate upgrade generates different DDL.
+entities+=$'\n'"$(changed '*schema-snapshot.sql')"
 if git diff "$mb" "$pr_head" -- '*application*.yml' '*application*.yaml' '*application*.properties' |
   grep -Eq '^[+-].*ddl-auto'; then
   entities+=$'\n'"ddl-auto setting"

@@ -127,5 +127,11 @@ Constraints:
   `generateJsonIncludeAnnotations`), and `ProblemDetails.instance` was a relative path where the contract says
   `format: uri` (the code now returns the absolute request URL; relaxing the contract to `uri-reference` is a
   breaking change and was left to the maintainer).
-- Open risks to verify during rollout: offline SQL Server DDL generation with Hibernate (PR 8), PIT on JUnit 6
-  (deferred).
+- The schema snapshot (PR 8) is a `@DataJpaTest` that lets Hibernate write the create script with the SQL Server
+  dialect and JDBC metadata access turned off (`hibernate.boot.allow_jdbc_metadata_access=false`, database version
+  pinned to SQL Server 2025 as in `docker-compose.yaml`), so it needs no SQL Server and uses exactly the naming
+  strategies Spring Boot configures. The test compares the script with the committed `schema-snapshot.sql`;
+  `guardrail-diff` reports a changed snapshot as `schema-change`, which also catches DDL changes from a Hibernate
+  upgrade without an entity change. Rejected: a standalone Hibernate `MetadataSources` export, which would duplicate
+  Spring Boot's naming strategies and drift from what runs in production.
+- Open risks to verify during rollout: PIT on JUnit 6 (deferred).
