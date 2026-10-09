@@ -96,5 +96,14 @@ Constraints:
   the PR, and every label change would re-run the full build).
 - Branch protection (and rulesets) on a private repository requires a paid plan (GitHub Pro for a personal account).
   Without it, CI still runs but no longer blocks merges.
+- Static analysis (PR 5) runs inside `./mvnw verify`: Error Prone and NullAway as javac plugins with `-Werror`, so
+  any compiler warning fails the build; SpotBugs + FindSecBugs and Maven Enforcer as plugins. Error Prone works
+  together with Lombok and MapStruct; it needs `--add-exports`/`--add-opens` for `jdk.compiler` in `.mvn/jvm.config`.
+  NullAway runs in JSpecify mode on `@NullMarked` packages only (`application` first), so adoption can grow package
+  by package without a big-bang annotation pass. `domain` is deliberately not null-marked: it keeps zero external
+  dependencies, JSpecify included, and the maintainer accepts the null risk there in exchange (domain code checks for
+  null itself). Rejected: allowing JSpecify in the domain as an annotation-only dependency. The SpotBugs exclude filter lives in `config/` and is a
+  guardrail file. Tests run in random class and method order with a per-build seed that is printed and can be
+  replayed with `-Dtest.order.seed`; rejected: Surefire's `runOrder=random`, which only shuffles classes.
 - Open risks to verify during rollout: Jackson 3 support in `swagger-request-validator` (PR 7), offline SQL Server DDL
-  generation with Hibernate (PR 8), Error Prone together with Lombok and MapStruct (PR 5), PIT on JUnit 6 (deferred).
+  generation with Hibernate (PR 8), PIT on JUnit 6 (deferred).

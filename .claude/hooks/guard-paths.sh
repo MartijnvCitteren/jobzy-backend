@@ -28,7 +28,7 @@ case "/$rel" in
   */../*) ask "path contains '..', cannot verify it stays outside guardrail files: $rel" ;;
   */target/*) deny "$rel is build output. Change the source (e.g. the OpenAPI YAML) and rebuild instead." ;;
   */generated-sources/*) deny "$rel is generated code. Never hand-edit it; change the OpenAPI YAML instead." ;;
-  /.claude/* | /.github/* | /.githooks/* | /.agents/* | /.mvn/* | /skills-lock.json | /mvnw | /mvnw.cmd | */ArchitectureTest.java)
+  /.claude/* | /.github/* | /.githooks/* | /.agents/* | /.mvn/* | /config/* | /skills-lock.json | /mvnw | /mvnw.cmd | */ArchitectureTest.java)
     ask "$rel is a guardrail or agent-instruction file. Changes to the safety net need explicit human approval." ;;
 esac
 

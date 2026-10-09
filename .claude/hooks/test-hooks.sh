@@ -68,6 +68,10 @@ open(".claude/CLAUDE.md", "w").write("x")
 EOF'
 expect_bash ask 'chmod -x .githooks/pre-commit'
 expect_bash ask "sed -i '' 's/assert/x/' jobzy-api/src/test/java/app/jobzy/api/archunit/ArchitectureTest.java"
+expect_bash ask 'cat > config/spotbugs-exclude.xml <<EOF
+<FindBugsFilter/>
+EOF'
+expect_bash allow "sed -i '' 's/x/y/' jobzy-api/src/main/java/app/jobzy/api/shared/config/WebConfig.java"
 expect_bash ask "rm \"$CLAUDE_PROJECT_DIR/.claude/hooks/verify-on-stop.sh\""
 
 # --- guard-bash: patterns stay within one command segment
@@ -108,11 +112,13 @@ expect_path ask "$p/.github/workflows/ci.yml"
 expect_path ask "$p/.githooks/pre-commit"
 expect_path ask "$p/.agents/skills/grilling/SKILL.md"
 expect_path ask "$p/.mvn/wrapper/maven-wrapper.properties"
+expect_path ask "$p/config/spotbugs-exclude.xml"
 expect_path ask "$p/skills-lock.json"
 expect_path ask "$p/mvnw"
 expect_path ask "$p/jobzy-api/src/test/java/app/jobzy/api/archunit/ArchitectureTest.java"
 expect_path ask "$p/jobzy-api/../.claude/settings.json"
 expect_path allow "$p/pom.xml"
+expect_path allow "$p/jobzy-api/src/main/java/app/jobzy/api/shared/config/WebConfig.java"
 expect_path allow "$p/jobzy-api/src/main/java/app/jobzy/api/domain/vacancy/Vacancy.java"
 expect_path allow "$p/jobzy-contracts/src/main/java/app/jobzy/contracts/VacancyApi.yml"
 expect_path allow "$p/docs/adr/0002-something.md"

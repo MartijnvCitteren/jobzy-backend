@@ -2,7 +2,6 @@ package app.jobzy.api.testSupport;
 
 import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
 import app.jobzy.api.domain.vacancy.Vacancy;
-import app.jobzy.api.domain.vacancy.Vacancy.Builder;
 import app.jobzy.api.domain.vacancy.valueobject.HoursPerWeek;
 import app.jobzy.api.domain.vacancy.valueobject.Location;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
@@ -20,7 +19,7 @@ public class VacancyFactory {
   public static final VacancyStatus STATUS = VacancyStatus.DRAFT;
   public static final WorkplaceType WORKPLACE_TYPE = WorkplaceType.HYBRID;
 
-  public static Builder getFilledCoreVacancy() {
+  public static Vacancy.Builder getFilledCoreVacancy() {
     return Vacancy.builder()
         .jobTitle(JOB_TITLE)
         .category(CATEGORY)

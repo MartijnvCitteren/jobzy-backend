@@ -3,6 +3,7 @@ package app.jobzy.api.adapter.out.persistence.vacancy.mapper;
 import app.jobzy.api.adapter.out.persistence.vacancy.VacancyDescriptionJpaEntity;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyDescription;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 /** Maps between {@code VacancyDescription} domain VO and {@code VacancyDescriptionJpaEntity}. */
@@ -28,5 +29,10 @@ public interface VacancyDescriptionJpaMapper {
    * @param description the domain VO
    * @return the entity ready to be wired onto its parent vacancy
    */
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "vacancy", ignore = true)
+  @Mapping(target = "createdAt", ignore = true)
+  @Mapping(target = "lastModifiedAt", ignore = true)
+  @Mapping(target = "modifiedBy", ignore = true)
   VacancyDescriptionJpaEntity toJpaEntity(VacancyDescription description);
 }

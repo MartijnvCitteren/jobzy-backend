@@ -194,7 +194,14 @@ public class Vacancy extends BaseObject {
     public Vacancy build() {
       UUID id = explicitId != null ? explicitId : UuidV7Generator.getUUID();
       return new Vacancy(
-          id, jobTitle, category, location, workplaceType, hoursPerWeek, status, description);
+          id,
+          Objects.requireNonNull(jobTitle, "jobTitle is required"),
+          Objects.requireNonNull(category, "category is required"),
+          Objects.requireNonNull(location, "location is required"),
+          Objects.requireNonNull(workplaceType, "workplaceType is required"),
+          Objects.requireNonNull(hoursPerWeek, "hoursPerWeek is required"),
+          status,
+          description);
     }
   }
 }

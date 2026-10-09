@@ -100,7 +100,7 @@ if [ "$prod_lines" -gt "$MAX_PROD_LINES" ] || [ "$test_lines" -gt "$MAX_TEST_LIN
 fi
 
 # --- Guardrail changes: agent config, skills, CI, build wrapper, ArchUnit rules and Maven <build> sections --------
-guardrail_files=$(changed '.github/*' '.claude/*' '.githooks/*' '.agents/*' '.mvn/*' mvnw mvnw.cmd skills-lock.json \
+guardrail_files=$(changed '.github/*' '.claude/*' '.githooks/*' '.agents/*' '.mvn/*' 'config/*' mvnw mvnw.cmd skills-lock.json \
   '*ArchitectureTest.java')
 build_section() { git show "$1:$2" 2>/dev/null | sed -n '/<build>/,/<\/build>/p'; }
 while IFS= read -r pom; do

@@ -1,5 +1,8 @@
 package app.jobzy.api.shared.exception;
 
+import lombok.Getter;
+
+@Getter
 public class BaseException extends RuntimeException {
   private static final String DEFAULT_LOG_CODE = "DEFAULT, please update log-code";
   private final String logCode;

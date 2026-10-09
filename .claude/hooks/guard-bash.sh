@@ -67,12 +67,12 @@ has "${GH}(workflow${S}+disable|repo${S}+(edit|delete|rename|archive))" &&
 
 # --- Shell writes to guardrail files: ask the human ----------------------------------------------
 proj="${CLAUDE_PROJECT_DIR:-$PWD}"
-guard_paths="(^|[[:space:]'\"=(:])(\./|${proj}/)?(\.claude/|\.githooks/|\.git/hooks|\.github/|\.agents/|\.mvn/|skills-lock\.json|mvnw|[^[:space:]]*ArchitectureTest\.java)"
+guard_paths="(^|[[:space:]'\"=(:])(\./|${proj}/)?(\.claude/|\.githooks/|\.git/hooks|\.github/|\.agents/|\.mvn/|config/|skills-lock\.json|mvnw|[^[:space:]]*ArchitectureTest\.java)"
 # Ignore harmless redirections like 2>/dev/null or 2>&1 before looking for writes.
 stripped=$(sed -E 's#[0-9]*>{1,2}[[:space:]]*/dev/null##g; s#[0-9]*>&[0-9]##g' <<<"$cmd")
 writes="(sed${S}+(-[[:alpha:]]*${S}+)*-i|perl${S}+-[[:alpha:]]*i|>|tee${S}|(^|[;&|(${S}])(mv|cp|rm|chmod|ln|truncate|touch)${S}|python|node${S}|git${S}+(checkout|restore|rm|mv|apply))"
 if grep -Eq -- "$guard_paths" <<<"$cmd" && grep -Eq -- "$writes" <<<"$stripped"; then
-  ask "this shell command may modify guardrail files (.claude/, .github/, .githooks/, .agents/, .mvn/, mvnw, skills-lock.json or ArchitectureTest)."
+  ask "this shell command may modify guardrail files (.claude/, .github/, .githooks/, .agents/, .mvn/, config/, mvnw, skills-lock.json or ArchitectureTest)."
 fi
 
 exit 0
