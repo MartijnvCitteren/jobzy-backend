@@ -72,6 +72,22 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Turns a call to a contract operation that is not built yet into an RFC 9457 501 problem
+   * response, naming the operation, so clients can tell "not built yet" apart from a real failure.
+   */
+  @ExceptionHandler(EndpointNotImplementedException.class)
+  ResponseEntity<ProblemDetails> handleEndpointNotImplementedException(
+      EndpointNotImplementedException ex, HttpServletRequest request) {
+    var problemDetails =
+        new ProblemDetails(Constants.NOT_IMPLEMENTED_TITLE, HttpStatus.NOT_IMPLEMENTED.value());
+    problemDetails.setDetail(ex.getMessage());
+    problemDetails.setInstance(URI.create(request.getRequestURI()));
+    return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
+        .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+        .body(problemDetails);
+  }
+
+  /**
    * Fallback for every exception not handled more specifically, so failures (e.g. a database error
    * during save) surface as RFC 9457 Problem Details instead of Spring's default error response. No
    * internal details are leaked in {@code detail}.
