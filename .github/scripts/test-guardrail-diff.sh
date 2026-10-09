@@ -106,6 +106,11 @@ mkdir -p api/src/main/resources && echo "ddl-auto: update" >api/src/main/resourc
 expect fail "ddl-auto changed"
 
 new_repo
+mkdir -p api/src/test/resources && echo "create table vacancy (id int);" >api/src/test/resources/schema-snapshot.sql && commit
+expect fail "schema snapshot changed"
+expect pass "schema snapshot changed with schema-change label" "schema-change"
+
+new_repo
 cat >.claude/CLAUDE.md <<'EOF'
 See `docs/` and `api/pom.xml` and `scripts/gone.sh`.
 EOF

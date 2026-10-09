@@ -122,6 +122,10 @@ Always use the wrapper (`./mvnw`), never a globally installed `mvn`.
   contract does not declare fails the test, as does `null` for a field that is not nullable. Requests are not
   validated, because tests send invalid requests on purpose. A violation means the code or the contract is wrong —
   fix whichever one is wrong (contract changes stay backwards compatible), never the filter.
+- **Schema snapshot.** `SchemaSnapshotTest` generates the SQL Server DDL of the JPA entities offline and compares
+  it with `jobzy-api/src/test/resources/schema-snapshot.sql`. On an intended schema change, review the generated
+  `jobzy-api/target/schema-snapshot.sql`, copy it over the snapshot and say so in the PR (the maintainer applies
+  `schema-change`). Never update the snapshot just to make the test pass without reading the DDL diff.
 - **ArchUnit ban list** (`ArchitectureTest`, production code unless noted): no Jackson 2 (`com.fasterxml.jackson`
   outside `.annotation`), no Java EE `javax.*` (use `jakarta.*`), no `java.util.Date`/`Calendar`/`SimpleDateFormat`/
   `java.sql` time types, no `System.out`/`System.err`/`printStackTrace` (use `@Log4j2`), no field injection (MapStruct
@@ -194,7 +198,7 @@ roadmap of guardrails are in `docs/adr/0001-agentic-development-guardrails.md`.
 | Fewer test methods than `main`, or a test class deleted | `test-removal-ok` |
 | More than 400 changed lines of production code and config, or 800 of tests (docs and `.agents/` excluded) | `large-pr-ok` |
 | Guardrail files changed (`.github/`, `.claude/`, `.githooks/`, `.agents/`, `.mvn/`, `config/`, `mvnw`, `skills-lock.json`, `ArchitectureTest`, a `<build>` section in a `pom.xml`) | `guardrail-change-ok` |
-| JPA entity (`@Entity`, `@Embeddable`, `@MappedSuperclass`) or `ddl-auto` changed | `schema-change` |
+| JPA entity (`@Entity`, `@Embeddable`, `@MappedSuperclass`), `schema-snapshot.sql` or `ddl-auto` changed | `schema-change` |
 | `CLAUDE.md` names a path that does not exist | none — fix `CLAUDE.md` |
 
 - An agent fixes the cause of a finding; when the finding is intended, it says so in the PR description and leaves the
