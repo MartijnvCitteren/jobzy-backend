@@ -73,6 +73,25 @@ class GlobalExceptionHandlerTest {
   }
 
   @Test
+  @DisplayName(
+      "given an operation that is not built yet, when handling then returns a 501 problem detail"
+          + " naming the operation")
+  void givenEndpointNotImplementedWhenHandleThenReturns501ProblemDetailNamingTheOperation() {
+    var response =
+        handler.handleEndpointNotImplementedException(
+            new EndpointNotImplementedException("getVacancy"), request());
+
+    assertEquals(HttpStatus.NOT_IMPLEMENTED, response.getStatusCode());
+    assertEquals(MediaType.APPLICATION_PROBLEM_JSON, response.getHeaders().getContentType());
+
+    ProblemDetails body = response.getBody();
+    assertEquals("Not implemented", body.getTitle());
+    assertEquals(HttpStatus.NOT_IMPLEMENTED.value(), body.getStatus());
+    assertEquals("Operation is not implemented yet: getVacancy", body.getDetail());
+    assertEquals(URI.create("/api/v1/vacancy"), body.getInstance());
+  }
+
+  @Test
   @DisplayName("given an unexpected exception, when handling then returns a 500 problem detail")
   void givenUnexpectedExceptionWhenHandleThenReturns500ProblemDetail() {
     var response = handler.handleException(new RuntimeException("boom"), request());

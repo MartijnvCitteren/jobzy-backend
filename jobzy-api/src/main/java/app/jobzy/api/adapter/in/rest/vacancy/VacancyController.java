@@ -1,5 +1,6 @@
 package app.jobzy.api.adapter.in.rest.vacancy;
 
+import app.jobzy.api.adapter.in.rest.EndpointNotImplementedException;
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyCoreRequestMapper;
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.request.VacancyDescriptionRequestMapper;
 import app.jobzy.api.adapter.in.rest.vacancy.mapper.response.VacancyDescriptionResponseMapper;
@@ -29,8 +30,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Only {@link #createVacancy} and {@link #manualVacancyDescription} are wired up so far; every
- * other operation falls through to {@link VacancyApi}'s default methods, which respond with 501 Not
+ * Only {@link #createVacancy} and {@link #manualVacancyDescription} are wired up so far. The
+ * generated {@link VacancyApi} has no default methods ({@code skipDefaultInterface}), so every
+ * other operation throws {@link EndpointNotImplementedException}, which responds with 501 Not
  * Implemented.
  */
 @Log4j2
@@ -47,7 +49,7 @@ public class VacancyController implements VacancyApi {
 
   @Override
   public ResponseEntity<VacancyResponse> closeVacancy(UUID id) {
-    return null;
+    throw new EndpointNotImplementedException("closeVacancy");
   }
 
   @Override
@@ -61,29 +63,29 @@ public class VacancyController implements VacancyApi {
 
   @Override
   public ResponseEntity<Void> deleteVacancy(UUID id) {
-    return null;
+    throw new EndpointNotImplementedException("deleteVacancy");
   }
 
   @Override
   public ResponseEntity<VacancyResponse> fillVacancy(UUID id) {
-    return null;
+    throw new EndpointNotImplementedException("fillVacancy");
   }
 
   @Override
   public ResponseEntity<VacancyDescriptionGeneration> generateVacancyDescription(
       UUID id, GenerateVacancyDescriptionRequest generateVacancyDescriptionRequest) {
-    return null;
+    throw new EndpointNotImplementedException("generateVacancyDescription");
   }
 
   @Override
   public ResponseEntity<VacancyResponse> getVacancy(UUID id) {
-    return null;
+    throw new EndpointNotImplementedException("getVacancy");
   }
 
   @Override
   public ResponseEntity<VacancyDescriptionGeneration> getVacancyDescriptionGeneration(
       UUID id, UUID generationId) {
-    return null;
+    throw new EndpointNotImplementedException("getVacancyDescriptionGeneration");
   }
 
   @Override
@@ -101,7 +103,7 @@ public class VacancyController implements VacancyApi {
       String sortDir,
       @Nullable String cursor,
       Integer limit) {
-    return null;
+    throw new EndpointNotImplementedException("listVacancies");
   }
 
   @Override
@@ -116,12 +118,12 @@ public class VacancyController implements VacancyApi {
 
   @Override
   public ResponseEntity<VacancyResponse> publishVacancy(UUID id) {
-    return null;
+    throw new EndpointNotImplementedException("publishVacancy");
   }
 
   @Override
   public ResponseEntity<VacancyResponse> updateVacancy(
       UUID id, VacancyUpdateRequest vacancyUpdateRequest) {
-    return null;
+    throw new EndpointNotImplementedException("updateVacancy");
   }
 }
