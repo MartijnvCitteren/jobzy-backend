@@ -8,6 +8,7 @@ import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class VacancyFactory {
   public static final String JOB_TITLE = "Sales Manager";
@@ -18,6 +19,7 @@ public class VacancyFactory {
   public static final String CITY = "Amsterdam";
   public static final VacancyStatus STATUS = VacancyStatus.DRAFT;
   public static final WorkplaceType WORKPLACE_TYPE = WorkplaceType.HYBRID;
+  public static final LocalDateTime CREATED_AT = LocalDateTime.of(2026, 1, 1, 9, 0);
 
   public static Vacancy.Builder getFilledCoreVacancy() {
     return Vacancy.builder()
@@ -26,7 +28,8 @@ public class VacancyFactory {
         .hoursPerWeek(new HoursPerWeek(MIN_HOURS_PER_WEEK, MAX_HOURS_PER_WEEK))
         .location(new Location(COUNTRY, CITY))
         .status(STATUS)
-        .workplaceType(WORKPLACE_TYPE);
+        .workplaceType(WORKPLACE_TYPE)
+        .createdAt(CREATED_AT);
   }
 
   public static CreateCoreVacancyCommand.CreateCoreVacancyCommandBuilder

@@ -2,6 +2,7 @@ package app.jobzy.api.adapter.out.persistence.vacancy;
 
 import app.jobzy.api.adapter.out.persistence.BaseJpaEntity;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyDescriptionSource;
+import app.jobzy.api.shared.gdpr.ProcessData;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -29,12 +30,13 @@ public class VacancyDescriptionJpaEntity extends BaseJpaEntity {
   @JoinColumn(name = "vacancy_id")
   private VacancyJpaEntity vacancy;
 
-  private String summary;
-  private String jobDescription;
-  private String tasks;
-  private String whatWeOffer;
-  private String aboutUs;
+  @ProcessData private String summary;
+  @ProcessData private String jobDescription;
+  @ProcessData private String tasks;
+  @ProcessData private String whatWeOffer;
+  @ProcessData private String aboutUs;
 
+  @ProcessData
   @Enumerated(EnumType.STRING)
   private VacancyDescriptionSource source;
 }

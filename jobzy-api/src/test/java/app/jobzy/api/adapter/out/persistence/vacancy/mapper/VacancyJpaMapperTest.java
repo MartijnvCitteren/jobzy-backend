@@ -76,6 +76,7 @@ class VacancyJpaMapperTest {
     assertEquals(vacancyEntity.getHoursPerWeek(), result.getHoursPerWeek());
     assertEquals(vacancyEntity.getStatus(), result.getStatus());
     assertEquals(domainDescription, result.getDescription());
+    assertEquals(vacancyEntity.getCreatedAt(), result.getCreatedAt());
   }
 
   @Test

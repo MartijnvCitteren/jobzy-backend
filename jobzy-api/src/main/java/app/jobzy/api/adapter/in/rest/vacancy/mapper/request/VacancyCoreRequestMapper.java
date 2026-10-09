@@ -2,12 +2,14 @@ package app.jobzy.api.adapter.in.rest.vacancy.mapper.request;
 
 import app.jobzy.api.application.port.in.command.CreateCoreVacancyCommand;
 import app.jobzy.api.vacancy.adapter.in.web.contract.VacancyCoreRequest;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(
     componentModel = "spring",
+    injectionStrategy = InjectionStrategy.CONSTRUCTOR,
     uses = {
       VacancyCategoryMapper.class,
       VacancyLocationMapper.class,

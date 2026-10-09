@@ -8,6 +8,7 @@ import app.jobzy.api.domain.vacancy.valueobject.VacancyCategory;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyDescription;
 import app.jobzy.api.domain.vacancy.valueobject.VacancyStatus;
 import app.jobzy.api.domain.vacancy.valueobject.WorkplaceType;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 import org.jspecify.annotations.Nullable;
@@ -31,7 +32,9 @@ public class Vacancy extends BaseObject {
       WorkplaceType workplaceType,
       HoursPerWeek hoursPerWeek,
       VacancyStatus status,
-      @Nullable VacancyDescription description) {
+      @Nullable VacancyDescription description,
+      LocalDateTime createdAt) {
+    super(createdAt);
     this.id = id;
     this.jobTitle = jobTitle;
     this.category = category;
@@ -149,6 +152,7 @@ public class Vacancy extends BaseObject {
     private @Nullable HoursPerWeek hoursPerWeek;
     private VacancyStatus status = VacancyStatus.DRAFT;
     private @Nullable VacancyDescription description;
+    private @Nullable LocalDateTime createdAt;
 
     private Builder() {}
 
@@ -192,6 +196,11 @@ public class Vacancy extends BaseObject {
       return this;
     }
 
+    public Builder createdAt(LocalDateTime createdAt) {
+      this.createdAt = createdAt;
+      return this;
+    }
+
     public Vacancy build() {
       UUID id = explicitId != null ? explicitId : UuidV7Generator.getUUID();
       return new Vacancy(
@@ -202,7 +211,8 @@ public class Vacancy extends BaseObject {
           Objects.requireNonNull(workplaceType, "workplaceType is required"),
           Objects.requireNonNull(hoursPerWeek, "hoursPerWeek is required"),
           status,
-          description);
+          description,
+          Objects.requireNonNull(createdAt, "createdAt is required"));
     }
   }
 }

@@ -1,5 +1,7 @@
 package app.jobzy.api.adapter.out.persistence;
 
+import app.jobzy.api.shared.gdpr.PersonalData;
+import app.jobzy.api.shared.gdpr.ProcessData;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
@@ -20,7 +22,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseJpaEntity {
-  @CreatedDate private LocalDateTime createdAt;
-  @LastModifiedDate private LocalDateTime lastModifiedAt;
-  private String modifiedBy;
+  @ProcessData @CreatedDate private LocalDateTime createdAt;
+  @ProcessData @LastModifiedDate private LocalDateTime lastModifiedAt;
+  @PersonalData private String modifiedBy;
 }
